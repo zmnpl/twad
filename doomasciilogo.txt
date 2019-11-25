@@ -1,0 +1,19 @@
+[steelblue]=================     ===============     ===============   ========  ========
+[steelblue]\\\\ . . . . . . .\\\\   //. . . . . . .\\\\   //. . . . . . .\\\\  \\\\. . .\\\\// . . //
+[orange]||[steelblue]. . .[orange]_____[steelblue]. . .[orange]|| ||[steelblue]. . .[orange]_____[steelblue]. . .[orange]|| ||[steelblue]. . .[orange]_____[steelblue]. . .[orange]|| ||[steelblue] . . .[orange]\\/[steelblue] . . .[orange]||
+[orange]||[steelblue] . .[orange]||   ||[steelblue]. . [orange]|| ||[steelblue] . .[orange]||   ||[steelblue]. . [orange]|| ||[steelblue] . .[orange]||   ||[steelblue]. . [orange]|| ||[steelblue]. . . . . . . [orange]||
+[orange]||[steelblue]. . [orange]||   ||[steelblue] . .[orange]|| ||[steelblue]. . [orange]||   ||[steelblue] . .[orange]|| ||[steelblue]. . [orange]||   ||[steelblue] . .[orange]|| ||[steelblue] . [orange]|[steelblue] . . . . .[orange]||
+[orange]||[steelblue] . .[orange]||   ||[steelblue]. [orange]_-|| ||-_[steelblue] .[orange]||   ||[steelblue]. . [orange]|| ||[steelblue] . .[orange]||   ||[steelblue]. [orange]_-|| ||-_[steelblue].[orange]|\\[steelblue] . . . . [orange]||
+[orange]||[steelblue]. . [orange]||   ||-'  || ||  `-||   || [steelblue]. .[orange]|| ||[steelblue]. . [orange]||   ||-'  || ||  `|\\_[steelblue] . .[orange]|[steelblue]. .[orange]||
+[orange]||[steelblue] . [orange]_||   ||    || ||    ||   ||_[steelblue] . [orange]|| ||[steelblue] . [orange]_||   ||    || ||   |\\ `-_/|[steelblue] . [orange]||
+[orange]||_-' ||  .|/    || ||    \\|.  || `-_|| ||_-' ||  .|/    || ||   | \\  / |-_[steelblue].[orange]||
+[orange]||    ||_-'      || ||      `-_||    || ||    ||_-'      || ||   | \\  / |  `||
+[orange]||    `'         || ||         `'    || ||    `'         || ||   | \\  / |   ||
+[orange]||            .===' `===.         .==='.`===.         .===' /==. |  \\/  |   ||
+[orange]||         .=='   \\_|-_ `===. .==='   _|_   `===. .===' _-|/   `==  \\/  |   ||
+[orange]||      .=='    _-'    `-_  `='    _-'   `-_    `='  _-'   `-_  /|  \\/  |   ||
+[orange]||   .=='    _-'          `-__\\._-'         `-_./__-'         `' |. /|  |   ||
+[orange]||.=='    _-'                                                     `' |  /==.||
+[orange]=='    _-'                                                            \\/   `==
+[orange]\\   _-'                                                                `-_   /
+[orange] `''                                                                      ``'
