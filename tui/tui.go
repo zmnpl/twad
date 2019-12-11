@@ -2,13 +2,14 @@ package tui
 
 import (
 	"fmt"
-	"github.com/zmnpl/twad/cfg"
-	"github.com/zmnpl/twad/games"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
+
+	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/games"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
@@ -18,36 +19,14 @@ const (
 	previewBackgroundColor = tcell.ColorRoyalBlue
 	accentColor            = tcell.ColorOrange
 
-	tableBorders = false
-
 	pageStats       = "stats"
 	pageNewForm     = "newform"
 	pageModSelector = "modselector"
 	pageSettings    = "settings"
 	pageMain        = "main"
+	pageLicense     = "license"
 
-	inputLabelName       = "Name"
-	inputLabelSourcePort = "Source Port"
-	inputLabelIWad       = "IWad"
-
-	// DOOM and Quake are registered trademarks of id Software, Inc. The DOOM, Quake and id logos are trademarks of id Software, Inc.
-	// The ASCII version of the DOOM logo is Copyright © 1994 by F.P. de Vries.
-
-	// this logo is work from Frans P. de Vries who originally made it and nicely granted me permission to use it here
-	// details can be found in this little piece of video game history:
-	// http://www.gamers.org/~fpv/doomlogo.html
-	doomLogo2      = "[red]=================     ===============     ===============   ========  ========\n\\\\ . . . . . . .\\\\   //. . . . . . .\\\\   //. . . . . . .\\\\  \\\\. . .\\\\// . . //\n||. . ._____. . .|| ||. . ._____. . .|| ||. . ._____. . .|| || . . .\\/ . . .||\n|| . .||   ||. . || || . .||   ||. . || || . .||   ||. . || ||. . . . . . . ||\n||. . ||   || . .|| ||. . ||   || . .|| ||. . ||   || . .|| || . | . . . . .||\n|| . .||   ||. _-|| ||-_ .||   ||. . || || . .||   ||. _-|| ||-_.|\\ . . . . ||\n||. . ||   ||-'  || ||  `-||   || . .|| ||. . ||   ||-'  || ||  `|\\_ . .|. .||\n|| . _||   ||    || ||    ||   ||_ . || || . _||   ||    || ||   |\\ `-_/| . ||\n||_-' ||  .|/    || ||    \\|.  || `-_|| ||_-' ||  .|/    || ||   | \\  / |-_.||\n||    ||_-'      || ||      `-_||    || ||    ||_-'      || ||   | \\  / |  `||\n||    `'         || ||         `'    || ||    `'         || ||   | \\  / |   ||\n||            .===' `===.         .==='.`===.         .===' /==. |  \\/  |   ||\n||         .=='   \\_|-_ `===. .==='   _|_   `===. .===' _-|/   `==  \\/  |   ||\n||      .=='    _-'    `-_  `='    _-'   `-_    `='  _-'   `-_  /|  \\/  |   ||\n||   .=='    _-'          `-__\\._-'         `-_./__-'         `' |. /|  |   ||\n||.=='    _-'                                                     `' |  /==.||\n=='    _-'                                                            \\/   `==\n\\   _-'                                                                `-_   /\n `''                                                                      ``'"
-	doomLogoBackup = "[royalblue]=================     ===============     ===============   ========  ========\n[royalblue]\\\\ . . . . . . .\\\\   //. . . . . . .\\\\   //. . . . . . .\\\\  \\\\. . .\\\\// . . //\n[orange]||[royalblue]. . .[orange]_____[royalblue]. . .[orange]|| ||[royalblue]. . .[orange]_____[royalblue]. . .[orange]|| ||[royalblue]. . .[orange]_____[royalblue]. . .[orange]|| ||[royalblue] . . .[orange]\\/[royalblue] . . .[orange]||\n[orange]||[royalblue] . .[orange]||   ||[royalblue]. . [orange]|| ||[royalblue] . .[orange]||   ||[royalblue]. . [orange]|| ||[royalblue] . .[orange]||   ||[royalblue]. . [orange]|| ||[royalblue]. . . . . . . [orange]||\n[orange]||[royalblue]. . [orange]||   ||[royalblue] . .[orange]|| ||[royalblue]. . [orange]||   ||[royalblue] . .[orange]|| ||[royalblue]. . [orange]||   ||[royalblue] . .[orange]|| ||[royalblue] . [orange]|[royalblue] . . . . .[orange]||\n[orange]||[royalblue] . .[orange]||   ||[royalblue]. [orange]_-|| ||-_[royalblue] .[orange]||   ||[royalblue]. . [orange]|| ||[royalblue] . .[orange]||   ||[royalblue]. [orange]_-|| ||-_[royalblue].[orange]|\\[royalblue] . . . . [orange]||\n[orange]||[royalblue]. . [orange]||   ||-'  || ||  `-||   || [royalblue]. .[orange]|| ||[royalblue]. . [orange]||   ||-'  || ||  `|\\_[royalblue] . .[orange]|[royalblue]. .[orange]||\n[orange]||[royalblue] . [orange]_||   ||    || ||    ||   ||_[royalblue] . [orange]|| ||[royalblue] . [orange]_||   ||    || ||   |\\ `-_/|[royalblue] . [orange]||\n[orange]||_-' ||  .|/    || ||    \\|.  || `-_|| ||_-' ||  .|/    || ||   | \\  / |-_[royalblue].[orange]||\n[orange]||    ||_-'      || ||      `-_||    || ||    ||_-'      || ||   | \\  / |  `||\n[orange]||    `'         || ||         `'    || ||    `'         || ||   | \\  / |   ||\n[orange]||            .===' `===.         .==='.`===.         .===' /==. |  \\/  |   ||\n[orange]||         .=='   \\_|-_ `===. .==='   _|_   `===. .===' _-|/   `==  \\/  |   ||\n[orange]||      .=='    _-'    `-_  `='    _-'   `-_    `='  _-'   `-_  /|  \\/  |   ||\n[orange]||   .=='    _-'          `-__\\._-'         `-_./__-'         `' |. /|  |   ||\n[orange]||.=='    _-'                                                     `' |  /==.||\n[orange]=='    _-'                                                            \\/   `==\n[orange]\\   _-'                                                                `-_   /\n[orange] `''                                                                      ``'"
-	doomLogo       = "[royalblue]=================     ===============     ===============   ========  ========\n[royalblue]\\\\ . . . . . . .\\\\   //. . . . . . .\\\\   //. . . . . . .\\\\  \\\\. . .\\\\// . . //\n[orange]||[royalblue]. . .[orange]_____[royalblue]. . .[orange]|| ||[royalblue]. . .[orange]_____[royalblue]. . .[orange]|| ||[royalblue]. . .[orange]_____[royalblue]. . .[orange]|| ||[royalblue] . . .[orange]\\/[royalblue] . . .[orange]||\n[orange]||[royalblue] . .[orange]||   ||[royalblue]. . [orange]|| ||[royalblue] . .[orange]||   ||[royalblue]. . [orange]|| ||[royalblue] . .[orange]||   ||[royalblue]. . [orange]|| ||[royalblue]. . . . . . . [orange]||\n[orange]||[royalblue]. . [orange]||   ||[royalblue] . .[orange]|| ||[royalblue]. . [orange]||   ||[royalblue] . .[orange]|| ||[royalblue]. . [orange]||   ||[royalblue] . .[orange]|| ||[royalblue] . [orange]|[royalblue] . . . . .[orange]||\n[orange]||[royalblue] . .[orange]||   ||[royalblue]. [orange]_-|| ||-_[royalblue] .[orange]||   ||[royalblue]. . [orange]|| ||[royalblue] . .[orange]||   ||[royalblue]. [orange]_-|| ||-_[royalblue].[orange]|\\[royalblue] . . . . [orange]||\n[orange]||[royalblue]. . [orange]||   ||-'  || ||  `-||   || [royalblue]. .[orange]|| ||[royalblue]. . [orange]||   ||-'  || ||  `|\\_[royalblue] . .[orange]|[royalblue]. .[orange]||\n[orange]||[royalblue] . [orange]_||   ||    || ||    ||   ||_[royalblue] . [orange]|| ||[royalblue] . [orange]_||   ||    || ||   |\\ `-_/|[royalblue] . [orange]||\n[orange]||_-' ||  .|/    || ||    \\|.  || `-_|| ||_-' ||  .|/    || ||   | \\  / |-_[royalblue].[orange]||\n[orange]||    ||_-'      || ||      `-_||    || ||    ||_-'      || ||   | \\  / |  `||\n[orange]||    `'         || ||         `'    || ||    `'         || ||   | \\  / |   ||\n[orange]||            .===' `===.         .==='.`===.         .===' /==. |  \\/  |   ||\n[orange]||         .=='   \\_|-_ `===. .==='   _|_   `===. .===' _-|/   `==  \\/  |   ||\n[orange]||      .=='    _-'    `-_  `='    _-'   `-_    `='  _-'   `-_  /|  \\/  |   ||\n[orange]||   .=='    _-'          `-__\\._-'         `-_./__-'         `' |. /|  |   ||\n[orange]||.=='    _-'                                                     `' |  /==.||\n[orange]=='    _-'                                                            \\/   `==\n[orange]\\   _-'                                                                `-_   /\n[orange] `''                     [orange]twad[white] - [orange]t[white]erminal [orange]wad[white] launcher[orange]                     ``'"
-
-	subtitle  = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] manager and launcher[orange]"
-	subtitle2 = "twad - terminal wad manager and launcher"
-
-	setupOkHint      = "Hit [red]Ctrl+O [white] when you are done."
-	setupPathExplain = "For me to function correctly, you need to have all your DOOM mod files organized in one central directory. Subdirectories per mod are possible of course."
-	setupPathExample = `[red]->[white]/home/slayer/games/DOOMmods            [red]# i need this folder
-  [white]/home/slayer/games/DOOMmods[orange]/BrutalDoom [grey]# sub dir for Brutal Doom
-  [white]/home/slayer/games/DOOMmods[orange]/QCDE       [grey]# sub dir for QCDE`
+	tableBorders = false
 )
 
 var (
@@ -98,6 +77,7 @@ func Draw() {
 	btnAddMod := tview.NewButton("(a) Add Mods To Game")
 	btnRemoveMod := tview.NewButton("(r) Remove Last Mod From Game")
 	btnDelete := tview.NewButton("(Delete) Remove Game")
+	btnLicenseAndCredits := tview.NewButton("(l) Credits/License")
 	btnQuit := tview.NewButton("(Ctrl+C) Quit")
 	buttonBar := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(btnRun, 0, 1, false).
@@ -109,6 +89,8 @@ func Draw() {
 		AddItem(btnRemoveMod, 0, 1, false).
 		AddItem(spacer, 1, 0, false).
 		AddItem(btnDelete, 0, 1, false).
+		AddItem(spacer, 1, 0, false).
+		AddItem(btnLicenseAndCredits, 0, 1, false).
 		AddItem(spacer, 1, 0, false).
 		AddItem(btnQuit, 0, 1, false)
 
@@ -139,6 +121,15 @@ func Draw() {
 	// capture input
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
+
+		if k == tcell.KeyRune {
+			switch event.Rune() {
+			case 'l':
+				actionPager.SwitchToPage(pageLicense)
+				return nil
+			}
+		}
+
 		if k == tcell.KeyInsert {
 			actionPager.SwitchToPage(pageNewForm)
 			app.SetFocus(newForm)
@@ -215,6 +206,21 @@ func makeHeader() *tview.TextView {
 	return header
 }
 
+//  license
+func makeLicense() *tview.TextView {
+	disclaimer := tview.NewTextView().
+		SetDynamicColors(true).
+		SetRegions(true)
+	fmt.Fprintf(disclaimer, "%s\n", doomLogoCreditHeader)
+	fmt.Fprintf(disclaimer, "%s\n\n", creditDoomLogo)
+	fmt.Fprintf(disclaimer, "%s\n", tviewHeader)
+	fmt.Fprintf(disclaimer, "%s\n\n", creditTview)
+	fmt.Fprintf(disclaimer, "%s\n", licenseHeader)
+	fmt.Fprintf(disclaimer, "%s", mitLicense)
+
+	return disclaimer
+}
+
 // command preview
 func makeCommandPreview() *tview.TextView {
 	commandPreview = tview.NewTextView().
@@ -255,6 +261,9 @@ func makeActionPager() *tview.Pages {
 
 	newForm = makeNewGameForm()
 	actionPager.AddPage(pageNewForm, newForm, true, false)
+
+	licensePage := makeLicense()
+	actionPager.AddPage(pageLicense, licensePage, true, false)
 
 	return actionPager
 }
