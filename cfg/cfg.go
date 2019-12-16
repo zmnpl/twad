@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	configInstance *Cfg
-	once           sync.Once
+	instance *Cfg
+	once     sync.Once
 )
 
 const (
@@ -82,7 +82,7 @@ func loadConfig() error {
 		return err
 	}
 
-	err = json.Unmarshal(content, configInstance)
+	err = json.Unmarshal(content, instance)
 	if err != nil {
 		return err
 	}
@@ -99,9 +99,9 @@ func configFullPath() string {
 // GetInstance sets up and returns the singleton instance of config
 func GetInstance() *Cfg {
 	once.Do(func() {
-		configInstance = &Cfg{}
+		instance = &Cfg{}
 	})
-	return configInstance
+	return instance
 }
 
 // GetConfigFolder returns the folder where configuration is stored
@@ -116,7 +116,7 @@ func GetSavegameFolder() string {
 
 // Persist writes all games into the according JSON file
 func Persist() error {
-	JSON, err := json.MarshalIndent(configInstance, "", "    ")
+	JSON, err := json.MarshalIndent(instance, "", "    ")
 	if err != nil {
 		return err
 	}
@@ -148,7 +148,7 @@ func processCfg(path string) {
 		v = strings.TrimSpace(v)
 		configData.WriteString(v + "\n")
 		if v == "[FileSearch.Directories]" {
-			configData.WriteString("PATH=" + configInstance.ModBasePath + "\n")
+			configData.WriteString("PATH=" + instance.ModBasePath + "\n")
 		}
 	}
 
