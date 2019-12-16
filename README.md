@@ -35,6 +35,11 @@ go get ...
 - Import for downloaded Zips
 - Rofi mode
 - AUR package
+- Savegame Count
+- Fading popup highlight where somthing was added
+- Help area
+- Factory for action pane pages
+- All the TODO flags -.-
 
 ## Credit where credit is due
 
