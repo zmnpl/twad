@@ -600,6 +600,9 @@ func populateStats(g *games.Game) {
 	statsTable.SetCell(row, 0, tview.NewTableCell("Playtime").SetTextColor(tview.Styles.SecondaryTextColor))
 	statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%.2f min", pts)).SetAlign(tview.AlignRight))
 	row++
+	statsTable.SetCell(row, 0, tview.NewTableCell("Last Played").SetTextColor(tview.Styles.SecondaryTextColor))
+	statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.LastPlayed)).SetAlign(tview.AlignRight))
+	row++
 
 	for k, v := range g.Stats {
 		statsTable.SetCell(row, 0, tview.NewTableCell(strings.Title(k)).SetTextColor(tview.Styles.SecondaryTextColor))

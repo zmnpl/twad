@@ -21,11 +21,12 @@ type GameList []Game
 // Game represents one game configuration
 type Game struct {
 	Name       string         `json:"name"`
-	SourcePort string         `json:"sourceport"`
+	SourcePort string         `json:"source_port"`
 	Iwad       string         `json:"iwad"`
 	Mods       []string       `json:"mods"`
 	Stats      map[string]int `json:"stats"`
 	Playtime   int64          `json:"playtime"`
+	LastPlayed string         `json:"last_played"`
 }
 
 var (
@@ -150,7 +151,7 @@ func (g *Game) Run() error {
 		saveDir := cfg.GetSavegameFolder() + "/" + g.cleansedName()
 		os.MkdirAll(saveDir, 0755) // TODO: check error
 		params = append(params, "-savedir")
-		params = append(params)
+		params = append(params, saveDir)
 	}
 
 	start := time.Now()
@@ -164,6 +165,8 @@ func (g *Game) Run() error {
 
 	playtime := time.Since(start).Milliseconds()
 	g.Playtime = g.Playtime + playtime
+	//g.LastPlayed = time.Now().Format("Mon Jan _2 15:04:05 MST 2006")
+	g.LastPlayed = time.Now().Format("2006-01-02 15:04:05MST")
 
 	processOutput(string(output), g)
 
