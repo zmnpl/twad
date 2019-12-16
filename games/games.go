@@ -2,15 +2,8 @@ package games
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"log"
-	"os"
-	"os/exec"
-	"regexp"
-	"strings"
 	"sync"
-	"time"
 
 	"github.com/zmnpl/twad/cfg"
 )
@@ -18,20 +11,9 @@ import (
 // GameList holds all the games configured
 type GameList []Game
 
-// Game represents one game configuration
-type Game struct {
-	Name       string         `json:"name"`
-	SourcePort string         `json:"source_port"`
-	Iwad       string         `json:"iwad"`
-	Mods       []string       `json:"mods"`
-	Stats      map[string]int `json:"stats"`
-	Playtime   int64          `json:"playtime"`
-	LastPlayed string         `json:"last_played"`
-}
-
 var (
 	once            sync.Once
-	gamesInstance   GameList
+	instance        GameList
 	config          *cfg.Cfg
 	changeListeners []func()
 	gamesJSONName   = "games.json"
@@ -46,10 +28,10 @@ func init() {
 // GetInstance sets up and returns the singleton instance of games
 func GetInstance() GameList {
 	once.Do(func() {
-		gamesInstance = make(GameList, 0, 0)
+		instance = make(GameList, 0, 0)
 		loadGames()
 	})
-	return gamesInstance
+	return instance
 }
 
 // c := make(chan func() error, 10)
@@ -79,42 +61,23 @@ func RegisterChangeListener(f func()) {
 // AddGame adds a game to the list
 // this triggers the list to be written to disk as well
 func AddGame(g Game) {
-	gamesInstance = append(gamesInstance, g)
+	instance = append(instance, g)
 	informChangeListeners()
 	Persist() // TODO: Could be done in a goroutine; Maybe queue via channel
 }
 
 // RemoveGameAt removes the game at the given index
 func RemoveGameAt(i int) {
-	gamesInstance = append(gamesInstance[:i], gamesInstance[i+1:]...)
+	instance = append(instance[:i], instance[i+1:]...)
 	informChangeListeners()
 	Persist()
-}
-
-// NewGame creates new instance of a game
-func NewGame(name, sourceport, iwad string) Game {
-	var mod Game
-	mod.Name = name
-	// TODO: default from config
-	mod.SourcePort = "/usr/bin/gzdoom"
-	if sourceport != "" {
-		mod.SourcePort = sourceport
-	}
-	mod.Iwad = "doom2.wad"
-	if iwad != "" {
-		mod.Iwad = iwad
-	}
-	mod.Mods = make([]string, 0)
-	mod.Stats = make(map[string]int)
-
-	return mod
 }
 
 // MaxModCount returns the biggest number of mods for a single game
 // this is useful for table creation, to know how many colums one needs
 func MaxModCount() int {
 	maxCnt := 0
-	for _, g := range gamesInstance {
+	for _, g := range instance {
 		if len(g.Mods) > maxCnt {
 			maxCnt = len(g.Mods)
 		}
@@ -124,102 +87,12 @@ func MaxModCount() int {
 
 // GameCount returns the number of games available
 func GameCount() int {
-	return len(gamesInstance)
-}
-
-// AddMod adds mod
-func (g *Game) AddMod(modFile string) {
-	g.Mods = append(g.Mods, modFile)
-	informChangeListeners()
-	Persist()
-}
-
-// Run executes given configuration and launches the mod
-func (g *Game) Run() error {
-	var params []string
-
-	if g.Iwad != "" {
-		params = append(params, "-iwad", g.Iwad)
-	}
-
-	if len(g.Mods) > 0 {
-		params = append(params, "-file")
-		params = append(params, g.Mods...)
-	}
-
-	if config.SaveDirs {
-		saveDir := cfg.GetSavegameFolder() + "/" + g.cleansedName()
-		os.MkdirAll(saveDir, 0755) // TODO: check error
-		params = append(params, "-savedir")
-		params = append(params, saveDir)
-	}
-
-	start := time.Now()
-
-	// execute and capture output
-	proc := exec.Command(g.SourcePort, params...)
-	output, err := proc.CombinedOutput()
-	if err != nil {
-		return err
-	}
-
-	playtime := time.Since(start).Milliseconds()
-	g.Playtime = g.Playtime + playtime
-	//g.LastPlayed = time.Now().Format("Mon Jan _2 15:04:05 MST 2006")
-	g.LastPlayed = time.Now().Format("2006-01-02 15:04:05MST")
-
-	processOutput(string(output), g)
-
-	// Call Persist to write stats
-	Persist()
-
-	return nil
-}
-
-func processOutput(output string, g *Game) {
-	for _, v := range strings.Split(output, "\n") {
-		if stat, increment := parseStatline(v, g); stat != "" {
-			g.Stats[stat] = g.Stats[stat] + increment
-		}
-	}
-}
-
-func parseStatline(line string, g *Game) (string, int) {
-	line = strings.TrimSpace(line)
-	switch {
-
-	case strings.HasPrefix(line, "Picked up a "):
-		return strings.TrimSuffix(strings.TrimPrefix(line, "Picked up a "), "."), 1
-
-	case strings.HasPrefix(line, "You got the "):
-		return strings.TrimSuffix(strings.TrimPrefix(line, "You got the "), "!"), 1
-
-	case strings.HasPrefix(line, "Level map01 - Kills: 10/19 - Items: 8/9 - Secrets: 0/5 - Time: 0:35"):
-		return "", 1
-
-	default:
-		return "", 0
-	}
-}
-
-// String returns the string which is run when running
-func (g Game) String() string {
-	var iwad string
-	if g.Iwad != "" {
-		iwad = fmt.Sprintf(" -iwad %s", g.Iwad)
-	}
-
-	var mods string
-	if len(g.Mods) > 0 {
-		mods = fmt.Sprintf(" -file %s", strings.Trim(strings.Join(g.Mods, " "), " "))
-	}
-
-	return fmt.Sprintf("%s%s%s", g.SourcePort, iwad, mods)
+	return len(instance)
 }
 
 // Persist writes all games into the according JSON file
 func Persist() error {
-	gamesJSON, err := json.MarshalIndent(gamesInstance, "", "    ")
+	gamesJSON, err := json.MarshalIndent(instance, "", "    ")
 	if err != nil {
 		return err
 	}
@@ -237,19 +110,10 @@ func loadGames() error {
 		return err
 	}
 
-	err = json.Unmarshal(content, &gamesInstance)
+	err = json.Unmarshal(content, &instance)
 	if err != nil {
 		return err
 	}
 
 	return nil
-}
-
-func (g Game) cleansedName() string {
-	cleanser, err := regexp.Compile("[^a-zA-Z0-9]+")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return cleanser.ReplaceAllString(g.Name, "")
 }
