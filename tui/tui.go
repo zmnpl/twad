@@ -24,6 +24,7 @@ const (
 	pageModSelector = "modselector"
 	pageSettings    = "settings"
 	pageMain        = "main"
+	pageHelp        = "help"
 	pageLicense     = "license"
 
 	tableBorders = false
@@ -70,30 +71,6 @@ func Draw() {
 	selectedGameChanged(&games.Game{})
 	populateGamesTable()
 
-	// buttons
-	spacer := tview.NewTextView().SetText("|")
-	btnRun := tview.NewButton("(Enter) Run Game")
-	btnInsert := tview.NewButton("(Insert) Add Game")
-	btnAddMod := tview.NewButton("(a) Add Mods To Game")
-	btnRemoveMod := tview.NewButton("(r) Remove Last Mod From Game")
-	btnDelete := tview.NewButton("(Delete) Remove Game")
-	btnLicenseAndCredits := tview.NewButton("(l) Credits/License")
-	btnQuit := tview.NewButton("(Ctrl+C) Quit")
-	buttonBar := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(btnRun, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnInsert, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnAddMod, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnRemoveMod, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnDelete, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnLicenseAndCredits, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnQuit, 0, 1, false)
-
 	// center with main content
 	bigMainPager = tview.NewPages()
 
@@ -104,7 +81,8 @@ func Draw() {
 			AddItem(gamesTable, 0, 2, true).
 			AddItem(tview.NewTextView(), 2, 0, false).
 			AddItem(actionPager, 0, 1, false), 0, 1, true).
-		AddItem(buttonBar, 1, 0, false)
+		AddItem(makeButtonBar(), 1, 0, false)
+
 	bigMainPager.AddPage(pageMain, mainPage, true, true)
 
 	// settings - only when first start of app
@@ -124,17 +102,29 @@ func Draw() {
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
-			case 'l':
+			// show credits and license
+			case 'c':
 				actionPager.SwitchToPage(pageLicense)
+				return nil
+			// open dialog to insert new game
+			case 'i':
+				actionPager.SwitchToPage(pageNewForm)
+				app.SetFocus(newForm)
 				return nil
 			}
 		}
 
-		if k == tcell.KeyInsert {
-			actionPager.SwitchToPage(pageNewForm)
-			app.SetFocus(newForm)
+		// show help at bottom of screen
+		if k == tcell.KeyF1 {
+			if bigMainPager.HasPage(pageHelp) {
+				appModeNormal()
+				return nil
+			}
+			bigMainPager.AddPage(pageHelp, makeHelpPage(), true, true)
 			return nil
 		}
+
+		// switch back to nowmal mode
 		if k == tcell.KeyESC {
 			appModeNormal()
 			return nil
@@ -162,10 +152,49 @@ func whenGamesChanged() {
 func appModeNormal() {
 	actionPager.SwitchToPage(pageStats)
 	bigMainPager.SwitchToPage(pageMain)
+	bigMainPager.RemovePage(pageHelp)
 	app.SetFocus(gamesTable)
 }
 
 // make ui elements
+
+// button bar showing keys
+func makeButtonBar() *tview.Flex {
+	spacer := tview.NewTextView().SetText("|")
+	btnRun := tview.NewButton("(Enter) Run Game")
+	btnInsert := tview.NewButton("(i) Add Game")
+	btnAddMod := tview.NewButton("(a) Add Mods To Game")
+	btnRemoveMod := tview.NewButton("(r) Remove Last Mod From Game")
+	btnDelete := tview.NewButton("(Delete) Remove Game")
+	btnLicenseAndCredits := tview.NewButton("(c) Credits/License")
+	btnQuit := tview.NewButton("(Ctrl+C) Quit")
+	buttonBar := tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(btnRun, 0, 1, false).
+		AddItem(spacer, 1, 0, false).
+		AddItem(btnInsert, 0, 1, false).
+		AddItem(spacer, 1, 0, false).
+		AddItem(btnAddMod, 0, 1, false).
+		AddItem(spacer, 1, 0, false).
+		AddItem(btnRemoveMod, 0, 1, false).
+		AddItem(spacer, 1, 0, false).
+		AddItem(btnDelete, 0, 1, false).
+		AddItem(spacer, 1, 0, false).
+		AddItem(btnLicenseAndCredits, 0, 1, false).
+		AddItem(spacer, 1, 0, false).
+		AddItem(btnQuit, 0, 1, false)
+
+	return buttonBar
+}
+
+// help for navigation
+func makeHelpPage() *tview.Flex {
+	// help
+	helpPage := tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(nil, 0, 1, false).
+		AddItem(commandPreview, 5, 0, false)
+	return helpPage
+
+}
 
 // settings page
 func makeSettingsPage() *tview.Flex {

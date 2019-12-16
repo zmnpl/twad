@@ -25,12 +25,12 @@ const (
 // Cfg holds basic configuration settings
 // WARNING: Should only be instantiated via GetInstance
 type Cfg struct {
-	ModBasePath string `json:"modBasePath"`
-	//ModExtensions []string       `json:"modExtensions"`
-	ModExtensions map[string]int `json:"modExtensions"`
-	SourcePorts   []string       `json:"sourcePorts"`
-	IWADs         []string       `json:"IWADs"`
+	ModBasePath   string         `json:"mod_base_path"`
+	ModExtensions map[string]int `json:"mod_extensions"`
+	SourcePorts   []string       `json:"source_ports"`
+	IWADs         []string       `json:"iwads"`
 	Configured    bool           `json:"configured"`
+	SaveDirs      bool           `json:"save_dirs"`
 }
 
 func defaultConfig() Cfg {
@@ -42,6 +42,7 @@ func defaultConfig() Cfg {
 	dConf.SourcePorts = []string{"gzdoom", "zandronum"}
 	dConf.IWADs = []string{"doom2.wad", "doom.wad"}
 	dConf.Configured = false
+	dConf.SaveDirs = true
 
 	return dConf
 }
@@ -54,7 +55,7 @@ func init() {
 
 func firstStart() {
 	// create directory for games and configs
-	configFolder := GetConfigFolder()
+	configFolder := GetSavegameFolder()
 	configPath := configFullPath()
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
 		err := os.MkdirAll(configFolder, 0755)
@@ -103,9 +104,14 @@ func GetInstance() *Cfg {
 	return configInstance
 }
 
-// GetConfigFolder returns the folder where I store my configuration
+// GetConfigFolder returns the folder where configuration is stored
 func GetConfigFolder() string {
 	return home() + configPath
+}
+
+// GetSavegameFolder returns the folder where savegames are stored
+func GetSavegameFolder() string {
+	return GetConfigFolder() + "/savegames"
 }
 
 // Persist writes all games into the according JSON file

@@ -3,14 +3,19 @@ package games
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/zmnpl/twad/cfg"
 	"io/ioutil"
+	"log"
+	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/zmnpl/twad/cfg"
 )
 
+// GameList holds all the games configured
 type GameList []Game
 
 // Game represents one game configuration
@@ -19,12 +24,10 @@ type Game struct {
 	SourcePort string         `json:"sourceport"`
 	Iwad       string         `json:"iwad"`
 	Mods       []string       `json:"mods"`
-	Params     []string       `json:"params"`
 	Stats      map[string]int `json:"stats"`
 	Playtime   int64          `json:"playtime"`
 }
 
-// Games holds TODO
 var (
 	once            sync.Once
 	gamesInstance   GameList
@@ -32,8 +35,6 @@ var (
 	changeListeners []func()
 	gamesJSONName   = "games.json"
 )
-
-// TODO: make singleton GetInstance
 
 func init() {
 	config = cfg.GetInstance()
@@ -68,6 +69,8 @@ func informChangeListeners() {
 	}
 }
 
+// RegisterChangeListener takes functions, that should get executed once
+// configuration change
 func RegisterChangeListener(f func()) {
 	changeListeners = append(changeListeners, f)
 }
@@ -101,13 +104,12 @@ func NewGame(name, sourceport, iwad string) Game {
 		mod.Iwad = iwad
 	}
 	mod.Mods = make([]string, 0)
-	mod.Params = make([]string, 0)
 	mod.Stats = make(map[string]int)
 
 	return mod
 }
 
-// MaxModCount returns the biggest number of mods for a single games
+// MaxModCount returns the biggest number of mods for a single game
 // this is useful for table creation, to know how many colums one needs
 func MaxModCount() int {
 	maxCnt := 0
@@ -142,6 +144,13 @@ func (g *Game) Run() error {
 	if len(g.Mods) > 0 {
 		params = append(params, "-file")
 		params = append(params, g.Mods...)
+	}
+
+	if config.SaveDirs {
+		saveDir := cfg.GetSavegameFolder() + "/" + g.cleansedName()
+		os.MkdirAll(saveDir, 0755) // TODO: check error
+		params = append(params, "-savedir")
+		params = append(params)
 	}
 
 	start := time.Now()
@@ -231,4 +240,13 @@ func loadGames() error {
 	}
 
 	return nil
+}
+
+func (g Game) cleansedName() string {
+	cleanser, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return cleanser.ReplaceAllString(g.Name, "")
 }

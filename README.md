@@ -30,10 +30,11 @@ go get ...
 
 ## Plans
 
-- AUR package
+- Separate savegames folders per game
 - More statistics
 - Import for downloaded Zips
 - Rofi mode
+- AUR package
 
 ## Credit where credit is due
 
@@ -41,7 +42,7 @@ go get ...
 
 The use of the DOOM ASCII logo has been nicely permitted by Frans P. de Vries. Find it's history [here](http://www.gamers.org/~fpv/doomlogo.html)
 
-DOOM and Quake are registered trademarks of id Software, Inc. The DOOM, Quake and id logos are trademarks of id Software, Inc. The ASCII version of the DOOM logo is Copyright © 1994 by F.P. de Vries. 
+DOOM and Quake are registered trademarks of id Software, Inc. The DOOM, Quake and id logos are trademarks of id Software, Inc. The ASCII version of the DOOM logo is Copyright © 1994 by F.P. de Vries.
 
 ### tview
 
