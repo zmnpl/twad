@@ -30,16 +30,16 @@ go get ...
 
 ## Plans
 
-- Separate savegames folders per game
-- More statistics
-- Import for downloaded Zips
-- Rofi mode
-- AUR package
+- ~~Separate savegames folders per game~~
 - Savegame Count
-- Fading popup highlight where somthing was added
-- Help area
 - Factory for action pane pages
-- All the TODO flags -.-
+- Help area
+- AUR package
+- Rofi mode
+- Import for downloaded Zips
+- More statistics
+- Fading popup highlight where somthing was added
+- All the TODO flags
 
 ## Credit where credit is due
 

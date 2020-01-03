@@ -158,6 +158,9 @@ func appModeNormal() {
 
 // make ui elements
 
+// TODO
+func createActionArea() {}
+
 // button bar showing keys
 func makeButtonBar() *tview.Flex {
 	spacer := tview.NewTextView().SetText("|")
@@ -280,6 +283,13 @@ func makeGamesTable() *tview.Table {
 	return gamesTable
 }
 
+func frameIt(p tview.Primitive, title string) *tview.Frame {
+	f := tview.NewFrame(p)
+	f.SetBorder(true).SetTitle(title)
+
+	return f
+}
+
 // action pager, which holds stats and the "new" form
 func makeActionPager() *tview.Pages {
 	actionPager = tview.NewPages()
@@ -289,10 +299,10 @@ func makeActionPager() *tview.Pages {
 	actionPager.AddPage(pageStats, statsTable, true, true)
 
 	newForm = makeNewGameForm()
-	actionPager.AddPage(pageNewForm, newForm, true, false)
+	actionPager.AddPage(pageNewForm, frameIt(newForm, "Add new game"), true, false)
 
 	licensePage := makeLicense()
-	actionPager.AddPage(pageLicense, licensePage, true, false)
+	actionPager.AddPage(pageLicense, frameIt(licensePage, "Credits and License"), true, false)
 
 	return actionPager
 }
@@ -471,7 +481,7 @@ func makeNewGameForm() *tview.Form {
 			games.AddGame(games.NewGame(name, sourceport, wad))
 		})
 
-	newForm.SetBorder(true).SetTitle("Add new game").SetTitleAlign(tview.AlignCenter)
+	newForm.SetBorder(false).SetTitle("Add new game").SetTitleAlign(tview.AlignCenter)
 
 	return newForm
 }
@@ -617,21 +627,29 @@ func populateStats(g *games.Game) {
 	statsTable.Clear()
 	row := 0
 	pts := float64(g.Playtime) / 1000 / 60
+	saves := 0
+
+	statsTable.SetCell(row, 0, tview.NewTableCell("# Savegames").SetTextColor(tview.Styles.SecondaryTextColor))
+	statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", saves)).SetAlign(tview.AlignLeft))
+	row++
 	statsTable.SetCell(row, 0, tview.NewTableCell("Playtime").SetTextColor(tview.Styles.SecondaryTextColor))
-	statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%.2f min", pts)).SetAlign(tview.AlignRight))
+	statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%.2f min", pts)).SetAlign(tview.AlignLeft))
 	row++
 	statsTable.SetCell(row, 0, tview.NewTableCell("Last Played").SetTextColor(tview.Styles.SecondaryTextColor))
-	statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.LastPlayed)).SetAlign(tview.AlignRight))
+	statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.LastPlayed)).SetAlign(tview.AlignLeft))
+	row++
+	statsTable.SetCell(row, 0, tview.NewTableCell(""))
+	//	statsTable.SetCell(row, 1, tview.NewTableCell(""))
 	row++
 
 	for k, v := range g.Stats {
-		statsTable.SetCell(row, 0, tview.NewTableCell(strings.Title(k)).SetTextColor(tview.Styles.SecondaryTextColor))
-		statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v     ", v)).SetAlign(tview.AlignRight))
+		statsTable.SetCell(row, 0, tview.NewTableCell(strings.Title("# "+k)).SetTextColor(tview.Styles.SecondaryTextColor))
+		statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", v)).SetAlign(tview.AlignLeft))
 		row++
 	}
 
 	statsTable.SetCell(row, 0, tview.NewTableCell("                    ").SetTextColor(tview.Styles.SecondaryTextColor))
-	statsTable.SetCell(row, 1, tview.NewTableCell("                    ").SetAlign(tview.AlignRight))
+	statsTable.SetCell(row, 1, tview.NewTableCell("                    ").SetAlign(tview.AlignLeft))
 }
 
 // helper functions

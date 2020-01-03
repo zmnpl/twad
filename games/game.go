@@ -14,13 +14,14 @@ import (
 
 // Game represents one game configuration
 type Game struct {
-	Name       string         `json:"name"`
-	SourcePort string         `json:"source_port"`
-	Iwad       string         `json:"iwad"`
-	Mods       []string       `json:"mods"`
-	Stats      map[string]int `json:"stats"`
-	Playtime   int64          `json:"playtime"`
-	LastPlayed string         `json:"last_played"`
+	Name          string         `json:"name"`
+	SourcePort    string         `json:"source_port"`
+	Iwad          string         `json:"iwad"`
+	Mods          []string       `json:"mods"`
+	Stats         map[string]int `json:"stats"`
+	Playtime      int64          `json:"playtime"`
+	LastPlayed    string         `json:"last_played"`
+	SaveGameCount int            `json:"savegame_coutn"`
 }
 
 // NewGame creates new instance of a game
@@ -108,9 +109,12 @@ func (g Game) getLaunchParams() []string {
 
 	if config.SaveDirs {
 		saveDir := cfg.GetSavegameFolder() + "/" + g.cleansedName()
-		os.MkdirAll(saveDir, 0755) // TODO: check error
-		params = append(params, "-savedir")
-		params = append(params, saveDir)
+		err := os.MkdirAll(saveDir, 0755)
+		// only use separate save dir if directory has been craeted
+		if err == nil {
+			params = append(params, "-savedir")
+			params = append(params, saveDir)
+		}
 	}
 
 	return params
