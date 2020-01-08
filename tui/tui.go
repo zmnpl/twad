@@ -111,7 +111,10 @@ func Draw() {
 				actionPager.SwitchToPage(pageNewForm)
 				app.SetFocus(newForm)
 				return nil
+			case 'q':
+				app.Stop()
 			}
+
 		}
 
 		// show help at bottom of screen
@@ -170,7 +173,7 @@ func makeButtonBar() *tview.Flex {
 	btnRemoveMod := tview.NewButton("(r) Remove Last Mod From Game")
 	btnDelete := tview.NewButton("(Delete) Remove Game")
 	btnLicenseAndCredits := tview.NewButton("(c) Credits/License")
-	btnQuit := tview.NewButton("(Ctrl+C) Quit")
+	btnQuit := tview.NewButton("(q) Quit")
 	buttonBar := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(btnRun, 0, 1, false).
 		AddItem(spacer, 1, 0, false).

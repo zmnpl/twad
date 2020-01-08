@@ -8,8 +8,9 @@ const (
 	subtitle  = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] manager and launcher[orange]"
 	subtitle2 = "twad - terminal wad manager and launcher"
 
-	setupOkHint      = "Hit [red]Ctrl+O [white] when you are done."
-	setupPathExplain = "For me to function correctly, you need to have all your DOOM mod files organized in one central directory. Subdirectories per mod are possible of course."
+	setupOkHint      = "Hit [red]Ctrl+O[white] when you are done."
+	setupPathExplain = `For [orange]twad[white] to function correctly, you should have all your DOOM mod files organized in one central directory. Subdirectories per mod are possible of course.
+Navigate with arrow keys or Vim bindings. [red]Enter[white] or [red]Space[white] expand the directory. Highlight the righ one and hit [red]Ctrl+O[white]`
 	setupPathExample = `[red]->[white]/home/slayer/games/DOOMmods            [red]# i need this folder
   [white]/home/slayer/games/DOOMmods[orange]/BrutalDoom [grey]# sub dir for Brutal Doom
   [white]/home/slayer/games/DOOMmods[orange]/QCDE       [grey]# sub dir for QCDE`
