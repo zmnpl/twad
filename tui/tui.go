@@ -167,6 +167,7 @@ func createActionArea() {}
 // button bar showing keys
 func makeButtonBar() *tview.Flex {
 	spacer := tview.NewTextView().SetText("|")
+	btnHome := tview.NewButton("(ESC) Reset UI")
 	btnRun := tview.NewButton("(Enter) Run Game")
 	btnInsert := tview.NewButton("(i) Add Game")
 	btnAddMod := tview.NewButton("(a) Add Mods To Game")
@@ -175,6 +176,8 @@ func makeButtonBar() *tview.Flex {
 	btnLicenseAndCredits := tview.NewButton("(c) Credits/License")
 	btnQuit := tview.NewButton("(q) Quit")
 	buttonBar := tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(btnHome, 0, 1, false).
+		AddItem(spacer, 1, 0, false).
 		AddItem(btnRun, 0, 1, false).
 		AddItem(spacer, 1, 0, false).
 		AddItem(btnInsert, 0, 1, false).
