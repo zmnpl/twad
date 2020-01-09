@@ -198,11 +198,51 @@ func makeButtonBar() *tview.Flex {
 // help for navigation
 func makeHelpPage() *tview.Flex {
 	// help
+	//helpPage := tview.NewFlex().SetDirection(tview.FlexRow).
+	//	AddItem(nil, 0, 1, false).
+	//	AddItem(commandPreview, 5, 0, false)
+
+	home := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](ESC)[white]   - Reset UI")
+	run := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](Enter)[white] - Run Game")
+	insert := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](i)[white]     - Add Game")
+	add := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](a)[white]     - Add Mod To Game")
+	remove := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](r)[white]     - Remove Last Mod From Game")
+	delet := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](Del)[white]   - Remove Game")
+	license := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](c)[white]     - Credits/License")
+	quit := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](q)[white]     - Quit")
+
+	a := tview.NewTextView().SetDynamicColors(true).SetText("")
+	a.SetBackgroundColor(tview.Styles.GraphicsColor)
+
+	spacer := tview.NewTextView().SetDynamicColors(true).SetText("")
+
+	helpArea := tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+			AddItem(spacer, 1, 0, false).
+			AddItem(home, 1, 0, false).
+			AddItem(run, 1, 0, false).
+			AddItem(insert, 1, 0, false).
+			AddItem(add, 1, 0, false).
+			AddItem(spacer, 1, 0, false),
+			0, 1, false).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+			AddItem(spacer, 1, 0, false).
+			AddItem(remove, 1, 0, false).
+			AddItem(delet, 1, 0, false).
+			AddItem(license, 1, 0, false).
+			AddItem(quit, 1, 0, false).
+			AddItem(spacer, 1, 0, false),
+			0, 1, false)
+
+		//	helpArea.SetBorder(true).SetBorderColor(tcell.ColorOrange)
+
 	helpPage := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, 0, 1, false).
-		AddItem(commandPreview, 5, 0, false)
-	return helpPage
+		AddItem(a, 1, 0, false).
+		AddItem(helpArea, 6, 0, false).
+		AddItem(a, 1, 0, false)
 
+	return helpPage
 }
 
 // settings page
