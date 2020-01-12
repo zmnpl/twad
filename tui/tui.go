@@ -39,6 +39,7 @@ var (
 	actionPager    *tview.Pages
 	newForm        *tview.Form
 	modTree        *tview.TreeView
+	licensePage    *tview.TextView
 
 	bigMainPager *tview.Pages
 )
@@ -104,13 +105,15 @@ func Draw() {
 			switch event.Rune() {
 			// show credits and license
 			case 'c':
+				frontPage, _ := actionPager.GetFrontPage()
+				if frontPage == pageLicense {
+					appModeNormal()
+					return nil
+				}
 				actionPager.SwitchToPage(pageLicense)
+				app.SetFocus(licensePage)
 				return nil
-			// open dialog to insert new game
-			case 'i':
-				actionPager.SwitchToPage(pageNewForm)
-				app.SetFocus(newForm)
-				return nil
+
 			case 'q':
 				app.Stop()
 			}
@@ -119,11 +122,14 @@ func Draw() {
 
 		// show help at bottom of screen
 		if k == tcell.KeyF1 {
-			if bigMainPager.HasPage(pageHelp) {
+			frontPage, _ := bigMainPager.GetFrontPage()
+			if frontPage == pageHelp {
 				appModeNormal()
 				return nil
 			}
-			bigMainPager.AddPage(pageHelp, makeHelpPage(), true, true)
+			help := makeHelpPane()
+			app.SetFocus(help)
+			bigMainPager.AddPage(pageHelp, help, true, true)
 			return nil
 		}
 
@@ -155,7 +161,7 @@ func whenGamesChanged() {
 func appModeNormal() {
 	actionPager.SwitchToPage(pageStats)
 	bigMainPager.SwitchToPage(pageMain)
-	bigMainPager.RemovePage(pageHelp)
+	//bigMainPager.RemovePage(pageHelp)
 	app.SetFocus(gamesTable)
 }
 
@@ -163,87 +169,6 @@ func appModeNormal() {
 
 // TODO
 func createActionArea() {}
-
-// button bar showing keys
-func makeButtonBar() *tview.Flex {
-	spacer := tview.NewTextView().SetText("|")
-	btnHome := tview.NewButton("(ESC) Reset UI")
-	btnRun := tview.NewButton("(Enter) Run Game")
-	btnInsert := tview.NewButton("(i) Add Game")
-	btnAddMod := tview.NewButton("(a) Add Mods To Game")
-	btnRemoveMod := tview.NewButton("(r) Remove Last Mod From Game")
-	btnDelete := tview.NewButton("(Delete) Remove Game")
-	btnLicenseAndCredits := tview.NewButton("(c) Credits/License")
-	btnQuit := tview.NewButton("(q) Quit")
-	buttonBar := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(btnHome, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnRun, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnInsert, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnAddMod, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnRemoveMod, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnDelete, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnLicenseAndCredits, 0, 1, false).
-		AddItem(spacer, 1, 0, false).
-		AddItem(btnQuit, 0, 1, false)
-
-	return buttonBar
-}
-
-// help for navigation
-func makeHelpPage() *tview.Flex {
-	// help
-	//helpPage := tview.NewFlex().SetDirection(tview.FlexRow).
-	//	AddItem(nil, 0, 1, false).
-	//	AddItem(commandPreview, 5, 0, false)
-
-	home := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](ESC)[white]   - Reset UI")
-	run := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](Enter)[white] - Run Game")
-	insert := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](i)[white]     - Add Game")
-	add := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](a)[white]     - Add Mod To Game")
-	remove := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](r)[white]     - Remove Last Mod From Game")
-	delet := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](Del)[white]   - Remove Game")
-	license := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](c)[white]     - Credits/License")
-	quit := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](q)[white]     - Quit")
-
-	a := tview.NewTextView().SetDynamicColors(true).SetText("")
-	a.SetBackgroundColor(tview.Styles.GraphicsColor)
-
-	spacer := tview.NewTextView().SetDynamicColors(true).SetText("")
-
-	helpArea := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(spacer, 1, 0, false).
-			AddItem(home, 1, 0, false).
-			AddItem(run, 1, 0, false).
-			AddItem(insert, 1, 0, false).
-			AddItem(add, 1, 0, false).
-			AddItem(spacer, 1, 0, false),
-			0, 1, false).
-		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(spacer, 1, 0, false).
-			AddItem(remove, 1, 0, false).
-			AddItem(delet, 1, 0, false).
-			AddItem(license, 1, 0, false).
-			AddItem(quit, 1, 0, false).
-			AddItem(spacer, 1, 0, false),
-			0, 1, false)
-
-		//	helpArea.SetBorder(true).SetBorderColor(tcell.ColorOrange)
-
-	helpPage := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, 0, 1, false).
-		AddItem(a, 1, 0, false).
-		AddItem(helpArea, 6, 0, false).
-		AddItem(a, 1, 0, false)
-
-	return helpPage
-}
 
 // settings page
 func makeSettingsPage() *tview.Flex {
@@ -272,31 +197,6 @@ func makeSettingsPage() *tview.Flex {
 		AddItem(pathSelector, 0, 1, true)
 
 	return settingsPage
-}
-
-//  header
-func makeHeader() *tview.TextView {
-	header := tview.NewTextView().
-		SetDynamicColors(true).
-		SetRegions(true)
-	fmt.Fprintf(header, "%s", doomLogo)
-
-	return header
-}
-
-//  license
-func makeLicense() *tview.TextView {
-	disclaimer := tview.NewTextView().
-		SetDynamicColors(true).
-		SetRegions(true)
-	fmt.Fprintf(disclaimer, "%s\n", doomLogoCreditHeader)
-	fmt.Fprintf(disclaimer, "%s\n\n", creditDoomLogo)
-	fmt.Fprintf(disclaimer, "%s\n", tviewHeader)
-	fmt.Fprintf(disclaimer, "%s\n\n", creditTview)
-	fmt.Fprintf(disclaimer, "%s\n", licenseHeader)
-	fmt.Fprintf(disclaimer, "%s", mitLicense)
-
-	return disclaimer
 }
 
 // command preview
@@ -329,13 +229,6 @@ func makeGamesTable() *tview.Table {
 	return gamesTable
 }
 
-func frameIt(p tview.Primitive, title string) *tview.Frame {
-	f := tview.NewFrame(p)
-	f.SetBorder(true).SetTitle(title)
-
-	return f
-}
-
 // action pager, which holds stats and the "new" form
 func makeActionPager() *tview.Pages {
 	actionPager = tview.NewPages()
@@ -345,10 +238,10 @@ func makeActionPager() *tview.Pages {
 	actionPager.AddPage(pageStats, statsTable, true, true)
 
 	newForm = makeNewGameForm()
-	actionPager.AddPage(pageNewForm, frameIt(newForm, "Add new game"), true, false)
+	actionPager.AddPage(pageNewForm, newForm, true, false)
 
-	licensePage := makeLicense()
-	actionPager.AddPage(pageLicense, frameIt(licensePage, "Credits and License"), true, false)
+	licensePage = makeLicense()
+	actionPager.AddPage(pageLicense, licensePage, true, false)
 
 	return actionPager
 }
@@ -453,6 +346,7 @@ func makeModTree(g *games.Game) *tview.TreeView {
 		SetRoot(root).
 		SetCurrentNode(root)
 	modFolderTree.SetBorder(true)
+	modFolderTree.SetTitle("Add Mod To Game")
 
 	// A helper function which adds the files and directories of the given path
 	// to the given target node.
@@ -527,7 +421,7 @@ func makeNewGameForm() *tview.Form {
 			games.AddGame(games.NewGame(name, sourceport, wad))
 		})
 
-	newForm.SetBorder(false).SetTitle("Add new game").SetTitleAlign(tview.AlignCenter)
+	newForm.SetBorder(true).SetTitle("Add new game").SetTitleAlign(tview.AlignCenter)
 
 	return newForm
 }
@@ -642,12 +536,19 @@ func populateGamesTable() {
 				app.SetFocus(modTree)
 				return nil
 			case 'r':
-				mods := allGames[r-fixRows].Mods
-				if len(mods) > 0 {
-					allGames[r-fixRows].Mods = mods[:len(mods)-1]
-					populateGamesTable()
-					games.Persist()
+				if r > 0 {
+					mods := allGames[r-fixRows].Mods
+					if len(mods) > 0 {
+						allGames[r-fixRows].Mods = mods[:len(mods)-1]
+						populateGamesTable()
+						games.Persist()
+					}
 				}
+				return nil
+			// open dialog to insert new game
+			case 'i':
+				actionPager.SwitchToPage(pageNewForm)
+				app.SetFocus(newForm)
 				return nil
 			}
 		}

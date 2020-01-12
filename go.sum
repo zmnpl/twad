@@ -9,6 +9,8 @@ github.com/mattn/go-runewidth v0.0.4 h1:2BvfKmzob6Bmd4YsL0zygOqfdFnK7GR4QL06Do4/
 github.com/mattn/go-runewidth v0.0.4/go.mod h1:LwmH8dsx7+W8Uxz3IHJYH5QSwggIsqBzpuz5H//U1FU=
 github.com/rivo/tview v0.0.0-20191129065140-82b05c9fb329 h1:MubHhHJ4mB0A5wMcc2am0/51RydztIDoumyOd0r0yBw=
 github.com/rivo/tview v0.0.0-20191129065140-82b05c9fb329/go.mod h1:/rBeY22VG2QprWnEqG57IBC8biVu3i0DOIjRLc9I8H0=
+github.com/rivo/tview v0.0.0-20200108161608-1316ea7a4b35 h1:iSQ9CjsvareuUUlmHAQKpn4+ZjZjMtldyygiOH3G3+s=
+github.com/rivo/tview v0.0.0-20200108161608-1316ea7a4b35/go.mod h1:/rBeY22VG2QprWnEqG57IBC8biVu3i0DOIjRLc9I8H0=
 github.com/rivo/uniseg v0.1.0 h1:+2KBaVoUmb9XzDsrx/Ct0W/EYOSFf/nWTauy++DprtY=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 golang.org/x/sys v0.0.0-20190626150813-e07cf5db2756/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
