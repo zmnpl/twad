@@ -28,14 +28,24 @@ go get ...
 3) Add mods to your games
 4) __Rip and Tear__
 
+## Rofi Mode
+
+You can use [***rofi***](https://github.com/davatorium/rofi) or [***dmenu***](https://tools.suckless.org/dmenu/) to launch your games. Run twad like this to use the respective programm. This will open rofi/dmenu and show a list of all games you already have. Select one you want to play and hit enter. Of course this will also track your statistics.
+```bash
+twad --rofi
+# or
+twad --dmenu
+```
+**For instant Rip & Tear:** Bind this to a keyboard shortcut
+
+
 ## Plans
 
 - ~~Separate savegames folders per game~~
+- ~~AUR package~~
+- ~~Rofi mode~~
+- ~~Help area~~
 - Savegame Count
-- Factory for action pane pages
-- Help area
-- AUR package
-- Rofi mode
 - Import for downloaded Zips
 - More statistics
 - Fading popup highlight where somthing was added
