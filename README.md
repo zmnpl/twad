@@ -18,7 +18,7 @@ An AUR package is planned.
 ### Manual
 
 ```golang
-go get ...
+go get -u github.com/zmnpl/twad
 ```
 
 ## Usage
