@@ -45,7 +45,7 @@ twad --dmenu
 - ~~AUR package~~
 - ~~Rofi mode~~
 - ~~Help area~~
-- Savegame Count
+- ~~Savegame Count~~
 - Import for downloaded Zips
 - More statistics
 - Fading popup highlight where somthing was added
