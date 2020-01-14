@@ -2,6 +2,7 @@ package games
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -94,6 +95,14 @@ func (g Game) String() string {
 	return fmt.Sprintf("%s %s", g.SourcePort, strings.Trim(strings.Join(params, " "), " "))
 }
 
+// SaveCount returns the number of savegames existing for this game
+func (g Game) SaveCount() int {
+	if saves, err := ioutil.ReadDir(g.getSaveDir()); err == nil {
+		return len(saves)
+	}
+	return 0
+}
+
 func (g Game) getLaunchParams() []string {
 	params := make([]string, 1, 10)
 	config := cfg.GetInstance()
@@ -108,16 +117,19 @@ func (g Game) getLaunchParams() []string {
 	}
 
 	if config.SaveDirs {
-		saveDir := cfg.GetSavegameFolder() + "/" + g.cleansedName()
-		err := os.MkdirAll(saveDir, 0755)
+		err := os.MkdirAll(g.getSaveDir(), 0755)
 		// only use separate save dir if directory has been craeted
 		if err == nil {
 			params = append(params, "-savedir")
-			params = append(params, saveDir)
+			params = append(params, g.getSaveDir())
 		}
 	}
 
 	return params
+}
+
+func (g Game) getSaveDir() string {
+	return cfg.GetSavegameFolder() + "/" + g.cleansedName()
 }
 
 // cleansedName removes all but alphanumeric characters from name

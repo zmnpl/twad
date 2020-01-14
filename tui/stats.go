@@ -22,7 +22,7 @@ func populateStats(g *games.Game) {
 	statsTable.Clear()
 	row := 0
 	pts := float64(g.Playtime) / 1000 / 60
-	saves := 0
+	saves := g.SaveCount()
 
 	statsTable.SetCell(row, 0, tview.NewTableCell("# Savegames").SetTextColor(tview.Styles.SecondaryTextColor))
 	statsTable.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", saves)).SetAlign(tview.AlignLeft))
