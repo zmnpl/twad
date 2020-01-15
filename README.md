@@ -48,6 +48,7 @@ twad --dmenu
 ```
 **For instant Rip & Tear:** Bind this to a keyboard shortcut
 
+![rofimode](rofimode.png)
 
 ## Plans
 
