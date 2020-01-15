@@ -16,12 +16,12 @@ import (
 const (
 	setupOkHint = "Hit [red]Ctrl+O[white] when you are done."
 
-	setupPathExplain = `For [orange]twad[white] to function correctly, you should have all your DOOM mod files organized in one central directory. Subdirectories per mod are possible of course.
+	setupPathExplain = `For [orange]twad[white] to function correctly, you should have all your DOOM mod files organized in one central directory. Put your doom.wad and doom2.wad in that central directory and create subdirectories per mod for the respective files.
 Navigate with arrow keys or Vim bindings. [red]Enter[white] or [red]Space[white] expand the directory. Highlight the righ one and hit [red]Ctrl+O[white]`
 
-	setupPathExample = `[red]->[white]/home/slayer/games/DOOMmods            [red]# i need this folder
-[white]/home/slayer/games/DOOMmods[orange]/BrutalDoom [grey]# sub dir for Brutal Doom
-[white]/home/slayer/games/DOOMmods[orange]/QCDE       [grey]# sub dir for QCDE`
+	setupPathExample = `[red]->[white]/home/slayer/games/DOOMmods            [red]# put doom.wad and doom2.wad in here
+  [white]/home/slayer/games/DOOMmods[orange]/BrutalDoom [grey]# sub dir for Brutal Doom
+  [white]/home/slayer/games/DOOMmods[orange]/QCDE       [grey]# sub dir for QCDE`
 )
 
 // settings page
@@ -32,7 +32,7 @@ func makeSettingsPage() *tview.Flex {
 	pathSelector := makePathSelectionTree(basePathPreview)
 
 	explanation := tview.NewTextView().SetRegions(true).SetWrap(true).SetWordWrap(true).SetDynamicColors(true)
-	fmt.Fprintf(explanation, "%s\n\nExample:\n", setupPathExplain)
+	fmt.Fprintf(explanation, "%s\n\nPoint me to the highlighted directory:\n", setupPathExplain)
 	fmt.Fprintf(explanation, "%s", setupPathExample)
 	fmt.Fprintf(explanation, "\n\n%s", setupOkHint)
 
@@ -43,10 +43,10 @@ func makeSettingsPage() *tview.Flex {
 	settingsFlex.SetTitleColor(accentColor)
 
 	settingsPage := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(settingsFlex, 78, 0, true).
+		AddItem(settingsFlex, 90, 0, true).
 		AddItem(tview.NewBox().SetBorder(false), 0, 1, false)
 
-	settingsFlex.AddItem(explanation, 11, 0, false).
+	settingsFlex.AddItem(explanation, 12, 0, false).
 		AddItem(basePathPreview, 1, 0, false).
 		AddItem(pathSelector, 0, 1, true)
 

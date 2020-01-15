@@ -2,31 +2,41 @@
 
 ![demo](demo.gif)
 
-If you love __DOOM__ and you love your terminal, then twad might be for you. It is a terminal based WAD manager and launcher for ZDoom engine games. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with the press of a button.
+If you love __DOOM__ and rather not leave your terminal like me, then you might be one of the few that might like **twad**. It is a terminal based WAD manager and launcher for ZDoom engine games. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with the press of a button.
 
 There are already great alternatives to manage and launch your WADs out there for many years and twad will probably never be as sophisticated. Though I figured: there are not so many for the terminal. Twad let's you stay in the terminal and on your keyboard as long as possible. Simple as that.
 
-__ALPHA__
-This tool is still in very early state.
+As a little bonus,  twad collects some statistics for you (of course doesn't send them anywhere!) and organizes savegames for each mod combination in a separate folder.
+
+## Watch Out
+
+This tool is still in very early state and might contain bugs.
 
 ## Installation
 
 ### AUR
 
-An AUR package is planned.
+https://aur.archlinux.org/packages/twad-git
 
-### Manual
+### Manually
 
 ```golang
 go get -u github.com/zmnpl/twad
 ```
 
-## Usage
+### Binary Download
 
-1) Set up your base directory
-2) Create games
-3) Add mods to your games
-4) __Rip and Tear__
+I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just download and run it.
+
+## Initial Config
+
+1) Create a base directory which holds gets to hold all your DOOM files
+2) Put your **doom.wad** and **doom2.wad** in that base dir
+3) Drop all your mods in here (Subdirectories are of course possible)
+4) Within twad create games
+5) Add mods to your games
+666) __Rip and Tear__
+
 
 ## Rofi Mode
 
