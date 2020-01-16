@@ -2,11 +2,11 @@
 
 ![demo](demo.gif)
 
-If you love __DOOM__ and rather not leave your terminal like me, then you might be one of the few that might like **twad**. It is a terminal based WAD manager and launcher for ZDoom engine games. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with the press of a button.
+If you love __DOOM__ and rather not leave your terminal like me, then you might be one of the few that might like **twad**. It is a terminal based WAD manager and launcher for ZDoom engine games. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with a couple of key strokes.
 
 There are already great alternatives to manage and launch your WADs out there for many years and twad will probably never be as sophisticated. Though I figured: there are not so many for the terminal. Twad let's you stay in the terminal and on your keyboard as long as possible. Simple as that.
 
-As a little bonus,  twad collects some statistics for you (of course doesn't send them anywhere!) and organizes savegames for each mod combination in a separate folder.
+As a little bonus, twad collects some statistics for you (of course doesn't send them anywhere!) and organizes savegames for each mod combination in a separate folder.
 
 ## Watch Out
 
@@ -30,7 +30,7 @@ I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl
 
 ## Initial Config
 
-1) Create a base directory which holds gets to hold all your DOOM files
+1) Create a base directory which gets to hold all your DOOM files
 2) Put your **doom.wad** and **doom2.wad** in that base dir
 3) Drop all your mods in here (Subdirectories are of course possible)
 4) Within twad create games
@@ -50,14 +50,15 @@ twad --dmenu
 
 ![rofimode](rofimode.png)
 
-## Plans
+## Plans / Ideas
 
 - ~~Separate savegames folders per game~~
 - ~~AUR package~~
 - ~~Rofi mode~~
 - ~~Help area~~
 - ~~Savegame Count~~
-- Import for downloaded Zips
+- Import for downloaded Zips(?)
+- Autoupdaet mods(?)
 - More statistics
 - Fading popup highlight where somthing was added
 - All the TODO flags

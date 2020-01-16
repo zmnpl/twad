@@ -96,21 +96,9 @@ func Draw() {
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
-			// show credits and license
-			case 'c':
-				frontPage, _ := actionPager.GetFrontPage()
-				if frontPage == pageLicense {
-					appModeNormal()
-					return nil
-				}
-				actionPager.SwitchToPage(pageLicense)
-				app.SetFocus(licensePage)
-				return nil
-
 			case 'q':
 				app.Stop()
 			}
-
 		}
 
 		// show help at bottom of screen
@@ -154,6 +142,5 @@ func whenGamesChanged() {
 func appModeNormal() {
 	actionPager.SwitchToPage(pageStats)
 	bigMainPager.SwitchToPage(pageMain)
-	//bigMainPager.RemovePage(pageHelp)
 	app.SetFocus(gamesTable)
 }

@@ -35,8 +35,7 @@ func RunRofiMode(command string) {
 	for i, v := range games.GetInstance() {
 		displayName := fmt.Sprintf("%v: %s\n", i, v.Name)
 		rofiToGame[displayName] = i
-		// pipe game namae to rofi
-		w.Write([]byte(displayName))
+		w.Write([]byte(displayName)) // pipe game name to rofi
 	}
 	w.Close()
 

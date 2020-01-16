@@ -124,12 +124,15 @@ func populateGamesTable() {
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
+			// open dialog to add mod to game
 			case 'a':
 				modTree := modTreeMaker()
 				actionPager.AddPage(pageModSelector, modTree, true, false)
 				actionPager.SwitchToPage(pageModSelector)
 				app.SetFocus(modTree)
 				return nil
+
+			// remove last mod from game
 			case 'r':
 				if r > 0 {
 					mods := allGames[r-fixRows].Mods
@@ -140,10 +143,22 @@ func populateGamesTable() {
 					}
 				}
 				return nil
+
 			// open dialog to insert new game
 			case 'i':
 				actionPager.SwitchToPage(pageNewForm)
 				app.SetFocus(newForm)
+				return nil
+
+			// show credits and license
+			case 'c':
+				frontPage, _ := actionPager.GetFrontPage()
+				if frontPage == pageLicense {
+					appModeNormal()
+					return nil
+				}
+				actionPager.SwitchToPage(pageLicense)
+				app.SetFocus(licensePage)
 				return nil
 			}
 		}
