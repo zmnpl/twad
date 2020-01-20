@@ -39,7 +39,7 @@ func defaultConfig() Cfg {
 	dConf.ModExtensions = make(map[string]int)
 	dConf.ModExtensions[".wad"] = 1
 	dConf.ModExtensions[".pk3"] = 1
-	dConf.SourcePorts = []string{"gzdoom", "zandronum"}
+	dConf.SourcePorts = []string{"gzdoom", "zandronum", "lzdoom"}
 	dConf.IWADs = []string{"doom2.wad", "doom.wad"}
 	dConf.Configured = false
 	dConf.SaveDirs = true
