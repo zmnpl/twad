@@ -135,6 +135,7 @@ func Persist() error {
 func AddPathToCfgs() error {
 	go processCfg(home() + "/.config/gzdoom/gzdoom.ini")
 	go processCfg(home() + "/.config/zandronum/zandronum.ini")
+	go processCfg(home() + "/.config/lzdoom/lzdoom.ini")
 	return nil
 }
 

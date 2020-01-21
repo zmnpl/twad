@@ -57,6 +57,7 @@ twad --dmenu
 - ~~Rofi mode~~
 - ~~Help area~~
 - ~~Savegame Count~~
+- Add button for path setup
 - Import for downloaded Zips(?)
 - Autoupdaet mods(?)
 - More statistics
