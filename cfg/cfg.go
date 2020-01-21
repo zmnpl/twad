@@ -44,7 +44,7 @@ func defaultConfig() Cfg {
 	dConf.IWADs = []string{"doom2.wad", "doom.wad"}
 	dConf.Configured = false
 	dConf.SaveDirs = true
-	dConf.WarnBeforeDelete = false
+	dConf.WarnBeforeDelete = true
 
 	return dConf
 }

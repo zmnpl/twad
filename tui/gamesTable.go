@@ -11,6 +11,9 @@ const (
 	gameTableHeaderSourcePort = "SourcePort"
 	gameTableHeaderIwad       = "Iwad"
 	gameTableHeaderMods       = "Mods"
+
+	deleteGameSure = "Kill game?"
+	deleteModSure  = "Kill last mod?"
 )
 
 // center table with mods
@@ -134,14 +137,23 @@ func populateGamesTable() {
 
 			// remove last mod from game
 			case 'r':
-				if r > 0 {
-					mods := allGames[r-fixRows].Mods
-					if len(mods) > 0 {
-						allGames[r-fixRows].Mods = mods[:len(mods)-1]
-						populateGamesTable()
-						games.Persist()
+				removeMod := func() {
+					if r > 0 {
+						mods := allGames[r-fixRows].Mods
+						if len(mods) > 0 {
+							allGames[r-fixRows].Mods = mods[:len(mods)-1]
+							populateGamesTable()
+							games.Persist()
+						}
 					}
 				}
+
+				if config.WarnBeforeDelete {
+					bigMainPager.AddPage(pageYouSure, makeYouSureBox(deleteModSure, removeMod, 2, r+2), true, true)
+					return nil
+				}
+
+				removeMod()
 				return nil
 
 			// open dialog to insert new game
@@ -169,12 +181,10 @@ func populateGamesTable() {
 					gamesTable.Select(r-1, 0)
 				}
 				games.RemoveGameAt(r - fixRows)
-
 			}
 
 			if config.WarnBeforeDelete {
-				bigMainPager.AddPage(pageYouSure, makeYouSureBox("Really?", remove), true, true)
-				appModeNormal()
+				bigMainPager.AddPage(pageYouSure, makeYouSureBox(deleteGameSure, remove, 2, r+2), true, true)
 				return nil
 			}
 
