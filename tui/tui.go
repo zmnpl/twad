@@ -19,6 +19,7 @@ const (
 	pageMain        = "main"
 	pageHelp        = "help"
 	pageLicense     = "license"
+	pageYouSure     = "yousure"
 
 	tableBorders = false
 )
@@ -142,5 +143,11 @@ func whenGamesChanged() {
 func appModeNormal() {
 	actionPager.SwitchToPage(pageStats)
 	bigMainPager.SwitchToPage(pageMain)
+	if bigMainPager.HasPage(pageYouSure) {
+		bigMainPager.RemovePage(pageYouSure)
+	}
+	if bigMainPager.HasPage(pageHelp) {
+		bigMainPager.RemovePage(pageHelp)
+	}
 	app.SetFocus(gamesTable)
 }

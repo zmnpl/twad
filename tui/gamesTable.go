@@ -164,10 +164,22 @@ func populateGamesTable() {
 		}
 
 		if k == tcell.KeyDelete && r > 0 {
-			if r == gamesTable.GetRowCount()-1 {
-				gamesTable.Select(r-1, 0)
+			remove := func() {
+				if r == gamesTable.GetRowCount()-1 {
+					gamesTable.Select(r-1, 0)
+				}
+				games.RemoveGameAt(r - fixRows)
+
 			}
-			games.RemoveGameAt(r - fixRows)
+
+			if config.WarnBeforeDelete {
+				bigMainPager.AddPage(pageYouSure, makeYouSureBox("Really?", remove), true, true)
+				appModeNormal()
+				return nil
+			}
+
+			remove()
+
 			return nil
 		}
 

@@ -25,12 +25,13 @@ const (
 // Cfg holds basic configuration settings
 // WARNING: Should only be instantiated via GetInstance
 type Cfg struct {
-	ModBasePath   string         `json:"mod_base_path"`
-	ModExtensions map[string]int `json:"mod_extensions"`
-	SourcePorts   []string       `json:"source_ports"`
-	IWADs         []string       `json:"iwads"`
-	Configured    bool           `json:"configured"`
-	SaveDirs      bool           `json:"save_dirs"`
+	ModBasePath      string         `json:"mod_base_path"`
+	ModExtensions    map[string]int `json:"mod_extensions"`
+	SourcePorts      []string       `json:"source_ports"`
+	IWADs            []string       `json:"iwads"`
+	Configured       bool           `json:"configured"`
+	SaveDirs         bool           `json:"save_dirs"`
+	WarnBeforeDelete bool           `json:"warn_before_delete"`
 }
 
 func defaultConfig() Cfg {
@@ -43,6 +44,7 @@ func defaultConfig() Cfg {
 	dConf.IWADs = []string{"doom2.wad", "doom.wad"}
 	dConf.Configured = false
 	dConf.SaveDirs = true
+	dConf.WarnBeforeDelete = false
 
 	return dConf
 }
