@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"fmt"
+
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
@@ -12,8 +14,8 @@ const (
 	gameTableHeaderIwad       = "Iwad"
 	gameTableHeaderMods       = "Mods"
 
-	deleteGameSure = "Kill game?"
-	deleteModSure  = "Kill last mod?"
+	deleteGameQuestion = "Delete '%v'?"
+	deleteModQuestion  = "Remove '%v' from '%v'?"
 )
 
 // center table with mods
@@ -149,7 +151,8 @@ func populateGamesTable() {
 				}
 
 				if config.WarnBeforeDelete {
-					bigMainPager.AddPage(pageYouSure, makeYouSureBox(deleteModSure, removeMod, 2, r+2), true, true)
+					g := allGames[r-fixRows]
+					bigMainPager.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
 					return nil
 				}
 
@@ -184,7 +187,8 @@ func populateGamesTable() {
 			}
 
 			if config.WarnBeforeDelete {
-				bigMainPager.AddPage(pageYouSure, makeYouSureBox(deleteGameSure, remove, 2, r+2), true, true)
+				g := allGames[r-fixRows]
+				bigMainPager.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, 2, r+2), true, true)
 				return nil
 			}
 
