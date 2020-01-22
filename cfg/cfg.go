@@ -23,7 +23,7 @@ const (
 )
 
 // Cfg holds basic configuration settings
-// WARNING: Should only be instantiated via GetInstance
+// Should only be instantiated via GetInstance
 type Cfg struct {
 	ModBasePath      string         `json:"mod_base_path"`
 	ModExtensions    map[string]int `json:"mod_extensions"`
@@ -53,6 +53,7 @@ func init() {
 	firstStart()
 	GetInstance()
 	loadConfig()
+	Persist()
 }
 
 func firstStart() {
