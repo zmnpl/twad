@@ -139,24 +139,26 @@ func populateGamesTable() {
 
 			// remove last mod from game
 			case 'r':
-				removeMod := func() {
-					if r > 0 {
-						mods := allGames[r-fixRows].Mods
-						if len(mods) > 0 {
-							allGames[r-fixRows].Mods = mods[:len(mods)-1]
-							populateGamesTable()
-							games.Persist()
+				mods := allGames[r-fixRows].Mods
+				if len(mods) > 0 {
+					removeMod := func() {
+						if r > 0 {
+							if len(mods) > 0 {
+								allGames[r-fixRows].Mods = mods[:len(mods)-1]
+								populateGamesTable()
+								games.Persist()
+							}
 						}
 					}
-				}
 
-				if config.WarnBeforeDelete {
-					g := allGames[r-fixRows]
-					bigMainPager.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
-					return nil
-				}
+					if config.WarnBeforeDelete {
+						g := allGames[r-fixRows]
+						bigMainPager.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
+						return nil
+					}
 
-				removeMod()
+					removeMod()
+				}
 				return nil
 
 			// open dialog to insert new game
