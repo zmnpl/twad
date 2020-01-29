@@ -129,6 +129,11 @@ func populateGamesTable() {
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
+			case 'o':
+				optionsDiag := makeOptions()
+				actionPager.AddPage(pageOptions, optionsDiag, true, false)
+				actionPager.SwitchToPage(pageOptions)
+				app.SetFocus(optionsDiag)
 			// open dialog to add mod to game
 			case 'a':
 				modTree := modTreeMaker()

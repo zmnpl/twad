@@ -12,6 +12,7 @@ const (
 	previewBackgroundColor = tcell.ColorRoyalBlue
 	accentColor            = tcell.ColorOrange
 
+	pageOptions     = "options"
 	pageStats       = "stats"
 	pageNewForm     = "newform"
 	pageModSelector = "modselector"
