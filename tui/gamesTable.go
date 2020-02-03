@@ -131,8 +131,8 @@ func populateGamesTable() {
 			switch event.Rune() {
 			case 'o':
 				optionsDiag := makeOptions()
-				actionPager.AddPage(pageOptions, optionsDiag, true, false)
-				actionPager.SwitchToPage(pageOptions)
+				bigMainPager.AddPage(pageOptions, optionsDiag, true, false)
+				bigMainPager.SwitchToPage(pageOptions)
 				app.SetFocus(optionsDiag)
 			// open dialog to add mod to game
 			case 'a':

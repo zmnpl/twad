@@ -150,5 +150,8 @@ func appModeNormal() {
 	if bigMainPager.HasPage(pageHelp) {
 		bigMainPager.RemovePage(pageHelp)
 	}
+	if bigMainPager.HasPage(pageSettings) {
+		bigMainPager.RemovePage(pageSettings)
+	}
 	app.SetFocus(gamesTable)
 }
