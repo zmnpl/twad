@@ -81,9 +81,19 @@ func makeOptions() *tview.Flex {
 		AddItem(nil, 0, rigthColSize, false)
 	okButton.SetSelectedFunc(func() {
 		cfg.GetInstance().ModBasePath = path.GetText()
-		// TODO: cleansing like trim ...pageOptions
-		cfg.GetInstance().SourcePorts = strings.Split(sourcePorts.GetText(), ",")
-		cfg.GetInstance().IWADs = strings.Split(iwads.GetText(), ",")
+
+		sps := strings.Split(sourcePorts.GetText(), ",")
+		for i := range sps {
+			sps[i] = strings.TrimSpace(sps[i])
+		}
+		cfg.GetInstance().SourcePorts = sps
+
+		iwds := strings.Split(iwads.GetText(), ",")
+		for i := range sps {
+			iwds[i] = strings.TrimSpace(iwds[i])
+		}
+		cfg.GetInstance().IWADs = iwds
+
 		cfg.GetInstance().WarnBeforeDelete = warn.IsChecked()
 		cfg.GetInstance().SaveDirs = saveDirs.IsChecked()
 		cfg.GetInstance().Configured = !firstStart.IsChecked()
