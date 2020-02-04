@@ -77,7 +77,7 @@ func Draw() {
 			AddItem(gamesTable, 0, 2, true).
 			AddItem(tview.NewTextView(), 2, 0, false).
 			AddItem(actionPager, 0, 1, false), 0, 1, true).
-		AddItem(makeButtonBar(), 1, 0, false)
+		AddItem(makeHelpPane(), 8, 0, false)
 
 	bigMainPager.AddPage(pageMain, mainPage, true, true)
 
@@ -144,6 +144,8 @@ func whenGamesChanged() {
 func appModeNormal() {
 	actionPager.SwitchToPage(pageStats)
 	bigMainPager.SwitchToPage(pageMain)
+
+	// clear bigMainPager
 	if bigMainPager.HasPage(pageYouSure) {
 		bigMainPager.RemovePage(pageYouSure)
 	}
@@ -155,6 +157,11 @@ func appModeNormal() {
 	}
 	if bigMainPager.HasPage(pageOptions) {
 		bigMainPager.RemovePage(pageOptions)
+	}
+
+	// clear actionPager
+	if actionPager.HasPage(pageNewForm) {
+		actionPager.RemovePage(pageNewForm)
 	}
 	app.SetFocus(gamesTable)
 }

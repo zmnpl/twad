@@ -166,6 +166,8 @@ func populateGamesTable() {
 
 			// open dialog to insert new game
 			case 'i':
+				newForm = makeNewGameForm()
+				actionPager.AddPage(pageNewForm, newForm, true, false)
 				actionPager.SwitchToPage(pageNewForm)
 				app.SetFocus(newForm)
 				return nil
