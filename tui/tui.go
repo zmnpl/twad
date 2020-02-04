@@ -43,7 +43,7 @@ func init() {
 	config = cfg.GetInstance()
 	games.RegisterChangeListener(whenGamesChanged)
 
-	// ui style
+	// ui stylepageSettings
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorBlack
 	tview.Styles.ContrastBackgroundColor = tcell.ColorRoyalBlue
 	tview.Styles.MoreContrastBackgroundColor = tcell.ColorOrange
@@ -77,7 +77,7 @@ func Draw() {
 			AddItem(gamesTable, 0, 2, true).
 			AddItem(tview.NewTextView(), 2, 0, false).
 			AddItem(actionPager, 0, 1, false), 0, 1, true).
-		AddItem(makeButtonBar(), 1, 0, false)
+		AddItem(makeHelpPane(), 8, 0, false)
 
 	bigMainPager.AddPage(pageMain, mainPage, true, true)
 
@@ -144,11 +144,24 @@ func whenGamesChanged() {
 func appModeNormal() {
 	actionPager.SwitchToPage(pageStats)
 	bigMainPager.SwitchToPage(pageMain)
+
+	// clear bigMainPager
 	if bigMainPager.HasPage(pageYouSure) {
 		bigMainPager.RemovePage(pageYouSure)
 	}
 	if bigMainPager.HasPage(pageHelp) {
 		bigMainPager.RemovePage(pageHelp)
+	}
+	if bigMainPager.HasPage(pageSettings) {
+		bigMainPager.RemovePage(pageSettings)
+	}
+	if bigMainPager.HasPage(pageOptions) {
+		bigMainPager.RemovePage(pageOptions)
+	}
+
+	// clear actionPager
+	if actionPager.HasPage(pageNewForm) {
+		actionPager.RemovePage(pageNewForm)
 	}
 	app.SetFocus(gamesTable)
 }
