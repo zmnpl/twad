@@ -77,7 +77,7 @@ func Draw() {
 			AddItem(gamesTable, 0, 2, true).
 			AddItem(tview.NewTextView(), 2, 0, false).
 			AddItem(actionPager, 0, 1, false), 0, 1, true).
-		AddItem(makeHelpPane(), 8, 0, false)
+		AddItem(makeHelpPane(), 5, 0, false)
 
 	bigMainPager.AddPage(pageMain, mainPage, true, true)
 
@@ -104,17 +104,17 @@ func Draw() {
 		}
 
 		// show help at bottom of screen
-		if k == tcell.KeyF1 {
-			frontPage, _ := bigMainPager.GetFrontPage()
-			if frontPage == pageHelp {
-				appModeNormal()
-				return nil
-			}
-			help := makeHelpPane()
-			app.SetFocus(help)
-			bigMainPager.AddPage(pageHelp, help, true, true)
-			return nil
-		}
+		// if k == tcell.KeyF1 {
+		// 	frontPage, _ := bigMainPager.GetFrontPage()
+		// 	if frontPage == pageHelp {
+		// 		appModeNormal()
+		// 		return nil
+		// 	}
+		// 	help := makeHelpPane()
+		// 	app.SetFocus(help)
+		// 	bigMainPager.AddPage(pageHelp, help, true, true)
+		// 	return nil
+		// }
 
 		// switch back to nowmal mode
 		if k == tcell.KeyESC {

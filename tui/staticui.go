@@ -105,32 +105,29 @@ func makeHelpPane() *tview.Flex {
 	delet := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](Del)[white]   - Remove Game")
 	license := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](c)[white]     - Credits/License")
 	quit := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](q)[white]     - Quit")
-
-	spacer := tview.NewTextView().SetDynamicColors(true).SetText("")
+	options := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](q)[white]     - Options")
 
 	helpArea := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(spacer, 1, 0, false).
 			AddItem(home, 1, 0, false).
 			AddItem(run, 1, 0, false).
-			AddItem(insert, 1, 0, false).
-			AddItem(add, 1, 0, false).
-			AddItem(spacer, 1, 0, false),
+			AddItem(quit, 1, 0, false),
 			0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(spacer, 1, 0, false).
-			AddItem(remove, 1, 0, false).
+			AddItem(insert, 1, 0, false).
+			AddItem(add, 1, 0, false).
+			AddItem(remove, 1, 0, false),
+			0, 1, false).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+			AddItem(options, 1, 0, false).
 			AddItem(delet, 1, 0, false).
-			AddItem(license, 1, 0, false).
-			AddItem(quit, 1, 0, false).
-			AddItem(spacer, 1, 0, false),
+			AddItem(license, 1, 0, false),
 			0, 1, false)
 	helpArea.SetBorder(true)
-	helpArea.SetTitle("Help")
 
 	helpPage := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, 0, 1, false).
-		AddItem(helpArea, 8, 0, true)
+		AddItem(helpArea, 5, 0, false)
 
 	return helpPage
 }
