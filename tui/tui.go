@@ -43,7 +43,7 @@ func init() {
 	config = cfg.GetInstance()
 	games.RegisterChangeListener(whenGamesChanged)
 
-	// ui style
+	// ui stylepageSettings
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorBlack
 	tview.Styles.ContrastBackgroundColor = tcell.ColorRoyalBlue
 	tview.Styles.MoreContrastBackgroundColor = tcell.ColorOrange
@@ -152,6 +152,9 @@ func appModeNormal() {
 	}
 	if bigMainPager.HasPage(pageSettings) {
 		bigMainPager.RemovePage(pageSettings)
+	}
+	if bigMainPager.HasPage(pageOptions) {
+		bigMainPager.RemovePage(pageOptions)
 	}
 	app.SetFocus(gamesTable)
 }
