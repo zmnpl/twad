@@ -18,7 +18,9 @@ type Game struct {
 	Name          string         `json:"name"`
 	SourcePort    string         `json:"source_port"`
 	Iwad          string         `json:"iwad"`
+	Environment   []string       `json:"environment"`
 	Mods          []string       `json:"mods"`
+	Parameters    []string       `json:"parameters"`
 	Stats         map[string]int `json:"stats"`
 	Playtime      int64          `json:"playtime"`
 	LastPlayed    string         `json:"last_played"`
@@ -53,6 +55,8 @@ func NewGame(name, sourceport, iwad string) Game {
 		game.Iwad = iwad
 	}
 
+	game.Environment = make([]string, 0)
+	game.Parameters = make([]string, 0)
 	game.Mods = make([]string, 0)
 	game.Stats = make(map[string]int)
 
@@ -74,6 +78,12 @@ func (g *Game) Run() error {
 
 	// execute and capture output
 	proc := exec.Command(g.SourcePort, params...)
+
+	// add environment variables
+	proc.Env = os.Environ()
+	proc.Env = append(proc.Env, g.Environment...)
+
+	// rip and tear!
 	output, err := proc.CombinedOutput()
 	if err != nil {
 		return err
@@ -92,7 +102,17 @@ func (g *Game) Run() error {
 func (g Game) String() string {
 	params := g.getLaunchParams()
 
-	return fmt.Sprintf("%s %s", g.SourcePort, strings.Trim(strings.Join(params, " "), " "))
+	return fmt.Sprintf("%s %s %s", g.EnvironmentString(), g.SourcePort, strings.TrimSpace(strings.Join(params, " ")))
+}
+
+// EnvironmentString returns a join of all prefix parameters
+func (g Game) EnvironmentString() string {
+	return strings.TrimSpace(strings.Join(g.Environment, " "))
+}
+
+// ParamsString returns a join of all prefix parameters
+func (g Game) ParamsString() string {
+	return strings.TrimSpace(strings.Join(g.Parameters, " "))
 }
 
 // SaveCount returns the number of savegames existing for this game
@@ -124,6 +144,9 @@ func (g Game) getLaunchParams() []string {
 			params = append(params, g.getSaveDir())
 		}
 	}
+
+	// add custom parameters here
+	params = append(params, g.Parameters...)
 
 	return params
 }

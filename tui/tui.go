@@ -21,6 +21,7 @@ const (
 	pageHelp        = "help"
 	pageLicense     = "license"
 	pageYouSure     = "yousure"
+	pageParamsEdit  = "paramseditor"
 
 	tableBorders = false
 )
@@ -162,6 +163,9 @@ func appModeNormal() {
 	// clear actionPager
 	if actionPager.HasPage(pageNewForm) {
 		actionPager.RemovePage(pageNewForm)
+	}
+	if actionPager.HasPage(pageParamsEdit) {
+		actionPager.RemovePage(pageParamsEdit)
 	}
 	app.SetFocus(gamesTable)
 }

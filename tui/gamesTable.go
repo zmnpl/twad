@@ -182,6 +182,13 @@ func populateGamesTable() {
 				actionPager.SwitchToPage(pageLicense)
 				app.SetFocus(licensePage)
 				return nil
+
+			case 'p':
+				customParameters := makeParamsEditor(&allGames[r-fixRows])
+				actionPager.AddPage(pageParamsEdit, customParameters, true, false)
+				actionPager.SwitchToPage(pageParamsEdit)
+				app.SetFocus(customParameters)
+				return nil
 			}
 		}
 
