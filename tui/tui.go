@@ -33,7 +33,6 @@ var (
 	statsTable     *tview.Table
 	commandPreview *tview.TextView
 	actionPager    *tview.Pages
-	newForm        *tview.Form
 	modTree        *tview.TreeView
 	licensePage    *tview.TextView
 
@@ -168,4 +167,20 @@ func appModeNormal() {
 		actionPager.RemovePage(pageParamsEdit)
 	}
 	app.SetFocus(gamesTable)
+}
+
+func tabNavigate(previous, next tview.Primitive) func(event *tcell.EventKey) *tcell.EventKey {
+	return func(event *tcell.EventKey) *tcell.EventKey {
+		k := event.Key()
+		switch k {
+		case tcell.KeyTab:
+			app.SetFocus(next)
+			return nil
+		case tcell.KeyBacktab:
+			app.SetFocus(previous)
+			return nil
+		}
+
+		return event
+	}
 }

@@ -3,7 +3,6 @@ package tui
 import (
 	"strings"
 
-	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/cfg"
 )
@@ -19,18 +18,6 @@ const (
 	optionsSaveDirsLabel      = "Use separate save game directories"
 	optionsMaxLabelLength     = 35
 )
-
-func optionMoveTo(next tview.Primitive) func(event *tcell.EventKey) *tcell.EventKey {
-	return func(event *tcell.EventKey) *tcell.EventKey {
-		k := event.Key()
-		switch k {
-		case tcell.KeyTab:
-			app.SetFocus(next)
-			return nil
-		}
-		return event
-	}
-}
 
 func makeOptions() *tview.Flex {
 	leftColSize := optionsMaxLabelLength + 1
@@ -89,7 +76,7 @@ func makeOptions() *tview.Flex {
 		cfg.GetInstance().SourcePorts = sps
 
 		iwds := strings.Split(iwads.GetText(), ",")
-		for i := range sps {
+		for i := range iwds {
 			iwds[i] = strings.TrimSpace(iwds[i])
 		}
 		cfg.GetInstance().IWADs = iwds
@@ -102,13 +89,13 @@ func makeOptions() *tview.Flex {
 	})
 
 	// navigation path
-	path.SetInputCapture(optionMoveTo(sourcePorts))
-	sourcePorts.SetInputCapture(optionMoveTo(iwads))
-	iwads.SetInputCapture(optionMoveTo(warn))
-	warn.SetInputCapture(optionMoveTo(saveDirs))
-	saveDirs.SetInputCapture(optionMoveTo(firstStart))
-	firstStart.SetInputCapture(optionMoveTo(okButton))
-	okButton.SetInputCapture(optionMoveTo(path))
+	path.SetInputCapture(tabNavigate(okButton, sourcePorts))
+	sourcePorts.SetInputCapture(tabNavigate(path, iwads))
+	iwads.SetInputCapture(tabNavigate(sourcePorts, warn))
+	warn.SetInputCapture(tabNavigate(iwads, saveDirs))
+	saveDirs.SetInputCapture(tabNavigate(warn, firstStart))
+	firstStart.SetInputCapture(tabNavigate(saveDirs, okButton))
+	okButton.SetInputCapture(tabNavigate(firstStart, path))
 
 	options := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(pathRow, 1, 0, true).

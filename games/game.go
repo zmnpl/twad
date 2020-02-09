@@ -66,7 +66,7 @@ func NewGame(name, sourceport, iwad string) Game {
 // AddMod adds mod
 func (g *Game) AddMod(modFile string) {
 	g.Mods = append(g.Mods, modFile)
-	informChangeListeners()
+	InformChangeListeners()
 	Persist()
 }
 

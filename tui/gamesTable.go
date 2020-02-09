@@ -82,7 +82,6 @@ func populateGamesTable() {
 			return makeModTree(selectedGame)
 		}
 	}
-	modTreeMaker := makeModTreeMaker(&games.Game{})
 
 	//makeCellPulser := func(c *tview.TableCell) func() {
 	//	return func() {
@@ -112,7 +111,6 @@ func populateGamesTable() {
 			//cell = gamesTable.GetCell(r, len(g.Mods)+3)
 		}
 		selectedGameChanged(g)
-		modTreeMaker = makeModTreeMaker(g)
 		//cellPulser = makeCellPulser(cell)
 	})
 
@@ -136,11 +134,14 @@ func populateGamesTable() {
 				app.SetFocus(optionsDiag)
 			// open dialog to add mod to game
 			case 'a':
-				modTree := modTreeMaker()
-				actionPager.AddPage(pageModSelector, modTree, true, false)
-				actionPager.SwitchToPage(pageModSelector)
-				app.SetFocus(modTree)
-				return nil
+				if r > 0 {
+					mtm := makeModTreeMaker(&allGames[r-fixRows])
+					modTree := mtm()
+					actionPager.AddPage(pageModSelector, modTree, true, false)
+					actionPager.SwitchToPage(pageModSelector)
+					app.SetFocus(modTree)
+					return nil
+				}
 
 			// remove last mod from game
 			case 'r':
@@ -166,7 +167,7 @@ func populateGamesTable() {
 
 			// open dialog to insert new game
 			case 'i':
-				newForm = makeNewGameForm()
+				newForm := makeAddEditGame(nil)
 				actionPager.AddPage(pageNewForm, newForm, true, false)
 				actionPager.SwitchToPage(pageNewForm)
 				app.SetFocus(newForm)
@@ -184,11 +185,13 @@ func populateGamesTable() {
 				return nil
 
 			case 'p':
-				customParameters := makeParamsEditor(&allGames[r-fixRows])
-				actionPager.AddPage(pageParamsEdit, customParameters, true, false)
-				actionPager.SwitchToPage(pageParamsEdit)
-				app.SetFocus(customParameters)
-				return nil
+				if r > 0 {
+					customParameters := makeAddEditGame(&allGames[r-fixRows])
+					actionPager.AddPage(pageParamsEdit, customParameters, true, false)
+					actionPager.SwitchToPage(pageParamsEdit)
+					app.SetFocus(customParameters)
+					return nil
+				}
 			}
 		}
 
