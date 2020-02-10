@@ -88,8 +88,12 @@ func Draw() {
 	}
 
 	// main layout
+	headerHeight := 20
+	if !cfg.GetInstance().PrintHeader {
+		headerHeight = 0
+	}
 	canvas := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(makeHeader(), 20, 0, false).
+		AddItem(makeHeader(), headerHeight, 0, false).
 		AddItem(bigMainPager, 0, 1, true)
 
 	// capture input

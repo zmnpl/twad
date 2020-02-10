@@ -16,6 +16,7 @@ const (
 	optionsIwadsLabel         = "IWADs"
 	optionsNextTimeFirstStart = "Show path selection on next start"
 	optionsSaveDirsLabel      = "Use separate save game directories"
+	optionsPrintHeaderLabel   = "Show Header"
 	optionsMaxLabelLength     = 35
 )
 
@@ -42,6 +43,12 @@ func makeOptions() *tview.Flex {
 		AddItem(iwadsLabel, leftColSize, 0, false).
 		AddItem(iwads, 0, rigthColSize, false)
 
+	printHeaderLabel := tview.NewTextView().SetText(optionsPrintHeaderLabel).SetTextColor(tview.Styles.SecondaryTextColor)
+	printHeader := tview.NewCheckbox().SetChecked(cfg.GetInstance().PrintHeader)
+	printHeaderRow := tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(printHeaderLabel, leftColSize, 0, false).
+		AddItem(printHeader, 0, rigthColSize, false)
+
 	warnBeforeDeleteLabel := tview.NewTextView().SetText(optionsWarnBeforeLabel).SetTextColor(tview.Styles.SecondaryTextColor)
 	warn := tview.NewCheckbox().SetChecked(cfg.GetInstance().WarnBeforeDelete)
 	warnRow := tview.NewFlex().SetDirection(tview.FlexColumn).
@@ -67,23 +74,25 @@ func makeOptions() *tview.Flex {
 		AddItem(okButton, len(optionsOkButtonLabel)+2, 0, false).
 		AddItem(nil, 0, rigthColSize, false)
 	okButton.SetSelectedFunc(func() {
-		cfg.GetInstance().ModBasePath = path.GetText()
+		config := cfg.GetInstance()
+		config.ModBasePath = path.GetText()
 
 		sps := strings.Split(sourcePorts.GetText(), ",")
 		for i := range sps {
 			sps[i] = strings.TrimSpace(sps[i])
 		}
-		cfg.GetInstance().SourcePorts = sps
+		config.SourcePorts = sps
 
 		iwds := strings.Split(iwads.GetText(), ",")
 		for i := range iwds {
 			iwds[i] = strings.TrimSpace(iwds[i])
 		}
-		cfg.GetInstance().IWADs = iwds
+		config.IWADs = iwds
 
-		cfg.GetInstance().WarnBeforeDelete = warn.IsChecked()
-		cfg.GetInstance().SaveDirs = saveDirs.IsChecked()
-		cfg.GetInstance().Configured = !firstStart.IsChecked()
+		config.PrintHeader = printHeader.IsChecked()
+		config.WarnBeforeDelete = warn.IsChecked()
+		config.SaveDirs = saveDirs.IsChecked()
+		config.Configured = !firstStart.IsChecked()
 		cfg.Persist()
 		appModeNormal()
 	})
@@ -91,7 +100,8 @@ func makeOptions() *tview.Flex {
 	// navigation path
 	path.SetInputCapture(tabNavigate(okButton, sourcePorts))
 	sourcePorts.SetInputCapture(tabNavigate(path, iwads))
-	iwads.SetInputCapture(tabNavigate(sourcePorts, warn))
+	iwads.SetInputCapture(tabNavigate(sourcePorts, printHeader))
+	printHeader.SetInputCapture(tabNavigate(iwads, warn))
 	warn.SetInputCapture(tabNavigate(iwads, saveDirs))
 	saveDirs.SetInputCapture(tabNavigate(warn, firstStart))
 	firstStart.SetInputCapture(tabNavigate(saveDirs, okButton))
@@ -103,6 +113,8 @@ func makeOptions() *tview.Flex {
 		AddItem(sourcePortsRow, 1, 0, false).
 		AddItem(nil, 1, 0, false).
 		AddItem(iwadsRow, 1, 0, false).
+		AddItem(nil, 1, 0, false).
+		AddItem(printHeaderRow, 1, 0, false).
 		AddItem(nil, 1, 0, false).
 		AddItem(warnRow, 1, 0, false).
 		AddItem(nil, 1, 0, false).

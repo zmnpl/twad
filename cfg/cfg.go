@@ -25,13 +25,14 @@ const (
 // Cfg holds basic configuration settings
 // Should only be instantiated via GetInstance
 type Cfg struct {
-	ModBasePath      string         `json:"mod_base_path"`
+	ModBasePath      string         `json:"mod_base_path,omitempty"`
 	ModExtensions    map[string]int `json:"mod_extensions"`
 	SourcePorts      []string       `json:"source_ports"`
 	IWADs            []string       `json:"iwads"`
-	Configured       bool           `json:"configured"`
-	SaveDirs         bool           `json:"save_dirs"`
-	WarnBeforeDelete bool           `json:"warn_before_delete"`
+	Configured       bool           `json:"configured,omitempty"`
+	SaveDirs         bool           `json:"save_dirs,omitempty"`
+	WarnBeforeDelete bool           `json:"warn_before_delete,omitempty"`
+	PrintHeader      bool           `json:"print_header,omitempty"`
 }
 
 func defaultConfig() Cfg {
@@ -45,6 +46,7 @@ func defaultConfig() Cfg {
 	dConf.Configured = false
 	dConf.SaveDirs = true
 	dConf.WarnBeforeDelete = true
+	dConf.PrintHeader = true
 
 	return dConf
 }
@@ -146,13 +148,22 @@ func processCfg(path string) {
 	if lines == nil {
 		return
 	}
+
+	entry := "PATH=" + instance.ModBasePath
+	// if the config already has the set path, there is nothing more to do here
+	for _, l := range lines {
+		if strings.Contains(l, entry) {
+			return
+		}
+	}
+
 	var configData bytes.Buffer
 
 	for _, v := range lines {
 		v = strings.TrimSpace(v)
 		configData.WriteString(v + "\n")
 		if v == "[FileSearch.Directories]" {
-			configData.WriteString("PATH=" + instance.ModBasePath + "\n")
+			configData.WriteString(entry + "\n")
 		}
 	}
 

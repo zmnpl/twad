@@ -184,7 +184,7 @@ func populateGamesTable() {
 				app.SetFocus(licensePage)
 				return nil
 
-			case 'p':
+			case 'e':
 				if r > 0 {
 					customParameters := makeAddEditGame(&allGames[r-fixRows])
 					actionPager.AddPage(pageParamsEdit, customParameters, true, false)
