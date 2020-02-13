@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	subtitle  = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] manager and launcher[orange]"
+	subtitle  = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] launcher[orange]"
 	subtitle2 = "twad - terminal wad manager and launcher"
 
 	tviewHeader = "[orange]tview"

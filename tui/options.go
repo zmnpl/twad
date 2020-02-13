@@ -76,6 +76,7 @@ func makeOptions() *tview.Flex {
 	okButton.SetSelectedFunc(func() {
 		config := cfg.GetInstance()
 		config.ModBasePath = path.GetText()
+		cfg.AddPathToCfgs()
 
 		sps := strings.Split(sourcePorts.GetText(), ",")
 		for i := range sps {

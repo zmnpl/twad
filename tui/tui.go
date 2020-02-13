@@ -89,11 +89,14 @@ func Draw() {
 
 	// main layout
 	headerHeight := 20
+	var header tview.Primitive
+	header = makeHeader()
 	if !cfg.GetInstance().PrintHeader {
-		headerHeight = 0
+		headerHeight = 1
+		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
 	}
 	canvas := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(makeHeader(), headerHeight, 0, false).
+		AddItem(header, headerHeight, 0, false).
 		AddItem(bigMainPager, 0, 1, true)
 
 	// capture input
