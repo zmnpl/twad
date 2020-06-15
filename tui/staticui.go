@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	subtitle  = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] manager and launcher[orange]"
+	subtitle  = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] launcher[orange]"
 	subtitle2 = "twad - terminal wad manager and launcher"
 
 	tviewHeader = "[orange]tview"
@@ -99,38 +99,39 @@ func makeButtonBar() *tview.Flex {
 func makeHelpPane() *tview.Flex {
 	home := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](ESC)[white]   - Reset UI")
 	run := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](Enter)[white] - Run Game")
-	insert := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](i)[white]     - Add Game")
+	insert := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](i)[white]     - Add New Game")
+	edit := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](e)[white]     - Edit Game")
 	add := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](a)[white]     - Add Mod To Game")
 	remove := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](r)[white]     - Remove Last Mod From Game")
 	delet := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](Del)[white]   - Remove Game")
 	license := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](c)[white]     - Credits/License")
 	quit := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](q)[white]     - Quit")
-
-	spacer := tview.NewTextView().SetDynamicColors(true).SetText("")
+	options := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](o)[white]     - Options")
 
 	helpArea := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(spacer, 1, 0, false).
-			AddItem(home, 1, 0, false).
 			AddItem(run, 1, 0, false).
-			AddItem(insert, 1, 0, false).
-			AddItem(add, 1, 0, false).
-			AddItem(spacer, 1, 0, false),
+			AddItem(home, 1, 0, false).
+			AddItem(quit, 1, 0, false),
 			0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(spacer, 1, 0, false).
+			AddItem(insert, 1, 0, false).
+			AddItem(edit, 1, 0, false).
+			AddItem(add, 1, 0, false),
+			0, 1, false).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 			AddItem(remove, 1, 0, false).
 			AddItem(delet, 1, 0, false).
-			AddItem(license, 1, 0, false).
-			AddItem(quit, 1, 0, false).
-			AddItem(spacer, 1, 0, false),
+			AddItem(options, 1, 0, false),
+			0, 1, false).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+			AddItem(license, 1, 0, false),
 			0, 1, false)
 	helpArea.SetBorder(true)
-	helpArea.SetTitle("Help")
 
 	helpPage := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, 0, 1, false).
-		AddItem(helpArea, 8, 0, true)
+		AddItem(helpArea, 5, 0, false)
 
 	return helpPage
 }

@@ -46,7 +46,8 @@ func GetInstance() GameList {
 // 	}
 //}
 
-func informChangeListeners() {
+// InformChangeListeners triggers the given function for each registered listener
+func InformChangeListeners() {
 	for _, f := range changeListeners {
 		f()
 	}
@@ -62,14 +63,14 @@ func RegisterChangeListener(f func()) {
 // this triggers the list to be written to disk as well
 func AddGame(g Game) {
 	instance = append(instance, g)
-	informChangeListeners()
+	InformChangeListeners()
 	Persist() // TODO: Could be done in a goroutine; Maybe queue via channel
 }
 
 // RemoveGameAt removes the game at the given index
 func RemoveGameAt(i int) {
 	instance = append(instance[:i], instance[i+1:]...)
-	informChangeListeners()
+	InformChangeListeners()
 	Persist()
 }
 

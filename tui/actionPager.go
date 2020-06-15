@@ -10,9 +10,6 @@ func makeActionPager() *tview.Pages {
 	statsTable = makeStatsTable()
 	actionPager.AddPage(pageStats, statsTable, true, true)
 
-	newForm = makeNewGameForm()
-	actionPager.AddPage(pageNewForm, newForm, true, false)
-
 	licensePage = makeLicense()
 	actionPager.AddPage(pageLicense, licensePage, true, false)
 

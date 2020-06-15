@@ -37,6 +37,21 @@ I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl
 5) Add mods to your games
 666) __Rip and Tear__
 
+## Engine Setup
+
+Your DOOM engine needs to know about the base folder of your mods and IWADs to work properly, since it works with relative paths (right now). For that a line in the respective config needs to be added in the *FileSearch.Directories* section. Like this:
+```
+# in your doom engine .ini
+[FileSearch.Directories]
+PATH=/home/doomguy/Games/Doom
+```
+
+Twad will try to do this automatically for these engines if it finds the respective config:
+- **Zandronum** *(~/.config/zandronum/zandronum.ini)*
+- **LZDoom** *(~/.config/lzdoom/lzdoom.ini)*
+- **GZDoom** *(~/.config/gzdoom/gzdoom.ini)*
+
+If you are using something different, please configure it accoridingly or send in an issue or pull request ;)
 
 ## Rofi Mode
 
@@ -57,9 +72,12 @@ twad --dmenu
 - ~~Rofi mode~~
 - ~~Help area~~
 - ~~Savegame Count~~
-- Add button for path setup
+- ~~Unified Add/Edit dialog~~
+- ~~Opions scren~~
+- ~~Ability to hide the header for screens with few rows~~
+- ~~Add button for path setup~~
 - Import for downloaded Zips(?)
-- Autoupdaet mods(?)
+- Autoupdate mods(?)
 - More statistics
 - Fading popup highlight where somthing was added
 - All the TODO flags

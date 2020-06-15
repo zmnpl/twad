@@ -12,6 +12,7 @@ const (
 	previewBackgroundColor = tcell.ColorRoyalBlue
 	accentColor            = tcell.ColorOrange
 
+	pageOptions     = "options"
 	pageStats       = "stats"
 	pageNewForm     = "newform"
 	pageModSelector = "modselector"
@@ -20,6 +21,7 @@ const (
 	pageHelp        = "help"
 	pageLicense     = "license"
 	pageYouSure     = "yousure"
+	pageParamsEdit  = "paramseditor"
 
 	tableBorders = false
 )
@@ -31,7 +33,6 @@ var (
 	statsTable     *tview.Table
 	commandPreview *tview.TextView
 	actionPager    *tview.Pages
-	newForm        *tview.Form
 	modTree        *tview.TreeView
 	licensePage    *tview.TextView
 
@@ -42,7 +43,7 @@ func init() {
 	config = cfg.GetInstance()
 	games.RegisterChangeListener(whenGamesChanged)
 
-	// ui style
+	// ui stylepageSettings
 	tview.Styles.PrimitiveBackgroundColor = tcell.ColorBlack
 	tview.Styles.ContrastBackgroundColor = tcell.ColorRoyalBlue
 	tview.Styles.MoreContrastBackgroundColor = tcell.ColorOrange
@@ -76,7 +77,7 @@ func Draw() {
 			AddItem(gamesTable, 0, 2, true).
 			AddItem(tview.NewTextView(), 2, 0, false).
 			AddItem(actionPager, 0, 1, false), 0, 1, true).
-		AddItem(makeButtonBar(), 1, 0, false)
+		AddItem(makeHelpPane(), 5, 0, false)
 
 	bigMainPager.AddPage(pageMain, mainPage, true, true)
 
@@ -87,8 +88,15 @@ func Draw() {
 	}
 
 	// main layout
+	headerHeight := 20
+	var header tview.Primitive
+	header = makeHeader()
+	if !cfg.GetInstance().PrintHeader {
+		headerHeight = 1
+		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
+	}
 	canvas := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(makeHeader(), 20, 0, false).
+		AddItem(header, headerHeight, 0, false).
 		AddItem(bigMainPager, 0, 1, true)
 
 	// capture input
@@ -103,17 +111,17 @@ func Draw() {
 		}
 
 		// show help at bottom of screen
-		if k == tcell.KeyF1 {
-			frontPage, _ := bigMainPager.GetFrontPage()
-			if frontPage == pageHelp {
-				appModeNormal()
-				return nil
-			}
-			help := makeHelpPane()
-			app.SetFocus(help)
-			bigMainPager.AddPage(pageHelp, help, true, true)
-			return nil
-		}
+		// if k == tcell.KeyF1 {
+		// 	frontPage, _ := bigMainPager.GetFrontPage()
+		// 	if frontPage == pageHelp {
+		// 		appModeNormal()
+		// 		return nil
+		// 	}
+		// 	help := makeHelpPane()
+		// 	app.SetFocus(help)
+		// 	bigMainPager.AddPage(pageHelp, help, true, true)
+		// 	return nil
+		// }
 
 		// switch back to nowmal mode
 		if k == tcell.KeyESC {
@@ -143,11 +151,43 @@ func whenGamesChanged() {
 func appModeNormal() {
 	actionPager.SwitchToPage(pageStats)
 	bigMainPager.SwitchToPage(pageMain)
+
+	// clear bigMainPager
 	if bigMainPager.HasPage(pageYouSure) {
 		bigMainPager.RemovePage(pageYouSure)
 	}
 	if bigMainPager.HasPage(pageHelp) {
 		bigMainPager.RemovePage(pageHelp)
 	}
+	if bigMainPager.HasPage(pageSettings) {
+		bigMainPager.RemovePage(pageSettings)
+	}
+	if bigMainPager.HasPage(pageOptions) {
+		bigMainPager.RemovePage(pageOptions)
+	}
+
+	// clear actionPager
+	if actionPager.HasPage(pageNewForm) {
+		actionPager.RemovePage(pageNewForm)
+	}
+	if actionPager.HasPage(pageParamsEdit) {
+		actionPager.RemovePage(pageParamsEdit)
+	}
 	app.SetFocus(gamesTable)
+}
+
+func tabNavigate(previous, next tview.Primitive) func(event *tcell.EventKey) *tcell.EventKey {
+	return func(event *tcell.EventKey) *tcell.EventKey {
+		k := event.Key()
+		switch k {
+		case tcell.KeyTab:
+			app.SetFocus(next)
+			return nil
+		case tcell.KeyBacktab:
+			app.SetFocus(previous)
+			return nil
+		}
+
+		return event
+	}
 }
