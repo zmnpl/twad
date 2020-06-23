@@ -192,6 +192,11 @@ func populateGamesTable() {
 					app.SetFocus(customParameters)
 					return nil
 				}
+
+			case 's':
+				games.SortAlph()
+				populateGamesTable()
+				return nil
 			}
 		}
 
