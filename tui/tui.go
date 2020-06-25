@@ -12,16 +12,17 @@ const (
 	previewBackgroundColor = tcell.ColorRoyalBlue
 	accentColor            = tcell.ColorOrange
 
-	pageOptions     = "options"
-	pageStats       = "stats"
-	pageNewForm     = "newform"
-	pageModSelector = "modselector"
-	pageSettings    = "settings"
-	pageMain        = "main"
-	pageHelp        = "help"
-	pageLicense     = "license"
-	pageYouSure     = "yousure"
-	pageParamsEdit  = "paramseditor"
+	pageOptions      = "options"
+	pageStats        = "stats"
+	pageNewForm      = "newform"
+	pageModSelector  = "modselector"
+	pageSettings     = "settings"
+	pageMain         = "main"
+	pageHelp         = "help"
+	pageLicense      = "license"
+	pageYouSure      = "yousure"
+	pageParamsEdit   = "paramseditor"
+	pageGameOverview = "gameoverview"
 
 	tableBorders = false
 )
@@ -142,6 +143,9 @@ func Draw() {
 func selectedGameChanged(g *games.Game) {
 	populateCommandPreview(g.String())
 	populateStats(g)
+	if actionPager.HasPage(pageGameOverview) {
+		actionPager.AddPage(pageGameOverview, makeGameOverview(g), true, true)
+	}
 }
 
 func whenGamesChanged() {
@@ -172,6 +176,9 @@ func appModeNormal() {
 	}
 	if actionPager.HasPage(pageParamsEdit) {
 		actionPager.RemovePage(pageParamsEdit)
+	}
+	if actionPager.HasPage(pageGameOverview) {
+		actionPager.RemovePage(pageGameOverview)
 	}
 	app.SetFocus(gamesTable)
 }

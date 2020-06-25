@@ -193,6 +193,14 @@ func populateGamesTable() {
 					return nil
 				}
 
+			case 'd':
+				if r > 0 {
+					gameOverview := makeGameOverview(&allGames[r-fixRows])
+					actionPager.AddPage(pageGameOverview, gameOverview, true, false)
+					actionPager.SwitchToPage(pageGameOverview)
+					return nil
+				}
+
 			case 's':
 				games.SortAlph()
 				populateGamesTable()
