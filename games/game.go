@@ -15,16 +15,17 @@ import (
 
 // Game represents one game configuration
 type Game struct {
-	Name          string         `json:"name"`
-	SourcePort    string         `json:"source_port"`
-	Iwad          string         `json:"iwad"`
-	Environment   []string       `json:"environment"`
-	Mods          []string       `json:"mods"`
-	Parameters    []string       `json:"parameters"`
-	Stats         map[string]int `json:"stats"`
-	Playtime      int64          `json:"playtime"`
-	LastPlayed    string         `json:"last_played"`
-	SaveGameCount int            `json:"savegame_coutn"`
+	Name          string         `json:"name,omitempty"`
+	SourcePort    string         `json:"source_port,omitempty"`
+	Iwad          string         `json:"iwad,omitempty"`
+	Environment   []string       `json:"environment,omitempty"`
+	Mods          []string       `json:"mods,omitempty"`
+	Parameters    []string       `json:"parameters,omitempty"`
+	Stats         map[string]int `json:"stats,omitempty"`
+	Playtime      int64          `json:"playtime,omitempty"`
+	LastPlayed    string         `json:"last_played,omitempty"`
+	SaveGameCount int            `json:"savegame_coutn,omitempty"`
+	Rating        int            `json:"rating,omitempty"`
 }
 
 // NewGame creates new instance of a game
