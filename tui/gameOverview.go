@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"path"
+
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
 )
@@ -10,7 +12,6 @@ const (
 	overviewEnvironmentVars = "Environment Variables"
 	overviewIwad            = "IWAD"
 	overviewSourcePort      = "Source Port"
-	overviewGameName        = "Name"
 	overviewOtherParams     = "Others"
 	overviewMods            = "Mods"
 )
@@ -18,9 +19,6 @@ const (
 func makeGameOverview(g *games.Game) *tview.Flex {
 
 	overviewWindow := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetText(overviewGameName).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false).
-		AddItem(tview.NewTextView().SetText(g.Name), 1, 0, false).
-		AddItem(nil, 1, 0, false).
 		AddItem(tview.NewTextView().SetText(overviewSourcePort).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false).
 		AddItem(tview.NewTextView().SetText(g.SourcePort), 1, 0, false).
 		AddItem(nil, 1, 0, false).
@@ -45,9 +43,11 @@ func makeGameOverview(g *games.Game) *tview.Flex {
 	}
 
 	overviewWindow.AddItem(tview.NewTextView().SetText(overviewMods).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
+	modList := tview.NewList()
 	for _, mod := range g.Mods {
-		overviewWindow.AddItem(tview.NewTextView().SetText(mod), 1, 0, false)
+		modList.AddItem(path.Base(mod), path.Dir(mod), '-', nil)
 	}
+	overviewWindow.AddItem(modList, 0, 1, false)
 
 	overviewWindow.SetBorder(true)
 	overviewWindow.SetTitle(overviewHeaderText)

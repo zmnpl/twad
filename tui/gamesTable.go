@@ -9,6 +9,7 @@ import (
 )
 
 const (
+	gameTableHeaderRating     = "Rating"
 	gameTableHeaderName       = "Name"
 	gameTableHeaderSourcePort = "SourcePort"
 	gameTableHeaderIwad       = "Iwad"
@@ -33,7 +34,7 @@ func populateGamesTable() {
 	allGames := games.GetInstance()
 
 	rows, cols := len(allGames), games.MaxModCount()-1
-	fixRows, fixCols := 1, 3
+	fixRows, fixCols := 1, 4
 
 	for r := 0; r < rows+fixRows; r++ {
 		var game games.Game
@@ -46,12 +47,14 @@ func populateGamesTable() {
 			if r < 1 {
 				switch c {
 				case 0:
-					cell = tview.NewTableCell(gameTableHeaderName).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(gameTableHeaderRating).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 1:
-					cell = tview.NewTableCell(gameTableHeaderSourcePort).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(gameTableHeaderName).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 2:
-					cell = tview.NewTableCell(gameTableHeaderIwad).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(gameTableHeaderSourcePort).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 3:
+					cell = tview.NewTableCell(gameTableHeaderIwad).SetTextColor(tview.Styles.SecondaryTextColor)
+				case 4:
 					cell = tview.NewTableCell(gameTableHeaderMods).SetTextColor(tview.Styles.SecondaryTextColor)
 				default:
 					cell = tview.NewTableCell("").SetTextColor(tview.Styles.SecondaryTextColor)
@@ -59,10 +62,12 @@ func populateGamesTable() {
 			} else {
 				switch c {
 				case 0:
-					cell = tview.NewTableCell(game.Name).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(game.RatingString()).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 1:
-					cell = tview.NewTableCell(game.SourcePort).SetTextColor(tview.Styles.PrimaryTextColor)
+					cell = tview.NewTableCell(game.Name).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 2:
+					cell = tview.NewTableCell(game.SourcePort).SetTextColor(tview.Styles.PrimaryTextColor)
+				case 3:
 					cell = tview.NewTableCell(game.Iwad).SetTextColor(tview.Styles.PrimaryTextColor)
 				default:
 					i := c - fixCols
@@ -127,6 +132,17 @@ func populateGamesTable() {
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
+			case '+':
+				allGames[r-fixRows].Rate(1)
+				c := tview.NewTableCell(allGames[r-fixRows].RatingString()).SetTextColor(tview.Styles.SecondaryTextColor)
+				gamesTable.SetCell(r, 0, c)
+				games.Persist()
+			case '-':
+				allGames[r-fixRows].Rate(-1)
+				c := tview.NewTableCell(allGames[r-fixRows].RatingString()).SetTextColor(tview.Styles.SecondaryTextColor)
+				gamesTable.SetCell(r, 0, c)
+				games.Persist()
+
 			case 'o':
 				optionsDiag := makeOptions()
 				bigMainPager.AddPage(pageOptions, optionsDiag, true, false)

@@ -106,6 +106,11 @@ func (g Game) String() string {
 	return fmt.Sprintf("%s %s %s", g.EnvironmentString(), g.SourcePort, strings.TrimSpace(strings.Join(params, " ")))
 }
 
+// RatingString returns the string resulting from the games rating
+func (g Game) RatingString() string {
+	return strings.Repeat("*", g.Rating) + strings.Repeat("-", 5-g.Rating)
+}
+
 // EnvironmentString returns a join of all prefix parameters
 func (g Game) EnvironmentString() string {
 	return strings.TrimSpace(strings.Join(g.Environment, " "))
@@ -122,6 +127,18 @@ func (g Game) SaveCount() int {
 		return len(saves)
 	}
 	return 0
+}
+
+// Rate increases or decreases the games rating
+func (g *Game) Rate(increment int) {
+	g.Rating += increment
+	switch {
+	case g.Rating > 5:
+		g.Rating = 5
+	case g.Rating < 0:
+		g.Rating = 0
+	}
+
 }
 
 func (g Game) getLaunchParams() []string {
