@@ -26,13 +26,14 @@ const (
 // Should only be instantiated via GetInstance
 type Cfg struct {
 	ModBasePath      string         `json:"mod_base_path,omitempty"`
-	ModExtensions    map[string]int `json:"mod_extensions"`
-	SourcePorts      []string       `json:"source_ports"`
-	IWADs            []string       `json:"iwads"`
+	ModExtensions    map[string]int `json:"mod_extensions,omitempty"`
+	SourcePorts      []string       `json:"source_ports,omitempty"`
+	IWADs            []string       `json:"iwads,omitempty"`
 	Configured       bool           `json:"configured,omitempty"`
 	SaveDirs         bool           `json:"save_dirs,omitempty"`
 	WarnBeforeDelete bool           `json:"warn_before_delete,omitempty"`
 	PrintHeader      bool           `json:"print_header,omitempty"`
+	NewModDisplay    bool           `json:"new_mod_display,omitempty"`
 }
 
 func defaultConfig() Cfg {
@@ -48,7 +49,7 @@ func defaultConfig() Cfg {
 	dConf.SaveDirs = true
 	dConf.WarnBeforeDelete = true
 	dConf.PrintHeader = true
-
+	dConf.NewModDisplay = true
 	return dConf
 }
 

@@ -211,7 +211,7 @@ func populateGamesTable() {
 
 			case 'd':
 				if r > 0 {
-					gameOverview := makeGameOverview(&allGames[r-fixRows])
+					gameOverview := makeModList(&allGames[r-fixRows])
 					actionPager.AddPage(pageGameOverview, gameOverview, true, false)
 					actionPager.SwitchToPage(pageGameOverview)
 					return nil
