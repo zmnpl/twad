@@ -191,17 +191,6 @@ func populateGamesTable() {
 				app.SetFocus(newForm)
 				return nil
 
-			// show credits and license
-			case 'c':
-				frontPage, _ := actionPager.GetFrontPage()
-				if frontPage == pageLicense {
-					appModeNormal()
-					return nil
-				}
-				actionPager.SwitchToPage(pageLicense)
-				app.SetFocus(licensePage)
-				return nil
-
 			case 'e':
 				if r > 0 {
 					customParameters := makeAddEditGame(&allGames[r-fixRows])

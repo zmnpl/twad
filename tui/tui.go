@@ -29,14 +29,16 @@ const (
 )
 
 var (
-	config         *cfg.Cfg
-	app            *tview.Application
-	gamesTable     *tview.Table
-	commandPreview *tview.TextView
-	actionPager    *tview.Pages
-	modPager       *tview.Pages
-	modTree        *tview.TreeView
-	licensePage    *tview.TextView
+	config              *cfg.Cfg
+	app                 *tview.Application
+	gamesTable          *tview.Table
+	commandPreview      *tview.TextView
+	mainApplicationPage *tview.Flex
+	actionPager         *tview.Pages
+	actionPagerSub1     *tview.Pages
+	actionPagerSub2     *tview.Pages
+	modTree             *tview.TreeView
+	licensePage         *tview.TextView
 
 	bigMainPager *tview.Pages
 )
@@ -61,29 +63,17 @@ func init() {
 
 // Draw performs all necessary steps to start the ui
 func Draw() {
-	// init basic primitives
-	app = tview.NewApplication()
-	gamesTable = makeGamesTable()
-	commandPreview = makeCommandPreview()
-	actionPager = makeActionPager()
-	modPager = makeModListPager()
-	selectedGameChanged(&games.Game{})
-	populateGamesTable()
+	initUiElements()
 
-	// center with main content
-	bigMainPager = tview.NewPages()
-
-	// main page with games table and stats
-	mainPage := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(commandPreview, 1, 0, false).
+	mainApplicationPage.AddItem(commandPreview, 1, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(gamesTable, 0, 5, true).
+			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
 			AddItem(tview.NewTextView(), 2, 0, false).
-			AddItem(modPager, 0, 2, false).
+			AddItem(actionPagerSub1, 0, 2, false).
 			AddItem(tview.NewTextView(), 2, 0, false).
 			AddItem(actionPager, 0, 3, false), 0, 2, true)
 
-	bigMainPager.AddPage(pageMain, mainPage, true, true)
+	bigMainPager.AddPage(pageMain, mainApplicationPage, true, true)
 
 	// settings - only when first start of app
 	if !config.Configured {
@@ -92,13 +82,7 @@ func Draw() {
 	}
 
 	// main layout
-	headerHeight := 20
-	var header tview.Primitive
-	header = makeHeader()
-	if !cfg.GetInstance().PrintHeader {
-		headerHeight = 1
-		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
-	}
+	header, headerHeight := getHeader()
 	canvas := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(header, headerHeight, 0, false).
 		AddItem(bigMainPager, 0, 1, true).
@@ -110,23 +94,22 @@ func Draw() {
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
+			// get out
 			case 'q':
 				app.Stop()
+			// show credits and license
+			case 'c':
+				frontPage, _ := actionPager.GetFrontPage()
+				if frontPage == pageLicense {
+					appModeNormal()
+					return nil
+				}
+				actionPager.SwitchToPage(pageLicense)
+				app.SetFocus(licensePage)
+				return nil
 			}
-		}
 
-		// show help at bottom of screen
-		// if k == tcell.KeyF1 {
-		// 	frontPage, _ := bigMainPager.GetFrontPage()
-		// 	if frontPage == pageHelp {
-		// 		appModeNormal()
-		// 		return nil
-		// 	}
-		// 	help := makeHelpPane()
-		// 	app.SetFocus(help)
-		// 	bigMainPager.AddPage(pageHelp, help, true, true)
-		// 	return nil
-		// }
+		}
 
 		// switch back to nowmal mode
 		if k == tcell.KeyESC {
@@ -143,11 +126,44 @@ func Draw() {
 	}
 }
 
+func initUiElements() {
+	// init basic primitives
+	app = tview.NewApplication()
+	gamesTable = makeGamesTable()
+	commandPreview = makeCommandPreview()
+	actionPager = makeActionPager()
+	actionPagerSub1 = makeModListPager()
+	selectedGameChanged(&games.Game{})
+	populateGamesTable()
+
+	// center with main content
+	bigMainPager = tview.NewPages()
+
+	// main page containing all the content
+	mainApplicationPage = tview.NewFlex().SetDirection(tview.FlexRow)
+
+	// right side
+	actionPager = tview.NewPages()
+	actionPagerSub1 = tview.NewPages()
+	actionPagerSub2 = tview.NewPages()
+}
+
+func getHeader() (tview.Primitive, int) {
+	headerHeight := 20
+	var header tview.Primitive
+	header = makeHeader()
+	if !cfg.GetInstance().PrintHeader {
+		headerHeight = 1
+		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
+	}
+	return header, headerHeight
+}
+
 // update functions
 func selectedGameChanged(g *games.Game) {
 	populateCommandPreview(g.String())
 	actionPager.AddPage(pageStats, makeStatsTable(g), true, true)
-	modPager.AddPage(pageMods, makeModList(g), true, true)
+	actionPagerSub1.AddPage(pageMods, makeModList(g), true, true)
 	if actionPager.HasPage(pageGameOverview) {
 		actionPager.AddPage(pageGameOverview, makeModList(g), true, true)
 	}

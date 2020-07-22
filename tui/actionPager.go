@@ -8,8 +8,6 @@ import (
 // action pager, which holds stats and the "new" form
 func makeActionPager() *tview.Pages {
 	actionPager = tview.NewPages()
-	actionPager.SetTitleAlign(tview.AlignLeft)
-
 	actionPager.AddPage(pageStats, makeStatsTable(&games.Game{}), true, true)
 
 	licensePage = makeLicense()

@@ -25,15 +25,17 @@ const (
 // Cfg holds basic configuration settings
 // Should only be instantiated via GetInstance
 type Cfg struct {
-	ModBasePath      string         `json:"mod_base_path,omitempty"`
-	ModExtensions    map[string]int `json:"mod_extensions,omitempty"`
-	SourcePorts      []string       `json:"source_ports,omitempty"`
-	IWADs            []string       `json:"iwads,omitempty"`
-	Configured       bool           `json:"configured,omitempty"`
-	SaveDirs         bool           `json:"save_dirs,omitempty"`
-	WarnBeforeDelete bool           `json:"warn_before_delete,omitempty"`
-	PrintHeader      bool           `json:"print_header,omitempty"`
-	NewModDisplay    bool           `json:"new_mod_display,omitempty"`
+	ModBasePath           string         `json:"mod_base_path,omitempty"`
+	ModExtensions         map[string]int `json:"mod_extensions,omitempty"`
+	SourcePorts           []string       `json:"source_ports,omitempty"`
+	IWADs                 []string       `json:"iwads,omitempty"`
+	Configured            bool           `json:"configured,omitempty"`
+	SaveDirs              bool           `json:"save_dirs,omitempty"`
+	WarnBeforeDelete      bool           `json:"warn_before_delete,omitempty"`
+	PrintHeader           bool           `json:"print_header,omitempty"`
+	NewModDisplay         bool           `json:"new_mod_display,omitempty"`
+	GameListAbsoluteWidth int            `json:"game_list_absolute_width,omitempty"`
+	GameListRelativeWidth int            `json:"game_list_relative_width,omitempty"`
 }
 
 func defaultConfig() Cfg {
@@ -50,6 +52,8 @@ func defaultConfig() Cfg {
 	dConf.WarnBeforeDelete = true
 	dConf.PrintHeader = true
 	dConf.NewModDisplay = true
+	dConf.GameListRelativeWidth = 5
+	dConf.GameListAbsoluteWidth = 0
 	return dConf
 }
 
