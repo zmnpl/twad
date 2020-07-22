@@ -42,9 +42,11 @@ func indexOfItemIn(item string, list []string) (int, bool) {
 
 func makeAddEditGame(g *games.Game) *tview.Flex {
 	gWasNil := false
+	title := editGame
 	if g == nil {
 		foo := games.NewGame("", "", "")
 		g = &foo
+		title = addGame
 		gWasNil = true
 	}
 
@@ -113,7 +115,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		AddItem(nil, 1, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).AddItem(okButton, 20, 0, false), 1, 0, false)
 	addEditGameForm.SetBorder(true)
-	addEditGameForm.SetTitle(addGame)
+	addEditGameForm.SetTitle(title)
 	addEditGameForm.SetBorderPadding(1, 1, 1, 1)
 
 	// navigation path

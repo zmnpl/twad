@@ -8,15 +8,19 @@ import (
 )
 
 const (
-	overviewMods = "Mods"
+	overviewMods = "Mods in order"
 )
 
 func makeModList(g *games.Game) *tview.Flex {
 
 	modListFlex := tview.NewFlex().SetDirection(tview.FlexRow)
 
-	modListFlex.AddItem(tview.NewTextView().SetText(overviewMods).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
+	modListFlex.AddItem(tview.NewTextView().
+		SetText(overviewMods).
+		SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
+
 	modList := tview.NewList()
+	modList.SetSecondaryTextColor(tview.Styles.TitleColor)
 	i := 0
 	for _, mod := range g.Mods {
 		i++

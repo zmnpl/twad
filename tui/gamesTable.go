@@ -62,7 +62,7 @@ func populateGamesTable() {
 			} else {
 				switch c {
 				case 0:
-					cell = tview.NewTableCell(game.RatingString()).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(game.RatingString()).SetTextColor(tview.Styles.TitleColor)
 				case 1:
 					cell = tview.NewTableCell(game.Name).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 2:
@@ -132,29 +132,61 @@ func populateGamesTable() {
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
+
+			// get out
+			case 'q':
+				app.Stop()
+
+			// show credits and license
+			case 'c':
+				// c again to toggle
+				frontPage, _ := rightSidePagerSub2.GetFrontPage()
+				if frontPage == pageLicense {
+					appModeNormal()
+					return nil
+				}
+				lp := makeLicense()
+				rightSidePagerSub2.AddPage(pageLicense, lp, true, true)
+				rightSidePagerSub2.SwitchToPage(pageLicense)
+				app.SetFocus(lp)
+				return nil
+
+			// options
+			case 'o':
+				optionsDiag := makeOptions()
+				bigMainPager.AddPage(pageOptions, optionsDiag, true, false)
+				bigMainPager.SwitchToPage(pageOptions)
+				app.SetFocus(optionsDiag)
+
+			// open dialog to insert new game
+			case 'i':
+				newForm := makeAddEditGame(nil)
+				rightSidePager.AddPage(pageAddEdit, newForm, true, false)
+				rightSidePager.SwitchToPage(pageAddEdit)
+				app.SetFocus(newForm)
+				return nil
+
+			// increase game rating
 			case '+':
 				allGames[r-fixRows].Rate(1)
 				c := tview.NewTableCell(allGames[r-fixRows].RatingString()).SetTextColor(tview.Styles.SecondaryTextColor)
 				gamesTable.SetCell(r, 0, c)
 				games.Persist()
+
+			// decrease game rating
 			case '-':
 				allGames[r-fixRows].Rate(-1)
 				c := tview.NewTableCell(allGames[r-fixRows].RatingString()).SetTextColor(tview.Styles.SecondaryTextColor)
 				gamesTable.SetCell(r, 0, c)
 				games.Persist()
 
-			case 'o':
-				optionsDiag := makeOptions()
-				bigMainPager.AddPage(pageOptions, optionsDiag, true, false)
-				bigMainPager.SwitchToPage(pageOptions)
-				app.SetFocus(optionsDiag)
 			// open dialog to add mod to game
 			case 'a':
 				if r > 0 {
 					mtm := makeModTreeMaker(&allGames[r-fixRows])
 					modTree := mtm()
-					actionPager.AddPage(pageModSelector, modTree, true, false)
-					actionPager.SwitchToPage(pageModSelector)
+					rightSidePagerSub2.AddPage(pageModSelector, modTree, true, false)
+					rightSidePagerSub2.SwitchToPage(pageModSelector)
 					app.SetFocus(modTree)
 					return nil
 				}
@@ -168,6 +200,7 @@ func populateGamesTable() {
 							if len(mods) > 0 {
 								allGames[r-fixRows].Mods = mods[:len(mods)-1]
 								populateGamesTable()
+								selectedGameChanged(&allGames[r-fixRows])
 								games.Persist()
 							}
 						}
@@ -183,28 +216,12 @@ func populateGamesTable() {
 				}
 				return nil
 
-			// open dialog to insert new game
-			case 'i':
-				newForm := makeAddEditGame(nil)
-				actionPager.AddPage(pageNewForm, newForm, true, false)
-				actionPager.SwitchToPage(pageNewForm)
-				app.SetFocus(newForm)
-				return nil
-
 			case 'e':
 				if r > 0 {
-					customParameters := makeAddEditGame(&allGames[r-fixRows])
-					actionPager.AddPage(pageParamsEdit, customParameters, true, false)
-					actionPager.SwitchToPage(pageParamsEdit)
-					app.SetFocus(customParameters)
-					return nil
-				}
-
-			case 'd':
-				if r > 0 {
-					gameOverview := makeModList(&allGames[r-fixRows])
-					actionPager.AddPage(pageGameOverview, gameOverview, true, false)
-					actionPager.SwitchToPage(pageGameOverview)
+					addEdit := makeAddEditGame(&allGames[r-fixRows])
+					rightSidePager.AddPage(pageAddEdit, addEdit, true, false)
+					rightSidePager.SwitchToPage(pageAddEdit)
+					app.SetFocus(addEdit)
 					return nil
 				}
 

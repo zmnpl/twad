@@ -75,6 +75,7 @@ func makeModTree(g *games.Game) *tview.TreeView {
 			default:
 				// it's not a directory
 				g.AddMod(strings.TrimPrefix(path, config.ModBasePath+"/"))
+				selectedGameChanged(g)
 			}
 		} else {
 			// Collapse if visible, expand if collapsed.
