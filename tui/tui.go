@@ -12,16 +12,18 @@ const (
 	previewBackgroundColor = tcell.ColorRoyalBlue
 	accentColor            = tcell.ColorOrange
 
-	pageOptions     = "options"
-	pageStats       = "stats"
-	pageNewForm     = "newform"
-	pageModSelector = "modselector"
-	pageSettings    = "settings"
-	pageMain        = "main"
-	pageHelp        = "help"
-	pageLicense     = "license"
-	pageYouSure     = "yousure"
-	pageParamsEdit  = "paramseditor"
+	pageOptions      = "options"
+	pageStats        = "stats"
+	pageNewForm      = "newform"
+	pageModSelector  = "modselector"
+	pageSettings     = "settings"
+	pageMain         = "main"
+	pageHelp         = "help"
+	pageLicense      = "license"
+	pageYouSure      = "yousure"
+	pageParamsEdit   = "paramseditor"
+	pageGameOverview = "gameoverview"
+	pageMods         = "mods"
 
 	tableBorders = false
 )
@@ -30,9 +32,9 @@ var (
 	config         *cfg.Cfg
 	app            *tview.Application
 	gamesTable     *tview.Table
-	statsTable     *tview.Table
 	commandPreview *tview.TextView
 	actionPager    *tview.Pages
+	modPager       *tview.Pages
 	modTree        *tview.TreeView
 	licensePage    *tview.TextView
 
@@ -64,6 +66,7 @@ func Draw() {
 	gamesTable = makeGamesTable()
 	commandPreview = makeCommandPreview()
 	actionPager = makeActionPager()
+	modPager = makeModListPager()
 	selectedGameChanged(&games.Game{})
 	populateGamesTable()
 
@@ -74,10 +77,11 @@ func Draw() {
 	mainPage := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(commandPreview, 1, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(gamesTable, 0, 2, true).
+			AddItem(gamesTable, 0, 5, true).
 			AddItem(tview.NewTextView(), 2, 0, false).
-			AddItem(actionPager, 0, 1, false), 0, 1, true).
-		AddItem(makeHelpPane(), 5, 0, false)
+			AddItem(modPager, 0, 2, false).
+			AddItem(tview.NewTextView(), 2, 0, false).
+			AddItem(actionPager, 0, 3, false), 0, 2, true)
 
 	bigMainPager.AddPage(pageMain, mainPage, true, true)
 
@@ -97,7 +101,8 @@ func Draw() {
 	}
 	canvas := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(header, headerHeight, 0, false).
-		AddItem(bigMainPager, 0, 1, true)
+		AddItem(bigMainPager, 0, 1, true).
+		AddItem(makeHelpPane(), 5, 0, false)
 
 	// capture input
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
@@ -141,7 +146,11 @@ func Draw() {
 // update functions
 func selectedGameChanged(g *games.Game) {
 	populateCommandPreview(g.String())
-	populateStats(g)
+	actionPager.AddPage(pageStats, makeStatsTable(g), true, true)
+	modPager.AddPage(pageMods, makeModList(g), true, true)
+	if actionPager.HasPage(pageGameOverview) {
+		actionPager.AddPage(pageGameOverview, makeModList(g), true, true)
+	}
 }
 
 func whenGamesChanged() {
@@ -172,6 +181,9 @@ func appModeNormal() {
 	}
 	if actionPager.HasPage(pageParamsEdit) {
 		actionPager.RemovePage(pageParamsEdit)
+	}
+	if actionPager.HasPage(pageGameOverview) {
+		actionPager.RemovePage(pageGameOverview)
 	}
 	app.SetFocus(gamesTable)
 }

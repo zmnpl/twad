@@ -3,6 +3,7 @@ package games
 import (
 	"encoding/json"
 	"io/ioutil"
+	"sort"
 	"sync"
 
 	"github.com/zmnpl/twad/cfg"
@@ -71,6 +72,13 @@ func AddGame(g Game) {
 func RemoveGameAt(i int) {
 	instance = append(instance[:i], instance[i+1:]...)
 	InformChangeListeners()
+	Persist()
+}
+
+func SortAlph() {
+	sort.Slice(instance, func(i, j int) bool {
+		return instance[i].Name < instance[j].Name
+	})
 	Persist()
 }
 

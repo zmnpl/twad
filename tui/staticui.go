@@ -107,6 +107,8 @@ func makeHelpPane() *tview.Flex {
 	license := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](c)[white]     - Credits/License")
 	quit := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](q)[white]     - Quit")
 	options := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](o)[white]     - Options")
+	details := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](d)[white]     - Display Game Details")
+	sort := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](s)[white]     - Sort Games Alphabetically")
 
 	helpArea := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
@@ -125,6 +127,8 @@ func makeHelpPane() *tview.Flex {
 			AddItem(options, 1, 0, false),
 			0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+			AddItem(details, 1, 0, false).
+			AddItem(sort, 1, 0, false).
 			AddItem(license, 1, 0, false),
 			0, 1, false)
 	helpArea.SetBorder(true)
