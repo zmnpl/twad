@@ -20,6 +20,9 @@ var (
 const (
 	configName = "twad.json"
 	configPath = "/.config/twad"
+
+	RIGHT_HORIZONTAL = 0
+	RIGHT_VERTICAL   = 1
 )
 
 // Cfg holds basic configuration settings

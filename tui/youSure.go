@@ -37,7 +37,7 @@ func makeYouSureBox(question string, onOk func(), xOffset int, yOffset int) *tvi
 		width = minWidth
 	}
 
-	// TODO - catch yOffset if popup flows out of the windows
+	// TODO: catch yOffset if popup flows out of the windows
 
 	youSureLayout := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, yOffset, 1, false).

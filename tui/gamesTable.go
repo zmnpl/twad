@@ -88,22 +88,6 @@ func populateGamesTable() {
 		}
 	}
 
-	//makeCellPulser := func(c *tview.TableCell) func() {
-	//	return func() {
-	//		r, g, b := tcell.ColorOrange.RGB()
-	//		c.BackgroundColor = tcell.NewRGBColor(r, g, b)
-	//		for i := 0; i <= 1000; i += 16 {
-	//			time.Sleep(16 * time.Millisecond)
-	//			r = r * 2
-	//			g = g * 2
-	//			b = b * 2
-	//			c.BackgroundColor = tcell.NewRGBColor(r, g, b)
-	//			app.Draw()
-	//		}
-	//	}
-	//}
-	//cellPulser := makeCellPulser(tview.NewTableCell(""))
-
 	gamesTable.SetSelectionChangedFunc(func(r int, c int) {
 		var g *games.Game
 		//var cell *tview.TableCell
@@ -116,7 +100,6 @@ func populateGamesTable() {
 			//cell = gamesTable.GetCell(r, len(g.Mods)+3)
 		}
 		selectedGameChanged(g)
-		//cellPulser = makeCellPulser(cell)
 	})
 
 	gamesTable.SetSelectedFunc(func(r int, c int) {

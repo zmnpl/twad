@@ -1,5 +1,5 @@
 - options for h/v right side
-- try revamp options to regular form
+- DONE try revamp options to regular form
 - use DOOMWADDIR
 -- check if exists on start
 -- if not, set to selected base-dir
