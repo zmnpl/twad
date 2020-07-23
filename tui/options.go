@@ -3,6 +3,8 @@ package tui
 import (
 	"strings"
 
+	"strconv"
+
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/cfg"
 )
@@ -17,7 +19,7 @@ const (
 	optionsNextTimeFirstStart     = "Show path selection on next start"
 	optionsSaveDirsLabel          = "Use separate save game directories"
 	optionsPrintHeaderLabel       = "Show header"
-	optionsGamesListRelativeWitdh = "Game list relative width"
+	optionsGamesListRelativeWitdh = "Game list relative width (% 1-100)"
 	optionsMaxLabelLength         = 35
 )
 
@@ -44,12 +46,6 @@ func makeOptions() *tview.Flex {
 		AddItem(iwadsLabel, leftColSize, 0, false).
 		AddItem(iwads, 0, rigthColSize, false)
 
-	// glRelWidthLabel := tview.NewTextView().SetText(optionsGamesListRelativeWitdh).SetTextColor(tview.Styles.SecondaryTextColor)
-	// glRelWidth := tview.NewInputField().SetText(string(cfg.GetInstance().GameListRelativeWidth))
-	// iwadsRow := tview.NewFlex().SetDirection(tview.FlexColumn).
-	// 	AddItem(iwadsLabel, leftColSize, 0, false).
-	// 	AddItem(iwads, 0, rigthColSize, false)
-
 	printHeaderLabel := tview.NewTextView().SetText(optionsPrintHeaderLabel).SetTextColor(tview.Styles.SecondaryTextColor)
 	printHeader := tview.NewCheckbox().SetChecked(cfg.GetInstance().PrintHeader)
 	printHeaderRow := tview.NewFlex().SetDirection(tview.FlexColumn).
@@ -73,6 +69,19 @@ func makeOptions() *tview.Flex {
 	firstStartRow := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(firstStartLabel, leftColSize, 0, false).
 		AddItem(firstStart, 0, rigthColSize, false)
+
+	gameListRelWidthLabel := tview.NewTextView().SetText(optionsGamesListRelativeWitdh).SetTextColor(tview.Styles.SecondaryTextColor)
+	gameListRelWidth := tview.NewInputField().SetAcceptanceFunc(func(text string, char rune) bool {
+		if text == "-" {
+			return false
+		}
+		i, err := strconv.Atoi(text)
+		return err == nil && i > 0 && i <= 100
+	})
+	gameListRelWidth.SetText(strconv.Itoa(cfg.GetInstance().GameListRelativeWidth))
+	gameListRelWidthRow := tview.NewFlex().SetDirection(tview.FlexColumn).
+		AddItem(gameListRelWidthLabel, leftColSize, 0, false).
+		AddItem(gameListRelWidth, 0, rigthColSize, false)
 
 	okButton := tview.NewButton(optionsOkButtonLabel)
 	okButton.SetBackgroundColorActivated(tview.Styles.PrimaryTextColor)
@@ -100,6 +109,7 @@ func makeOptions() *tview.Flex {
 		config.PrintHeader = printHeader.IsChecked()
 		config.WarnBeforeDelete = warn.IsChecked()
 		config.SaveDirs = saveDirs.IsChecked()
+		config.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
 		config.Configured = !firstStart.IsChecked()
 		cfg.Persist()
 		appModeNormal()
@@ -112,8 +122,9 @@ func makeOptions() *tview.Flex {
 	printHeader.SetInputCapture(tabNavigate(iwads, warn))
 	warn.SetInputCapture(tabNavigate(iwads, saveDirs))
 	saveDirs.SetInputCapture(tabNavigate(warn, firstStart))
-	firstStart.SetInputCapture(tabNavigate(saveDirs, okButton))
-	okButton.SetInputCapture(tabNavigate(firstStart, path))
+	firstStart.SetInputCapture(tabNavigate(saveDirs, gameListRelWidth))
+	gameListRelWidth.SetInputCapture(tabNavigate(firstStart, okButton))
+	okButton.SetInputCapture(tabNavigate(gameListRelWidth, path))
 
 	options := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(pathRow, 1, 0, true).
@@ -129,6 +140,8 @@ func makeOptions() *tview.Flex {
 		AddItem(saveDirsRow, 1, 0, false).
 		AddItem(nil, 1, 0, false).
 		AddItem(firstStartRow, 1, 0, false).
+		AddItem(nil, 1, 0, false).
+		AddItem(gameListRelWidthRow, 1, 0, false).
 		AddItem(nil, 1, 0, false).
 		AddItem(okButtonRow, 1, 0, false)
 	options.SetBorder(true)

@@ -117,7 +117,7 @@ func initUIElements() {
 	// TODO: make layout a bit more flexible
 	defaultRightPage := tview.NewFlex().SetDirection(tview.FlexColumn)
 	defaultRightPage.
-		AddItem(tview.NewTextView().SetBackgroundColor(tview.Styles.PrimaryTextColor), 2, 0, false).
+		AddItem(tview.NewTextView(), 2, 0, false).
 		AddItem(rightSidePagesSub1, 0, 5, false).
 		AddItem(tview.NewTextView(), 2, 0, false).
 		AddItem(rightSidePagesSub2, 0, 5, false)
@@ -126,7 +126,7 @@ func initUIElements() {
 	mainContentPage.AddItem(commandPreview, 1, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
 			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
-			AddItem(rightSidePages, 0, 10-config.GameListRelativeWidth, false), 0, 2, true)
+			AddItem(rightSidePages, 0, 100-config.GameListRelativeWidth, false), 0, 2, true)
 
 	// center with main content
 	contentPages = tview.NewPages()

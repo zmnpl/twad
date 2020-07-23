@@ -52,7 +52,7 @@ func defaultConfig() Cfg {
 	dConf.WarnBeforeDelete = true
 	dConf.PrintHeader = true
 	dConf.NewModDisplay = true
-	dConf.GameListRelativeWidth = 5
+	dConf.GameListRelativeWidth = 40
 	dConf.GameListAbsoluteWidth = 0
 	return dConf
 }
