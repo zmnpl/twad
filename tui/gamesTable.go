@@ -140,29 +140,29 @@ func populateGamesTable() {
 			// show credits and license
 			case 'c':
 				// c again to toggle
-				frontPage, _ := rightSidePagerSub2.GetFrontPage()
+				frontPage, _ := rightSidePagesSub2.GetFrontPage()
 				if frontPage == pageLicense {
 					appModeNormal()
 					return nil
 				}
 				lp := makeLicense()
-				rightSidePagerSub2.AddPage(pageLicense, lp, true, true)
-				rightSidePagerSub2.SwitchToPage(pageLicense)
+				rightSidePagesSub2.AddPage(pageLicense, lp, true, true)
+				rightSidePagesSub2.SwitchToPage(pageLicense)
 				app.SetFocus(lp)
 				return nil
 
 			// options
 			case 'o':
 				optionsDiag := makeOptions()
-				bigMainPager.AddPage(pageOptions, optionsDiag, true, false)
-				bigMainPager.SwitchToPage(pageOptions)
+				contentPages.AddPage(pageOptions, optionsDiag, true, false)
+				contentPages.SwitchToPage(pageOptions)
 				app.SetFocus(optionsDiag)
 
 			// open dialog to insert new game
 			case 'i':
 				newForm := makeAddEditGame(nil)
-				rightSidePager.AddPage(pageAddEdit, newForm, true, false)
-				rightSidePager.SwitchToPage(pageAddEdit)
+				rightSidePages.AddPage(pageAddEdit, newForm, true, false)
+				rightSidePages.SwitchToPage(pageAddEdit)
 				app.SetFocus(newForm)
 				return nil
 
@@ -185,8 +185,8 @@ func populateGamesTable() {
 				if r > 0 {
 					mtm := makeModTreeMaker(&allGames[r-fixRows])
 					modTree := mtm()
-					rightSidePagerSub2.AddPage(pageModSelector, modTree, true, false)
-					rightSidePagerSub2.SwitchToPage(pageModSelector)
+					rightSidePagesSub2.AddPage(pageModSelector, modTree, true, false)
+					rightSidePagesSub2.SwitchToPage(pageModSelector)
 					app.SetFocus(modTree)
 					return nil
 				}
@@ -208,7 +208,7 @@ func populateGamesTable() {
 
 					if config.WarnBeforeDelete {
 						g := allGames[r-fixRows]
-						bigMainPager.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
+						contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
 						return nil
 					}
 
@@ -219,8 +219,8 @@ func populateGamesTable() {
 			case 'e':
 				if r > 0 {
 					addEdit := makeAddEditGame(&allGames[r-fixRows])
-					rightSidePager.AddPage(pageAddEdit, addEdit, true, false)
-					rightSidePager.SwitchToPage(pageAddEdit)
+					rightSidePages.AddPage(pageAddEdit, addEdit, true, false)
+					rightSidePages.SwitchToPage(pageAddEdit)
 					app.SetFocus(addEdit)
 					return nil
 				}
@@ -242,7 +242,7 @@ func populateGamesTable() {
 
 			if config.WarnBeforeDelete {
 				g := allGames[r-fixRows]
-				bigMainPager.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, 2, r+2), true, true)
+				contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, 2, r+2), true, true)
 				return nil
 			}
 

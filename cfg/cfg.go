@@ -60,7 +60,7 @@ func defaultConfig() Cfg {
 func init() {
 	firstStart()
 	GetInstance()
-	loadConfig()
+	loadConfig() // TODO: handle error
 	Persist()
 }
 

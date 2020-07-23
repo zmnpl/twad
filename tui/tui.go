@@ -28,18 +28,15 @@ const (
 )
 
 var (
-	config              *cfg.Cfg
-	app                 *tview.Application
-	gamesTable          *tview.Table
-	commandPreview      *tview.TextView
-	mainApplicationPage *tview.Flex
-	rightSidePager      *tview.Pages
-	rightSidePagerSub1  *tview.Pages
-	rightSidePagerSub2  *tview.Pages
-	modTree             *tview.TreeView
-	licensePage         *tview.TextView
-
-	bigMainPager *tview.Pages
+	config             *cfg.Cfg
+	app                *tview.Application
+	mainContentPage    *tview.Flex
+	contentPages       *tview.Pages
+	gamesTable         *tview.Table
+	commandPreview     *tview.TextView
+	rightSidePages     *tview.Pages
+	rightSidePagesSub1 *tview.Pages
+	rightSidePagesSub2 *tview.Pages
 )
 
 func init() {
@@ -67,7 +64,7 @@ func Draw() {
 	// settings - only when first start of app
 	if !config.Configured {
 		settingsPage := makeSettingsPage()
-		bigMainPager.AddPage(pageSettings, settingsPage, true, true)
+		contentPages.AddPage(pageSettings, settingsPage, true, true)
 	}
 
 	// main layout
@@ -75,7 +72,7 @@ func Draw() {
 	helpPane, helpPaneHeight := makeHelpPane()
 	canvas := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(header, headerHeight, 0, false).
-		AddItem(bigMainPager, 0, 1, true).
+		AddItem(contentPages, 0, 1, true).
 		AddItem(helpPane, helpPaneHeight, 0, false)
 
 	// populate
@@ -85,26 +82,16 @@ func Draw() {
 	// capture input
 	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
-
 		// switch back to nowmal mode
 		if k == tcell.KeyESC {
 			appModeNormal()
 			return nil
 		}
-
-		// runes are not really to handle at app leve -.-
-		if k == tcell.KeyRune {
-			//switch event.Rune() {
-			//case 'q': // get out
-			//app.Stop()
-			//}
-		}
-
 		return event
 	})
 
 	// run app
-	if err := app.SetRoot(canvas, true).SetFocus(bigMainPager).Run(); err != nil {
+	if err := app.SetRoot(canvas, true).SetFocus(contentPages).Run(); err != nil {
 		panic(err)
 	}
 }
@@ -112,34 +99,38 @@ func Draw() {
 func initUIElements() {
 	// init basic primitives
 	app = tview.NewApplication()
-	gamesTable = makeGamesTable()
+
+	// command preview
 	commandPreview = makeCommandPreview()
 
+	// main view to select games
+	gamesTable = makeGamesTable()
+
 	// main page containing all the content
-	mainApplicationPage = tview.NewFlex().SetDirection(tview.FlexRow)
+	mainContentPage = tview.NewFlex().SetDirection(tview.FlexRow)
 
 	// right side
-	rightSidePager = tview.NewPages()
-	rightSidePagerSub1 = tview.NewPages()
-	rightSidePagerSub2 = tview.NewPages()
+	rightSidePages = tview.NewPages()
+	rightSidePagesSub1 = tview.NewPages()
+	rightSidePagesSub2 = tview.NewPages()
 
 	// TODO: make layout a bit more flexible
 	defaultRightPage := tview.NewFlex().SetDirection(tview.FlexColumn)
 	defaultRightPage.
 		AddItem(tview.NewTextView().SetBackgroundColor(tview.Styles.PrimaryTextColor), 2, 0, false).
-		AddItem(rightSidePagerSub1, 0, 5, false).
+		AddItem(rightSidePagesSub1, 0, 5, false).
 		AddItem(tview.NewTextView(), 2, 0, false).
-		AddItem(rightSidePagerSub2, 0, 5, false)
-	rightSidePager.AddPage(pageDefaultRight, defaultRightPage, true, true)
+		AddItem(rightSidePagesSub2, 0, 5, false)
+	rightSidePages.AddPage(pageDefaultRight, defaultRightPage, true, true)
 
-	mainApplicationPage.AddItem(commandPreview, 1, 0, false).
+	mainContentPage.AddItem(commandPreview, 1, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
 			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
-			AddItem(rightSidePager, 0, 10-config.GameListRelativeWidth, false), 0, 2, true)
+			AddItem(rightSidePages, 0, 10-config.GameListRelativeWidth, false), 0, 2, true)
 
 	// center with main content
-	bigMainPager = tview.NewPages()
-	bigMainPager.AddPage(pageMain, mainApplicationPage, true, true)
+	contentPages = tview.NewPages()
+	contentPages.AddPage(pageMain, mainContentPage, true, true)
 }
 
 // small or big header
@@ -157,10 +148,10 @@ func getHeader() (tview.Primitive, int) {
 // update functions
 func selectedGameChanged(g *games.Game) {
 	populateCommandPreview(g.String())
-	rightSidePagerSub1.AddPage(pageMods, makeModList(g), true, true)
-	frontPage, _ := rightSidePagerSub2.GetFrontPage()
+	rightSidePagesSub1.AddPage(pageMods, makeModList(g), true, true)
+	frontPage, _ := rightSidePagesSub2.GetFrontPage()
 	if frontPage != pageModSelector {
-		rightSidePagerSub2.AddPage(pageStats, makeStatsTable(g), true, true)
+		rightSidePagesSub2.AddPage(pageStats, makeStatsTable(g), true, true)
 	}
 }
 
@@ -171,25 +162,25 @@ func whenGamesChanged() {
 
 // reset ui
 func appModeNormal() {
-	rightSidePager.SwitchToPage(pageDefaultRight)
-	rightSidePagerSub1.SwitchToPage(pageMods)
-	rightSidePagerSub2.SwitchToPage(pageStats)
-	bigMainPager.SwitchToPage(pageMain)
+	rightSidePages.SwitchToPage(pageDefaultRight)
+	rightSidePagesSub1.SwitchToPage(pageMods)
+	rightSidePagesSub2.SwitchToPage(pageStats)
+	contentPages.SwitchToPage(pageMain)
 
 	// clear bigMainPager
-	if bigMainPager.HasPage(pageYouSure) {
-		bigMainPager.RemovePage(pageYouSure)
+	if contentPages.HasPage(pageYouSure) {
+		contentPages.RemovePage(pageYouSure)
 	}
-	if bigMainPager.HasPage(pageSettings) {
-		bigMainPager.RemovePage(pageSettings)
+	if contentPages.HasPage(pageSettings) {
+		contentPages.RemovePage(pageSettings)
 	}
-	if bigMainPager.HasPage(pageOptions) {
-		bigMainPager.RemovePage(pageOptions)
+	if contentPages.HasPage(pageOptions) {
+		contentPages.RemovePage(pageOptions)
 	}
 
 	// clear actionPager
-	if rightSidePager.HasPage(pageAddEdit) {
-		rightSidePager.RemovePage(pageAddEdit)
+	if rightSidePages.HasPage(pageAddEdit) {
+		rightSidePages.RemovePage(pageAddEdit)
 	}
 
 	app.SetFocus(gamesTable)

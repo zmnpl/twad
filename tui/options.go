@@ -8,16 +8,17 @@ import (
 )
 
 const (
-	optionsOkButtonLabel      = "Ok"
-	optionsHeader             = "Options"
-	optionsPathLabel          = "Base Path"
-	optionsWarnBeforeLabel    = "Warn before deletion"
-	optionsSourcePortLabel    = "Source Ports"
-	optionsIwadsLabel         = "IWADs"
-	optionsNextTimeFirstStart = "Show path selection on next start"
-	optionsSaveDirsLabel      = "Use separate save game directories"
-	optionsPrintHeaderLabel   = "Show Header"
-	optionsMaxLabelLength     = 35
+	optionsOkButtonLabel          = "Ok"
+	optionsHeader                 = "Options"
+	optionsPathLabel              = "Base Path"
+	optionsWarnBeforeLabel        = "Warn before deletion"
+	optionsSourcePortLabel        = "Source Ports"
+	optionsIwadsLabel             = "IWADs"
+	optionsNextTimeFirstStart     = "Show path selection on next start"
+	optionsSaveDirsLabel          = "Use separate save game directories"
+	optionsPrintHeaderLabel       = "Show header"
+	optionsGamesListRelativeWitdh = "Game list relative width"
+	optionsMaxLabelLength         = 35
 )
 
 func makeOptions() *tview.Flex {
@@ -42,6 +43,12 @@ func makeOptions() *tview.Flex {
 	iwadsRow := tview.NewFlex().SetDirection(tview.FlexColumn).
 		AddItem(iwadsLabel, leftColSize, 0, false).
 		AddItem(iwads, 0, rigthColSize, false)
+
+	// glRelWidthLabel := tview.NewTextView().SetText(optionsGamesListRelativeWitdh).SetTextColor(tview.Styles.SecondaryTextColor)
+	// glRelWidth := tview.NewInputField().SetText(string(cfg.GetInstance().GameListRelativeWidth))
+	// iwadsRow := tview.NewFlex().SetDirection(tview.FlexColumn).
+	// 	AddItem(iwadsLabel, leftColSize, 0, false).
+	// 	AddItem(iwads, 0, rigthColSize, false)
 
 	printHeaderLabel := tview.NewTextView().SetText(optionsPrintHeaderLabel).SetTextColor(tview.Styles.SecondaryTextColor)
 	printHeader := tview.NewCheckbox().SetChecked(cfg.GetInstance().PrintHeader)
