@@ -1,5 +1,6 @@
 - options for h/v right side
-- DONE try revamp options to regular form
+- DONE revamp options to regular form
+- DONE revamp addedit game to regular form
 - use DOOMWADDIR
 -- check if exists on start
 -- if not, set to selected base-dir
