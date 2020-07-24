@@ -16,11 +16,13 @@ const (
 	aeSourcePort = "Source Port"
 	aeIWAD       = "IWAD"
 
-	aeEnvironment       = "Environment Variables"
-	aeEnvironmentDetail = `Provide environment variables here; To turn VSync off entirely for example:
+	aeEnvironment       = "Environment Variables *"
+	aeEnvironmentDetail = `* Provide environment variables here; To turn VSync off entirely for example:
 "vblank_mode=1"`
-	aeOtherParams       = "Others"
-	aeOtherParamsDetail = "Other parameters you want to pass to your ZDoom port for this game"
+	aeOtherParams       = "Others **"
+	aeOtherParamsDetail = "** Other parameters you want to pass to your ZDoom port for this game"
+
+	aeOkButton = "Ok"
 )
 
 func splitParams(params string) []string {
@@ -50,9 +52,13 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		gWasNil = true
 	}
 
-	inputName := tview.NewInputField().SetText(g.Name)
+	ae := tview.NewForm()
 
-	inputSourcePort := tview.NewDropDown().SetFieldWidth(20).SetOptions([]string{"NA"}, nil)
+	inputName := tview.NewInputField().SetText(g.Name).SetLabel(aeName).SetLabelColor(tview.Styles.SecondaryTextColor)
+	ae.AddFormItem(inputName)
+
+	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeSourcePort).SetLabelColor(tview.Styles.SecondaryTextColor)
+	ae.AddFormItem(inputSourcePort)
 	if cfg.GetInstance().SourcePorts != nil && len(cfg.GetInstance().SourcePorts) > 0 {
 		inputSourcePort.SetOptions(cfg.GetInstance().SourcePorts, nil)
 		if i, isIn := indexOfItemIn(g.SourcePort, cfg.GetInstance().SourcePorts); isIn {
@@ -62,7 +68,8 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		}
 	}
 
-	inputIwad := tview.NewDropDown().SetFieldWidth(20).SetOptions([]string{"NA"}, nil)
+	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeIWAD).SetLabelColor(tview.Styles.SecondaryTextColor)
+	ae.AddFormItem(inputIwad)
 	if cfg.GetInstance().IWADs != nil && len(cfg.GetInstance().IWADs) > 0 {
 		inputIwad.SetOptions(cfg.GetInstance().IWADs, nil)
 		if i, isIn := indexOfItemIn(g.Iwad, cfg.GetInstance().IWADs); isIn {
@@ -72,12 +79,13 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		}
 	}
 
-	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString())
+	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(aeEnvironment).SetLabelColor(tview.Styles.SecondaryTextColor)
+	ae.AddFormItem(inputEnvVars)
 
-	inputCustomParams := tview.NewInputField().SetText(g.ParamsString())
+	inputCustomParams := tview.NewInputField().SetText(g.ParamsString()).SetLabel(aeOtherParams).SetLabelColor(tview.Styles.SecondaryTextColor)
+	ae.AddFormItem(inputCustomParams)
 
-	okButton := tview.NewButton(optionsOkButtonLabel).SetBackgroundColorActivated(tview.Styles.PrimaryTextColor).SetLabelColorActivated(tview.Styles.ContrastBackgroundColor)
-	okButton.SetSelectedFunc(func() {
+	ae.AddButton(aeOkButton, func() {
 		g.Name = strings.TrimSpace(inputName.GetText())
 		_, g.SourcePort = inputSourcePort.GetCurrentOption()
 		_, g.Iwad = inputIwad.GetCurrentOption()
@@ -95,36 +103,13 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	// build form
 	addEditGameForm := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetText(aeName).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false).
-		AddItem(inputName, 1, 0, true).
-		AddItem(nil, 1, 0, false).
-		AddItem(tview.NewTextView().SetText(aeSourcePort).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false).
-		AddItem(inputSourcePort, 1, 0, false).
-		AddItem(nil, 1, 0, false).
-		AddItem(tview.NewTextView().SetText(aeIWAD).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false).
-		AddItem(inputIwad, 1, 0, false).
-		AddItem(nil, 1, 0, false).
-		AddItem(tview.NewTextView().SetText(aeEnvironment).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false).
+		AddItem(ae, 0, 1, true).
 		AddItem(tview.NewTextView().SetText(aeEnvironmentDetail), 2, 0, false).
-		AddItem(inputEnvVars, 1, 0, false).
 		AddItem(nil, 1, 0, false).
-		AddItem(tview.NewTextView().SetText(aeOtherParams).SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false).
-		AddItem(tview.NewTextView().SetText(aeOtherParamsDetail), 1, 0, false).
-		AddItem(inputCustomParams, 1, 0, false).
-		AddItem(nil, 1, 0, false).
-		AddItem(nil, 1, 0, false).
-		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).AddItem(okButton, 20, 0, false), 1, 0, false)
+		AddItem(tview.NewTextView().SetText(aeOtherParamsDetail), 1, 0, false)
 	addEditGameForm.SetBorder(true)
 	addEditGameForm.SetTitle(title)
 	addEditGameForm.SetBorderPadding(1, 1, 1, 1)
-
-	// navigation path
-	inputName.SetInputCapture(tabNavigate(okButton, inputSourcePort))
-	inputSourcePort.SetInputCapture(tabNavigate(inputName, inputIwad))
-	inputIwad.SetInputCapture(tabNavigate(inputSourcePort, inputEnvVars))
-	inputEnvVars.SetInputCapture(tabNavigate(inputIwad, inputCustomParams))
-	inputCustomParams.SetInputCapture(tabNavigate(inputEnvVars, okButton))
-	okButton.SetInputCapture(tabNavigate(inputCustomParams, inputName))
 
 	return addEditGameForm
 }
