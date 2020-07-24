@@ -28,15 +28,15 @@ const (
 )
 
 var (
-	config             *cfg.Cfg
-	app                *tview.Application
-	mainContentPage    *tview.Flex
-	contentPages       *tview.Pages
-	gamesTable         *tview.Table
-	commandPreview     *tview.TextView
-	rightSidePages     *tview.Pages
-	rightSidePagesSub1 *tview.Pages
-	rightSidePagesSub2 *tview.Pages
+	config              *cfg.Cfg
+	app                 *tview.Application
+	mainContentPage     *tview.Flex
+	contentPages        *tview.Pages
+	gamesTable          *tview.Table
+	commandPreview      *tview.TextView
+	detailPages         *tview.Pages
+	detailSidePagesSub1 *tview.Pages
+	detailSidePagesSub2 *tview.Pages
 )
 
 func init() {
@@ -63,7 +63,7 @@ func Draw() {
 
 	// settings - only when first start of app
 	if !config.Configured {
-		settingsPage := makeSettingsPage()
+		settingsPage := makeFirstTimeSetup()
 		contentPages.AddPage(pageSettings, settingsPage, true, true)
 	}
 
@@ -110,23 +110,27 @@ func initUIElements() {
 	mainContentPage = tview.NewFlex().SetDirection(tview.FlexRow)
 
 	// right side
-	rightSidePages = tview.NewPages()
-	rightSidePagesSub1 = tview.NewPages()
-	rightSidePagesSub2 = tview.NewPages()
+	detailPages = tview.NewPages()
+	detailSidePagesSub1 = tview.NewPages()
+	detailSidePagesSub2 = tview.NewPages()
 
 	// TODO: make layout a bit more flexible
-	defaultRightPage := tview.NewFlex().SetDirection(tview.FlexColumn)
-	defaultRightPage.
-		AddItem(tview.NewTextView(), 2, 0, false).
-		AddItem(rightSidePagesSub1, 0, 5, false).
-		AddItem(tview.NewTextView(), 2, 0, false).
-		AddItem(rightSidePagesSub2, 0, 5, false)
-	rightSidePages.AddPage(pageDefaultRight, defaultRightPage, true, true)
+	detailLayout := tview.FlexColumn
+	if config.DetailPaneSplitVertical {
+		detailLayout = tview.FlexRow
+	}
+	defaultDetailPage := tview.NewFlex().SetDirection(detailLayout)
+	defaultDetailPage.
+		AddItem(detailSidePagesSub1, 0, 5, false).
+		AddItem(nil, 2, 0, false).
+		AddItem(detailSidePagesSub2, 0, 5, false)
+	detailPages.AddPage(pageDefaultRight, defaultDetailPage, true, true)
 
 	mainContentPage.AddItem(commandPreview, 1, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
 			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
-			AddItem(rightSidePages, 0, 100-config.GameListRelativeWidth, false), 0, 2, true)
+			AddItem(nil, 2, 0, false).
+			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, false), 0, 2, true)
 
 	// center with main content
 	contentPages = tview.NewPages()
@@ -138,7 +142,7 @@ func getHeader() (tview.Primitive, int) {
 	headerHeight := 20
 	var header tview.Primitive
 	header = makeHeader()
-	if !cfg.GetInstance().PrintHeader {
+	if cfg.GetInstance().HideHeader {
 		headerHeight = 1
 		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
 	}
@@ -148,10 +152,10 @@ func getHeader() (tview.Primitive, int) {
 // update functions
 func selectedGameChanged(g *games.Game) {
 	populateCommandPreview(g.String())
-	rightSidePagesSub1.AddPage(pageMods, makeModList(g), true, true)
-	frontPage, _ := rightSidePagesSub2.GetFrontPage()
+	detailSidePagesSub1.AddPage(pageMods, makeModList(g), true, true)
+	frontPage, _ := detailSidePagesSub2.GetFrontPage()
 	if frontPage != pageModSelector {
-		rightSidePagesSub2.AddPage(pageStats, makeStatsTable(g), true, true)
+		detailSidePagesSub2.AddPage(pageStats, makeStatsTable(g), true, true)
 	}
 }
 
@@ -162,9 +166,9 @@ func whenGamesChanged() {
 
 // reset ui
 func appModeNormal() {
-	rightSidePages.SwitchToPage(pageDefaultRight)
-	rightSidePagesSub1.SwitchToPage(pageMods)
-	rightSidePagesSub2.SwitchToPage(pageStats)
+	detailPages.SwitchToPage(pageDefaultRight)
+	detailSidePagesSub1.SwitchToPage(pageMods)
+	detailSidePagesSub2.SwitchToPage(pageStats)
 	contentPages.SwitchToPage(pageMain)
 
 	// clear bigMainPager
@@ -179,8 +183,8 @@ func appModeNormal() {
 	}
 
 	// clear actionPager
-	if rightSidePages.HasPage(pageAddEdit) {
-		rightSidePages.RemovePage(pageAddEdit)
+	if detailPages.HasPage(pageAddEdit) {
+		detailPages.RemovePage(pageAddEdit)
 	}
 
 	app.SetFocus(gamesTable)

@@ -123,14 +123,14 @@ func populateGamesTable() {
 			// show credits and license
 			case 'c':
 				// c again to toggle
-				frontPage, _ := rightSidePagesSub2.GetFrontPage()
+				frontPage, _ := detailSidePagesSub2.GetFrontPage()
 				if frontPage == pageLicense {
 					appModeNormal()
 					return nil
 				}
 				lp := makeLicense()
-				rightSidePagesSub2.AddPage(pageLicense, lp, true, true)
-				rightSidePagesSub2.SwitchToPage(pageLicense)
+				detailSidePagesSub2.AddPage(pageLicense, lp, true, true)
+				detailSidePagesSub2.SwitchToPage(pageLicense)
 				app.SetFocus(lp)
 				return nil
 
@@ -144,8 +144,8 @@ func populateGamesTable() {
 			// open dialog to insert new game
 			case 'i':
 				newForm := makeAddEditGame(nil)
-				rightSidePages.AddPage(pageAddEdit, newForm, true, false)
-				rightSidePages.SwitchToPage(pageAddEdit)
+				detailPages.AddPage(pageAddEdit, newForm, true, false)
+				detailPages.SwitchToPage(pageAddEdit)
 				app.SetFocus(newForm)
 				return nil
 
@@ -168,8 +168,8 @@ func populateGamesTable() {
 				if r > 0 {
 					mtm := makeModTreeMaker(&allGames[r-fixRows])
 					modTree := mtm()
-					rightSidePagesSub2.AddPage(pageModSelector, modTree, true, false)
-					rightSidePagesSub2.SwitchToPage(pageModSelector)
+					detailSidePagesSub2.AddPage(pageModSelector, modTree, true, false)
+					detailSidePagesSub2.SwitchToPage(pageModSelector)
 					app.SetFocus(modTree)
 					return nil
 				}
@@ -189,21 +189,22 @@ func populateGamesTable() {
 						}
 					}
 
-					if config.WarnBeforeDelete {
-						g := allGames[r-fixRows]
-						contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
+					if config.DeleteWithoutWarning {
+						removeMod()
 						return nil
 					}
+					g := allGames[r-fixRows]
+					contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
+					return nil
 
-					removeMod()
 				}
 				return nil
 
 			case 'e':
 				if r > 0 {
 					addEdit := makeAddEditGame(&allGames[r-fixRows])
-					rightSidePages.AddPage(pageAddEdit, addEdit, true, false)
-					rightSidePages.SwitchToPage(pageAddEdit)
+					detailPages.AddPage(pageAddEdit, addEdit, true, false)
+					detailPages.SwitchToPage(pageAddEdit)
 					app.SetFocus(addEdit)
 					return nil
 				}
@@ -223,14 +224,13 @@ func populateGamesTable() {
 				games.RemoveGameAt(r - fixRows)
 			}
 
-			if config.WarnBeforeDelete {
-				g := allGames[r-fixRows]
-				contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, 2, r+2), true, true)
+			if config.DeleteWithoutWarning {
+				remove()
 				return nil
 			}
 
-			remove()
-
+			g := allGames[r-fixRows]
+			contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, 2, r+2), true, true)
 			return nil
 		}
 

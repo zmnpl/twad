@@ -20,43 +20,42 @@ var (
 const (
 	configName = "twad.json"
 	configPath = "/.config/twad"
-
-	RIGHT_HORIZONTAL = 0
-	RIGHT_VERTICAL   = 1
 )
 
 // Cfg holds basic configuration settings
 // Should only be instantiated via GetInstance
 type Cfg struct {
-	ModBasePath           string         `json:"mod_base_path,omitempty"`
-	ModExtensions         map[string]int `json:"mod_extensions,omitempty"`
-	SourcePorts           []string       `json:"source_ports,omitempty"`
-	IWADs                 []string       `json:"iwads,omitempty"`
-	Configured            bool           `json:"configured,omitempty"`
-	SaveDirs              bool           `json:"save_dirs,omitempty"`
-	WarnBeforeDelete      bool           `json:"warn_before_delete,omitempty"`
-	PrintHeader           bool           `json:"print_header,omitempty"`
-	NewModDisplay         bool           `json:"new_mod_display,omitempty"`
-	GameListAbsoluteWidth int            `json:"game_list_absolute_width,omitempty"`
-	GameListRelativeWidth int            `json:"game_list_relative_width,omitempty"`
+	BasePath                string         `json:"mod_base_path"`
+	WritePathToEngineCfg    bool           `json:"write_path_to_engine_cfg"`
+	DontUseDOOMWADDIR       bool           `json:"dont_use_doomwaddir"`
+	ModExtensions           map[string]int `json:"mod_extensions"`
+	SourcePorts             []string       `json:"source_ports"`
+	IWADs                   []string       `json:"iwa_ds"`
+	Configured              bool           `json:"configured"`
+	DefaultSaveDir          bool           `json:"default_save_dir"`
+	DeleteWithoutWarning    bool           `json:"delete_without_warning"`
+	HideHeader              bool           `json:"hide_header"`
+	LegacyModList           bool           `json:"legacy_mod_list"`
+	GameListAbsoluteWidth   int            `json:"game_list_absolute_width"`
+	GameListRelativeWidth   int            `json:"game_list_relative_width"`
+	DetailPaneSplitVertical bool           `json:"detail_pane_split_vertical"`
 }
 
 func defaultConfig() Cfg {
 	var dConf Cfg
-	dConf.ModBasePath = home() + "/Games/Doom"
+	dConf.BasePath = home() + "/DOOM"
+	if dwd, exists := os.LookupEnv("DOOMWADDIR"); exists {
+		dConf.BasePath = dwd
+	}
 	dConf.ModExtensions = make(map[string]int)
 	dConf.ModExtensions[".wad"] = 1
 	dConf.ModExtensions[".pk3"] = 1
 	dConf.ModExtensions[".ipk3"] = 1
 	dConf.SourcePorts = []string{"gzdoom", "zandronum", "lzdoom"}
 	dConf.IWADs = []string{"doom2.wad", "doom.wad"}
-	dConf.Configured = false
-	dConf.SaveDirs = true
-	dConf.WarnBeforeDelete = true
-	dConf.PrintHeader = true
-	dConf.NewModDisplay = true
 	dConf.GameListRelativeWidth = 40
 	dConf.GameListAbsoluteWidth = 0
+
 	return dConf
 }
 
@@ -64,7 +63,7 @@ func init() {
 	firstStart()
 	GetInstance()
 	loadConfig() // TODO: handle error
-	Persist()
+	Persist()    // just in case new settings made it into the programm
 }
 
 func firstStart() {
@@ -139,26 +138,38 @@ func Persist() error {
 	if err != nil {
 		return err
 	}
+
+	EnableBasePath()
+
 	return nil
 }
 
-// AddPathToCfgs adds the mod base path to the config ini files
+// EnableBasePath adds the mod base path to the config ini files and/or sets it as DOOMWADDIR
 // that enables the engine, to find mod files added with the -file parameter based on relative paths
-func AddPathToCfgs() error {
-	go processCfg(home() + "/.config/gzdoom/gzdoom.ini")
-	go processCfg(home() + "/.config/zandronum/zandronum.ini")
-	go processCfg(home() + "/.config/lzdoom/lzdoom.ini")
+func EnableBasePath() error {
+	// DOOMWADDIR
+	if instance.DontUseDOOMWADDIR == false {
+		os.Setenv("DOOMWADDIR", instance.BasePath)
+	}
+
+	// Engine-Configs
+	if instance.WritePathToEngineCfg {
+		go processEngineCfg(home() + "/.config/gzdoom/gzdoom.ini")
+		go processEngineCfg(home() + "/.config/zandronum/zandronum.ini")
+		go processEngineCfg(home() + "/.config/lzdoom/lzdoom.ini")
+	}
+
 	return nil
 }
 
-func processCfg(path string) {
+func processEngineCfg(path string) {
 	lines := configLines(path)
 	// if there are not lines for the respective config that is considered ok; maybe that config is not installed
 	if lines == nil {
 		return
 	}
 
-	entry := "PATH=" + instance.ModBasePath
+	entry := "PATH=" + instance.BasePath
 	// if the config already has the set path, there is nothing more to do here
 	for _, l := range lines {
 		if strings.Contains(l, entry) {

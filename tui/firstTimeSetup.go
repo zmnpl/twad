@@ -16,16 +16,17 @@ import (
 const (
 	setupOkHint = "Hit [red]Ctrl+O[white] when you are done."
 
-	setupPathExplain = `For [orange]twad[white] to function correctly, you should have all your DOOM mod files organized in one central directory. Put your doom.wad and doom2.wad in that central directory and create subdirectories per mod for the respective files.
+	setupPathExplain = `For [orange]twad[white] to function correctly, your *.wad files /  DOOM mod files need to be organized in one central directory. Put your doom.wad and doom2.wad in that central directory and create subdirectories per mod for the respective files. This folder will be set as [red]DOOMWADDIR[white] environment variable for the current terminal session when [orange]twad[white] runs.
+
 Navigate with arrow keys or Vim bindings. [red]Enter[white] or [red]Space[white] expand the directory. Highlight the righ one and hit [red]Ctrl+O[white]`
 
-	setupPathExample = `[red]->[white]/home/slayer/games/DOOMmods            [red]# put doom.wad and doom2.wad in here
-  [white]/home/slayer/games/DOOMmods[orange]/BrutalDoom [grey]# sub dir for Brutal Doom
-  [white]/home/slayer/games/DOOMmods[orange]/QCDE       [grey]# sub dir for QCDE`
+	setupPathExample = `[red]->[white]/home/slayer/doomwaddir            [red]# put doom.wad and doom2.wad in here
+  [white]/home/slayer/doomwaddir[orange]/BrutalDoom [grey]# sub dir for Sigil
+  [white]/home/slayer/doomwaddir[orange]/QCDE       [grey]# sub dir for QCDE`
 )
 
 // settings page
-func makeSettingsPage() *tview.Flex {
+func makeFirstTimeSetup() *tview.Flex {
 	basePathPreview := tview.NewTextView()
 	basePathPreview.SetBackgroundColor(previewBackgroundColor)
 	fmt.Fprintf(basePathPreview, "mods path: ")
@@ -121,7 +122,7 @@ func makePathSelectionTree(preview *tview.TextView) *tview.TreeView {
 		}
 		preview.Clear()
 		fmt.Fprintf(preview, "mod path: %s", reference.(string))
-		config.ModBasePath = reference.(string)
+		config.BasePath = reference.(string)
 	})
 
 	modFolderTree.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
@@ -130,7 +131,6 @@ func makePathSelectionTree(preview *tview.TextView) *tview.TreeView {
 		switch k {
 		case tcell.KeyCtrlO:
 			config.Configured = true
-			cfg.AddPathToCfgs()
 			err := cfg.Persist()
 			if err != nil {
 				// TODO - handle this

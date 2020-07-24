@@ -154,7 +154,7 @@ func (g Game) getLaunchParams() []string {
 		params = append(params, g.Mods...)
 	}
 
-	if config.SaveDirs {
+	if config.DefaultSaveDir == false {
 		err := os.MkdirAll(g.getSaveDir(), 0755)
 		// only use separate save dir if directory has been craeted
 		if err == nil {
