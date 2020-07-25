@@ -33,8 +33,11 @@ func populateGamesTable() {
 	gamesTable.Clear()
 	allGames := games.GetInstance()
 
-	rows, cols := len(allGames), games.MaxModCount()-1
 	fixRows, fixCols := 1, 4
+	rows, cols := len(allGames), 0
+	if config.LegacyModList {
+		cols = games.MaxModCount() - 1
+	}
 
 	for r := 0; r < rows+fixRows; r++ {
 		var game games.Game

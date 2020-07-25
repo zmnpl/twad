@@ -15,6 +15,8 @@ import (
 var (
 	instance *Cfg
 	once     sync.Once
+	// KnownIwads contains names of the most common iwads
+	KnownIwads = [...]string{"doom.wad", "doom2.wad", "tnt.wad", "plutonia.wad", "heretic.wad", "hexen.wad", "strive1.wad", "sve.wad", "chex.wad", "strife0.wad", "freedoom1.wad", "freedoom2.wad", "freedm.wad", "chex3.wad", "action2.wad", "harm1.wad", "hacx.wad"}
 )
 
 const (
@@ -25,7 +27,7 @@ const (
 // Cfg holds basic configuration settings
 // Should only be instantiated via GetInstance
 type Cfg struct {
-	BasePath                string         `json:"mod_base_path"`
+	BasePath                string         `json:"base_path"`
 	WritePathToEngineCfg    bool           `json:"write_path_to_engine_cfg"`
 	DontUseDOOMWADDIR       bool           `json:"dont_use_doomwaddir"`
 	ModExtensions           map[string]int `json:"mod_extensions"`

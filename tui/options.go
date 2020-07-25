@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -11,10 +12,12 @@ import (
 )
 
 const (
+	optsWarnColor                = "[red]"
 	optsOkButtonLabel            = "Save"
 	optsHeader                   = "Options"
 	optsPathLabel                = "Base Path"
-	optsPathDoesntExist          = " [red](doesn't exist)"
+	optsErrPathDoesntExist       = " (doesn't exist)"
+	optsErrPathNoIWads           = " (doesn't contain IWADs)"
 	optsDontDOOMWADDIR           = "Do NOT shadow DOOMWADDIR (use your shell's default)"
 	optsWriteBasePathToEngineCFG = "Write the path into DOOM engines *.ini files"
 	optsDontWarn                 = "Do NOT warn before deletion"
@@ -25,7 +28,26 @@ const (
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
 	optsDetailPaneVertical       = "UI - Split right side detail pane vertically"
+	optsLegacyModView            = "UI - Add mods in game table"
 )
+
+func pathHasIwad(path string) (bool, error) {
+	files, err := ioutil.ReadDir(path)
+
+	if err != nil {
+		return false, err
+	}
+
+	for _, file := range files {
+		for _, iwad := range cfg.KnownIwads {
+			if strings.ToLower(file.Name()) == iwad {
+				return true, nil
+			}
+		}
+	}
+
+	return false, nil
+}
 
 func makeOptions() *tview.Flex {
 	o := tview.NewForm()
@@ -33,11 +55,22 @@ func makeOptions() *tview.Flex {
 	path := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.GetInstance().BasePath)
 	o.AddFormItem(path)
 	path.SetDoneFunc(func(key tcell.Key) {
+		// does this path exist?
 		if _, err := os.Stat(path.GetText()); os.IsNotExist(err) {
-			path.SetLabel(optsPathLabel + optsPathDoesntExist)
-		} else {
-			path.SetLabel(optsPathLabel)
+			path.SetLabel(optsPathLabel + optsWarnColor + optsErrPathDoesntExist)
+			return
 		}
+
+		// check if selected path contains any iwads
+		if hasIwad, err := pathHasIwad(path.GetText()); !hasIwad {
+			if err != nil {
+				path.SetLabel(optsPathLabel + optsWarnColor + " (" + err.Error() + ")")
+			}
+			path.SetLabel(optsPathLabel + optsWarnColor + optsErrPathNoIWads)
+			return
+		}
+
+		path.SetLabel(optsPathLabel)
 	})
 
 	firstStart := tview.NewCheckbox().SetLabel(optsNextTimeFirstStart).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(!cfg.GetInstance().Configured)
@@ -71,6 +104,9 @@ func makeOptions() *tview.Flex {
 	detailPaneVertical := tview.NewCheckbox().SetLabel(optsDetailPaneVertical).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().DetailPaneSplitVertical)
 	o.AddFormItem(detailPaneVertical)
 
+	legacyModView := tview.NewCheckbox().SetLabel(optsLegacyModView).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().LegacyModList)
+	o.AddFormItem(legacyModView)
+
 	o.AddButton(optsOkButtonLabel, func() {
 		c := cfg.GetInstance()
 
@@ -93,6 +129,7 @@ func makeOptions() *tview.Flex {
 		c.DefaultSaveDir = defaultSaveDirs.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
 		c.DetailPaneSplitVertical = detailPaneVertical.IsChecked()
+		c.LegacyModList = legacyModView.IsChecked()
 		c.Configured = !firstStart.IsChecked()
 
 		cfg.Persist()

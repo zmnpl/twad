@@ -63,8 +63,7 @@ func Draw() {
 
 	// settings - only when first start of app
 	if !config.Configured {
-		settingsPage := makeFirstTimeSetup()
-		contentPages.AddPage(pageSettings, settingsPage, true, true)
+		contentPages.AddPage(pageSettings, makeFirstTimeSetup(), true, true)
 	}
 
 	// main layout
