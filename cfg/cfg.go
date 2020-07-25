@@ -27,9 +27,9 @@ const (
 // Cfg holds basic configuration settings
 // Should only be instantiated via GetInstance
 type Cfg struct {
-	BasePath                string         `json:"base_path"`
-	WritePathToEngineCfg    bool           `json:"write_path_to_engine_cfg"`
-	DontUseDOOMWADDIR       bool           `json:"dont_use_doomwaddir"`
+	WadDir                  string         `json:"wad_dir"`
+	WriteWadDirToEngineCfg  bool           `json:"write_wad_dir_to_engine_cfg"`
+	DontSetDoomwaddir       bool           `json:"dont_set_doomwaddir"`
 	ModExtensions           map[string]int `json:"mod_extensions"`
 	SourcePorts             []string       `json:"source_ports"`
 	IWADs                   []string       `json:"iwa_ds"`
@@ -37,7 +37,7 @@ type Cfg struct {
 	DefaultSaveDir          bool           `json:"default_save_dir"`
 	DeleteWithoutWarning    bool           `json:"delete_without_warning"`
 	HideHeader              bool           `json:"hide_header"`
-	LegacyModList           bool           `json:"legacy_mod_list"`
+	ModsInTable             bool           `json:"mods_in_table"`
 	GameListAbsoluteWidth   int            `json:"game_list_absolute_width"`
 	GameListRelativeWidth   int            `json:"game_list_relative_width"`
 	DetailPaneSplitVertical bool           `json:"detail_pane_split_vertical"`
@@ -52,9 +52,9 @@ func init() {
 
 func defaultConfig() Cfg {
 	var dConf Cfg
-	dConf.BasePath = home() + "/DOOM"
+	dConf.WadDir = home() + "/DOOM"
 	if dwd, exists := os.LookupEnv("DOOMWADDIR"); exists {
-		dConf.BasePath = dwd
+		dConf.WadDir = dwd
 	}
 	dConf.ModExtensions = make(map[string]int)
 	dConf.ModExtensions[".wad"] = 1
@@ -109,8 +109,8 @@ func loadConfig() error {
 	// check zero values for certain variables
 	// empty ones do not really make sense
 	// so set them to the defaults
-	if instance.BasePath == "" {
-		instance.BasePath = dConf.BasePath
+	if instance.WadDir == "" {
+		instance.WadDir = dConf.WadDir
 	}
 
 	if len(instance.ModExtensions) == 0 {
@@ -168,12 +168,12 @@ func Persist() error {
 // that enables the engine, to find mod files added with the -file parameter based on relative paths
 func EnableBasePath() error {
 	// DOOMWADDIR
-	if instance.DontUseDOOMWADDIR == false {
-		os.Setenv("DOOMWADDIR", instance.BasePath)
+	if instance.DontSetDoomwaddir == false {
+		os.Setenv("DOOMWADDIR", instance.WadDir)
 	}
 
 	// Engine-Configs
-	if instance.WritePathToEngineCfg {
+	if instance.WriteWadDirToEngineCfg {
 		go processEngineCfg(home() + "/.config/gzdoom/gzdoom.ini")
 		go processEngineCfg(home() + "/.config/zandronum/zandronum.ini")
 		go processEngineCfg(home() + "/.config/lzdoom/lzdoom.ini")
@@ -191,7 +191,7 @@ func processEngineCfg(path string) {
 		return
 	}
 
-	entry := "PATH=" + instance.BasePath
+	entry := "PATH=" + instance.WadDir
 	// if the config already has the set path, there is nothing more to do here
 	for _, l := range lines {
 		if strings.Contains(l, entry) {

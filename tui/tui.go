@@ -16,7 +16,7 @@ const (
 	pageStats        = "stats"
 	pageAddEdit      = "addEdit"
 	pageModSelector  = "modselector"
-	pageSettings     = "settings"
+	pageFirstSetup   = "firstsetup"
 	pageMain         = "main"
 	pageHelp         = "help"
 	pageLicense      = "license"
@@ -63,7 +63,7 @@ func Draw() {
 
 	// settings - only when first start of app
 	if !config.Configured {
-		contentPages.AddPage(pageSettings, makeFirstTimeSetup(), true, true)
+		contentPages.AddPage(pageFirstSetup, makeFirstTimeSetup(), true, true)
 	}
 
 	// main layout
@@ -113,7 +113,7 @@ func initUIElements() {
 	detailSidePagesSub1 = tview.NewPages()
 	detailSidePagesSub2 = tview.NewPages()
 
-	// TODO: make layout a bit more flexible
+	// detail layout based on options
 	detailLayout := tview.FlexColumn
 	if config.DetailPaneSplitVertical {
 		detailLayout = tview.FlexRow
@@ -174,8 +174,8 @@ func appModeNormal() {
 	if contentPages.HasPage(pageYouSure) {
 		contentPages.RemovePage(pageYouSure)
 	}
-	if contentPages.HasPage(pageSettings) {
-		contentPages.RemovePage(pageSettings)
+	if contentPages.HasPage(pageFirstSetup) {
+		contentPages.RemovePage(pageFirstSetup)
 	}
 	if contentPages.HasPage(pageOptions) {
 		contentPages.RemovePage(pageOptions)

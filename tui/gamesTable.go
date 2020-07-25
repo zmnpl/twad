@@ -35,7 +35,7 @@ func populateGamesTable() {
 
 	fixRows, fixCols := 1, 4
 	rows, cols := len(allGames), 0
-	if config.LegacyModList {
+	if config.ModsInTable {
 		cols = games.MaxModCount() - 1
 	}
 

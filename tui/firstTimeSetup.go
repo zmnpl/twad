@@ -122,7 +122,7 @@ func makePathSelectionTree(preview *tview.TextView) *tview.TreeView {
 		}
 		preview.Clear()
 		fmt.Fprintf(preview, "mod path: %s", reference.(string))
-		config.BasePath = reference.(string)
+		config.WadDir = reference.(string)
 	})
 
 	modFolderTree.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
