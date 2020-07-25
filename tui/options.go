@@ -133,8 +133,8 @@ func makeOptions() *tview.Flex {
 		c.Configured = !firstStart.IsChecked()
 
 		cfg.Persist()
+		cfg.EnableBasePath()
 		appModeNormal()
-
 	})
 
 	// layout

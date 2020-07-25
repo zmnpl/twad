@@ -64,8 +64,8 @@ func defaultConfig() Cfg {
 func init() {
 	firstStart()
 	GetInstance()
-	loadConfig() // TODO: handle error
-	Persist()    // just in case new settings made it into the programm
+	Persist() // just in case new settings made it into the programm
+	EnableBasePath()
 }
 
 func firstStart() {
@@ -92,14 +92,37 @@ func firstStart() {
 }
 
 func loadConfig() error {
+	dcfg := defaultConfig()
+
 	content, err := ioutil.ReadFile(configFullPath())
 	if err != nil {
+		instance = &dcfg
 		return err
 	}
 
 	err = json.Unmarshal(content, instance)
 	if err != nil {
+		instance = &dcfg
 		return err
+	}
+
+	// check zero values for certain variables
+	// empty ones do not really make sense
+	// so set them to the defaults
+	if instance.BasePath == "" {
+		instance.BasePath = dcfg.BasePath
+	}
+
+	if len(instance.ModExtensions) == 0 {
+		instance.ModExtensions = dcfg.ModExtensions
+	}
+
+	if len(instance.SourcePorts) == 0 {
+		instance.SourcePorts = dcfg.SourcePorts
+	}
+
+	if len(instance.IWADs) == 0 {
+		instance.IWADs = dcfg.IWADs
 	}
 
 	return nil
@@ -115,6 +138,7 @@ func configFullPath() string {
 func GetInstance() *Cfg {
 	once.Do(func() {
 		instance = &Cfg{}
+		loadConfig()
 	})
 	return instance
 }
@@ -141,8 +165,6 @@ func Persist() error {
 		return err
 	}
 
-	EnableBasePath()
-
 	return nil
 }
 
@@ -163,6 +185,8 @@ func EnableBasePath() error {
 
 	return nil
 }
+
+// Helper functions
 
 func processEngineCfg(path string) {
 	lines := configLines(path)
@@ -210,8 +234,6 @@ func configLines(path string) []string {
 
 	return lines
 }
-
-// Helper functions
 
 func home() string {
 	usr, err := user.Current()

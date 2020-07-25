@@ -135,6 +135,7 @@ func makePathSelectionTree(preview *tview.TextView) *tview.TreeView {
 			if err != nil {
 				// TODO - handle this
 			}
+			cfg.EnableBasePath()
 			appModeNormal()
 			return nil
 		}
