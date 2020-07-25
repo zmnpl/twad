@@ -43,6 +43,13 @@ type Cfg struct {
 	DetailPaneSplitVertical bool           `json:"detail_pane_split_vertical"`
 }
 
+func init() {
+	firstStart()
+	GetInstance()
+	Persist() // just in case new settings made it into the programm
+	EnableBasePath()
+}
+
 func defaultConfig() Cfg {
 	var dConf Cfg
 	dConf.BasePath = home() + "/DOOM"
@@ -59,13 +66,6 @@ func defaultConfig() Cfg {
 	dConf.GameListAbsoluteWidth = 0
 
 	return dConf
-}
-
-func init() {
-	firstStart()
-	GetInstance()
-	Persist() // just in case new settings made it into the programm
-	EnableBasePath()
 }
 
 func firstStart() {
@@ -92,17 +92,17 @@ func firstStart() {
 }
 
 func loadConfig() error {
-	dcfg := defaultConfig()
+	dConf := defaultConfig()
 
 	content, err := ioutil.ReadFile(configFullPath())
 	if err != nil {
-		instance = &dcfg
+		instance = &dConf
 		return err
 	}
 
 	err = json.Unmarshal(content, instance)
 	if err != nil {
-		instance = &dcfg
+		instance = &dConf
 		return err
 	}
 
@@ -110,26 +110,22 @@ func loadConfig() error {
 	// empty ones do not really make sense
 	// so set them to the defaults
 	if instance.BasePath == "" {
-		instance.BasePath = dcfg.BasePath
+		instance.BasePath = dConf.BasePath
 	}
 
 	if len(instance.ModExtensions) == 0 {
-		instance.ModExtensions = dcfg.ModExtensions
+		instance.ModExtensions = dConf.ModExtensions
 	}
 
 	if len(instance.SourcePorts) == 0 {
-		instance.SourcePorts = dcfg.SourcePorts
+		instance.SourcePorts = dConf.SourcePorts
 	}
 
 	if len(instance.IWADs) == 0 {
-		instance.IWADs = dcfg.IWADs
+		instance.IWADs = dConf.IWADs
 	}
 
 	return nil
-}
-
-func configFullPath() string {
-	return GetConfigFolder() + "/" + configName
 }
 
 // Exported functions
@@ -233,6 +229,10 @@ func configLines(path string) []string {
 	}
 
 	return lines
+}
+
+func configFullPath() string {
+	return GetConfigFolder() + "/" + configName
 }
 
 func home() string {
