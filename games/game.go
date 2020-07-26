@@ -141,6 +141,15 @@ func (g *Game) Rate(increment int) {
 
 }
 
+// SwitchMods switches both entries within the mod slice
+func (g *Game) SwitchMods(a, b int) {
+	if a < len(g.Mods)-1 && b < len(g.Mods)-1 {
+		tmp := g.Mods[a]
+		g.Mods[a] = g.Mods[b]
+		g.Mods[b] = tmp
+	}
+}
+
 func (g Game) getLaunchParams() []string {
 	params := make([]string, 1, 10)
 	config := cfg.GetInstance()

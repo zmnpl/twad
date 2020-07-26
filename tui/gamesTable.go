@@ -237,6 +237,10 @@ func populateGamesTable() {
 			return nil
 		}
 
+		if k == tcell.KeyTAB {
+			app.SetFocus(detailSidePagesSub1)
+		}
+
 		return event
 	})
 }
