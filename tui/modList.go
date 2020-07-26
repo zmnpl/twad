@@ -12,14 +12,6 @@ const (
 	overviewMods = "Mods in order"
 )
 
-func populateModList(list *tview.List, g *games.Game) {
-	i := 0
-	for _, mod := range g.Mods {
-		i++
-		list.AddItem(path.Base(mod), path.Dir(mod), '*', nil)
-	}
-}
-
 func makeModList(g *games.Game) *tview.Flex {
 
 	modListFlex := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -30,8 +22,11 @@ func makeModList(g *games.Game) *tview.Flex {
 
 	modList := tview.NewList()
 	modList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
-	populateModList(modList, g)
-
+	i := 0
+	for _, mod := range g.Mods {
+		i++
+		modList.AddItem(path.Base(mod), path.Dir(mod), '*', nil)
+	}
 	//mover := func(selectedGame *games.Game) func() *tview.TreeView {
 	//	return func() *tview.TreeView {
 	//		return makeModTree(selectedGame)
@@ -39,18 +34,39 @@ func makeModList(g *games.Game) *tview.Flex {
 	//}
 
 	editMode := false
-	modList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
-		if editMode == false {
-			modList.SetSelectedBackgroundColor(tview.Styles.TertiaryTextColor)
-			editMode = true
-			return
-		}
+	editOn := func() {
+		modList.SetSelectedBackgroundColor(tview.Styles.TertiaryTextColor)
+		editMode = true
+	}
+	editOff := func() {
 		modList.SetSelectedBackgroundColor(tview.Styles.PrimaryTextColor)
 		editMode = false
+		games.Persist()
+	}
+
+	modList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
+		if editMode == false {
+			editOn()
+			return
+		}
+		editOff()
 	})
 
+	last := 0
 	modList.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
+		if editMode {
+			g.SwitchMods(last, index)
+			lastMain, lastSecondary := modList.GetItemText(last)
+			main, secondary := modList.GetItemText(index)
 
+			modList.SetItemText(index, lastMain, lastSecondary)
+			modList.SetItemText(last, main, secondary)
+		}
+		last = index
+	})
+
+	modList.SetDoneFunc(func() {
+		editOff()
 	})
 
 	// tab navigates back to games table; tab navigation on list is redundant

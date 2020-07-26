@@ -18,6 +18,11 @@ const (
 // tree view for selecting additional mods TODO
 func makeModTree(g *games.Game) *tview.TreeView {
 	rootDir := config.WadDir
+	if _, err := os.Stat(rootDir); err != nil {
+		if os.IsNotExist(err) {
+		}
+		return nil
+	}
 	root := tview.NewTreeNode(rootDir).SetColor(tview.Styles.TitleColor)
 	modFolderTree := tview.NewTreeView().
 		SetRoot(root).

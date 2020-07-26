@@ -143,10 +143,11 @@ func (g *Game) Rate(increment int) {
 
 // SwitchMods switches both entries within the mod slice
 func (g *Game) SwitchMods(a, b int) {
-	if a < len(g.Mods)-1 && b < len(g.Mods)-1 {
-		tmp := g.Mods[a]
-		g.Mods[a] = g.Mods[b]
-		g.Mods[b] = tmp
+	if a < len(g.Mods) && b < len(g.Mods) {
+		modA := g.Mods[a]
+		modB := g.Mods[b]
+		g.Mods[a] = modB
+		g.Mods[b] = modA
 	}
 }
 

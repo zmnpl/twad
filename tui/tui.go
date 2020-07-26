@@ -84,7 +84,7 @@ func Draw() {
 		// switch back to nowmal mode
 		if k == tcell.KeyESC {
 			appModeNormal()
-			return nil
+			return event
 		}
 		return event
 	})
