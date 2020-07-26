@@ -23,10 +23,8 @@ func makeModList(g *games.Game) *tview.Flex {
 	modList := tview.NewList()
 	modList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
 	// populate list with data
-	i := 0
 	for _, mod := range g.Mods {
-		i++
-		modList.AddItem(path.Base(mod), path.Dir(mod), '*', nil)
+		modList.AddItem(path.Base(mod), path.Dir(mod), 'f', nil)
 	}
 
 	// edit functionality
@@ -54,7 +52,7 @@ func makeModList(g *games.Game) *tview.Flex {
 	})
 
 	last := 0
-	modList.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
+	changeFunc := func(index int, mainText string, secondaryText string, shortcut rune) {
 		if editMode {
 			// switch mod positions in game
 			g.SwitchMods(last, index)
@@ -66,7 +64,8 @@ func makeModList(g *games.Game) *tview.Flex {
 			modList.SetItemText(last, main, secondary)
 		}
 		last = index
-	})
+	}
+	modList.SetChangedFunc(changeFunc)
 
 	// tab navigates back to games table; tab navigation on list is redundant
 	modList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
@@ -78,9 +77,11 @@ func makeModList(g *games.Game) *tview.Flex {
 
 		if k == tcell.KeyDelete {
 			if !editMode {
-				//currentItem := modList.GetCurrentItem()
-				modList.RemoveItem(0)
-
+				// TODO: This seems to be a bug in tview
+				// Existing change func when deleting zero item
+				modList.SetChangedFunc(nil)
+				modList.RemoveItem(modList.GetCurrentItem())
+				modList.SetChangedFunc(changeFunc)
 			}
 			// TODO: actually remove mod from the game
 			// need to write function on game for that
