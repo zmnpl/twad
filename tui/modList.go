@@ -35,11 +35,13 @@ func makeModList(g *games.Game) *tview.Flex {
 		modList.SetSelectedBackgroundColor(tview.Styles.TertiaryTextColor)
 		editMode = true
 	}
-	editOff := func() {
+	editOff := func(save bool) {
 		if editMode {
 			modList.SetSelectedBackgroundColor(tview.Styles.PrimaryTextColor)
 			editMode = false
-			games.Persist()
+			if save {
+				games.Persist()
+			}
 		}
 	}
 
@@ -48,7 +50,7 @@ func makeModList(g *games.Game) *tview.Flex {
 			editOn()
 			return
 		}
-		editOff()
+		editOff(true)
 	})
 
 	last := 0
@@ -66,10 +68,6 @@ func makeModList(g *games.Game) *tview.Flex {
 		last = index
 	})
 
-	modList.SetDoneFunc(func() {
-		//editOff()
-	})
-
 	// tab navigates back to games table; tab navigation on list is redundant
 	modList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
@@ -78,11 +76,12 @@ func makeModList(g *games.Game) *tview.Flex {
 			return nil
 		}
 
-		if k == tcell.KeyDEL {
-			modList.RemoveItem(modList.GetCurrentItem())
+		if k == tcell.KeyDelete {
+			if !editMode {
+				//currentItem := modList.GetCurrentItem()
+				modList.RemoveItem(0)
 
-			editOff()
-			modList.RemoveItem(modList.GetCurrentItem())
+			}
 			// TODO: actually remove mod from the game
 			// need to write function on game for that
 			return nil
@@ -91,7 +90,6 @@ func makeModList(g *games.Game) *tview.Flex {
 		if k == tcell.KeyRune {
 			switch event.Rune() {
 			case 'q':
-				editOff()
 				app.Stop()
 			}
 		}
