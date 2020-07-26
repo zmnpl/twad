@@ -105,8 +105,8 @@ func makeOptions() *tview.Flex {
 	detailPaneVertical := tview.NewCheckbox().SetLabel(optsDetailPaneVertical).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().DetailPaneSplitVertical)
 	o.AddFormItem(detailPaneVertical)
 
-	legacyModView := tview.NewCheckbox().SetLabel(optsLegacyModView).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().ModsInTable)
-	o.AddFormItem(legacyModView)
+	//legacyModView := tview.NewCheckbox().SetLabel(optsLegacyModView).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().ModsInTable)
+	//o.AddFormItem(legacyModView)
 
 	o.AddButton(optsOkButtonLabel, func() {
 		c := cfg.GetInstance()
@@ -130,7 +130,7 @@ func makeOptions() *tview.Flex {
 		c.DefaultSaveDir = defaultSaveDirs.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
 		c.DetailPaneSplitVertical = detailPaneVertical.IsChecked()
-		c.ModsInTable = legacyModView.IsChecked()
+		//c.ModsInTable = legacyModView.IsChecked()
 		c.Configured = !firstStart.IsChecked()
 
 		cfg.Persist()

@@ -13,35 +13,34 @@ const (
 )
 
 func makeModList(g *games.Game) *tview.Flex {
-
+	// surrounding container
 	modListFlex := tview.NewFlex().SetDirection(tview.FlexRow)
-
 	modListFlex.AddItem(tview.NewTextView().
 		SetText(overviewMods).
 		SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
 
+	// list
 	modList := tview.NewList()
 	modList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
+	// populate list with data
 	i := 0
 	for _, mod := range g.Mods {
 		i++
 		modList.AddItem(path.Base(mod), path.Dir(mod), '*', nil)
 	}
-	//mover := func(selectedGame *games.Game) func() *tview.TreeView {
-	//	return func() *tview.TreeView {
-	//		return makeModTree(selectedGame)
-	//	}
-	//}
 
+	// edit functionality
 	editMode := false
 	editOn := func() {
 		modList.SetSelectedBackgroundColor(tview.Styles.TertiaryTextColor)
 		editMode = true
 	}
 	editOff := func() {
-		modList.SetSelectedBackgroundColor(tview.Styles.PrimaryTextColor)
-		editMode = false
-		games.Persist()
+		if editMode {
+			modList.SetSelectedBackgroundColor(tview.Styles.PrimaryTextColor)
+			editMode = false
+			games.Persist()
+		}
 	}
 
 	modList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
@@ -55,10 +54,12 @@ func makeModList(g *games.Game) *tview.Flex {
 	last := 0
 	modList.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
 		if editMode {
+			// switch mod positions in game
 			g.SwitchMods(last, index)
+
+			// switch list item texts
 			lastMain, lastSecondary := modList.GetItemText(last)
 			main, secondary := modList.GetItemText(index)
-
 			modList.SetItemText(index, lastMain, lastSecondary)
 			modList.SetItemText(last, main, secondary)
 		}
@@ -66,7 +67,7 @@ func makeModList(g *games.Game) *tview.Flex {
 	})
 
 	modList.SetDoneFunc(func() {
-		editOff()
+		//editOff()
 	})
 
 	// tab navigates back to games table; tab navigation on list is redundant
@@ -75,6 +76,24 @@ func makeModList(g *games.Game) *tview.Flex {
 		if k == tcell.KeyTab {
 			app.SetFocus(gamesTable)
 			return nil
+		}
+
+		if k == tcell.KeyDEL {
+			modList.RemoveItem(modList.GetCurrentItem())
+
+			editOff()
+			modList.RemoveItem(modList.GetCurrentItem())
+			// TODO: actually remove mod from the game
+			// need to write function on game for that
+			return nil
+		}
+
+		if k == tcell.KeyRune {
+			switch event.Rune() {
+			case 'q':
+				editOff()
+				app.Stop()
+			}
 		}
 
 		return event
