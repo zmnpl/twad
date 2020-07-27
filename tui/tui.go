@@ -84,7 +84,6 @@ func Draw() {
 		// switch back to nowmal mode
 		if k == tcell.KeyESC {
 			appModeNormal()
-			//return event
 			return nil
 		}
 		return event
@@ -185,6 +184,10 @@ func appModeNormal() {
 	// clear actionPager
 	if detailPages.HasPage(pageAddEdit) {
 		detailPages.RemovePage(pageAddEdit)
+	}
+
+	if detailSidePagesSub1.HasPage(pageYouSure) {
+		detailSidePagesSub1.RemovePage(pageYouSure)
 	}
 
 	app.SetFocus(gamesTable)

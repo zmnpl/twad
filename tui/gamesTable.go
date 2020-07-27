@@ -178,30 +178,30 @@ func populateGamesTable() {
 				}
 
 			// remove last mod from game
-			case 'r':
-				mods := allGames[r-fixRows].Mods
-				if len(mods) > 0 {
-					removeMod := func() {
-						if r > 0 {
-							if len(mods) > 0 {
-								allGames[r-fixRows].Mods = mods[:len(mods)-1]
-								populateGamesTable()
-								selectedGameChanged(&allGames[r-fixRows])
-								games.Persist()
-							}
-						}
-					}
+			// case 'r':
+			// 	mods := allGames[r-fixRows].Mods
+			// 	if len(mods) > 0 {
+			// 		removeMod := func() {
+			// 			if r > 0 {
+			// 				if len(mods) > 0 {
+			// 					allGames[r-fixRows].Mods = mods[:len(mods)-1]
+			// 					populateGamesTable()
+			// 					selectedGameChanged(&allGames[r-fixRows])
+			// 					games.Persist()
+			// 				}
+			// 			}
+			// 		}
 
-					if config.DeleteWithoutWarning {
-						removeMod()
-						return nil
-					}
-					g := allGames[r-fixRows]
-					contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
-					return nil
+			// 		if config.DeleteWithoutWarning {
+			// 			removeMod()
+			// 			return nil
+			// 		}
+			// 		g := allGames[r-fixRows]
+			// 		contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
+			// 		return nil
 
-				}
-				return nil
+			// 	}
+			// 	return nil
 
 			case 'e':
 				if r > 0 {
@@ -233,7 +233,7 @@ func populateGamesTable() {
 			}
 
 			g := allGames[r-fixRows]
-			contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, 2, r+2), true, true)
+			contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, appModeNormal, 2, r+2), true, true)
 			return nil
 		}
 

@@ -71,6 +71,11 @@ func (g *Game) AddMod(modFile string) {
 	Persist()
 }
 
+// RemoveMod removes mod at the given index
+func (g *Game) RemoveMod(i int) {
+	g.Mods = append(g.Mods[0:i], g.Mods[i+1:]...)
+}
+
 // Run executes given configuration and launches the mod
 func (g *Game) Run() error {
 	params := g.getLaunchParams()

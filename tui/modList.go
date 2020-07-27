@@ -1,10 +1,12 @@
 package tui
 
 import (
+	"fmt"
 	"path"
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
+	"github.com/zmnpl/twad/cfg"
 	"github.com/zmnpl/twad/games"
 )
 
@@ -21,6 +23,7 @@ func makeModList(g *games.Game) *tview.Flex {
 
 	// list
 	modList := tview.NewList()
+	modListFlex.AddItem(modList, 0, 1, true)
 	modList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
 	// populate list with data
 	for _, mod := range g.Mods {
@@ -67,6 +70,17 @@ func makeModList(g *games.Game) *tview.Flex {
 	}
 	modList.SetChangedFunc(changeFunc)
 
+	removeMod := func(i int) {
+		// TODO: bug in tview
+		// Existing change func when deleting zero item
+		// created pull request; setting nil and resetting is temp workaround
+		modList.SetChangedFunc(nil) // BUG WORKAROUND
+		modList.RemoveItem(i)
+		g.RemoveMod(i)
+		games.Persist()
+		modList.SetChangedFunc(changeFunc) // BUG WORKAROUND
+	}
+
 	// tab navigates back to games table; tab navigation on list is redundant
 	modList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
@@ -76,15 +90,28 @@ func makeModList(g *games.Game) *tview.Flex {
 		}
 
 		if k == tcell.KeyDelete {
+			// when in edit mode, this is only confusing
 			if !editMode {
-				// TODO: This seems to be a bug in tview
-				// Existing change func when deleting zero item
-				modList.SetChangedFunc(nil)
-				modList.RemoveItem(modList.GetCurrentItem())
-				modList.SetChangedFunc(changeFunc)
+				ci := modList.GetCurrentItem()
+				if cfg.GetInstance().DeleteWithoutWarning {
+					removeMod(ci)
+					return nil
+				}
+
+				detailSidePagesSub1.AddPage(pageYouSure,
+					makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[ci], g.Name),
+						func() {
+							removeMod(ci)
+							detailSidePagesSub1.RemovePage(pageYouSure)
+							app.SetFocus(modList)
+						},
+						func() {
+							//appModeNormal()
+							detailSidePagesSub1.RemovePage(pageYouSure)
+							app.SetFocus(modList)
+						},
+						2, 2), true, true) // TODO: calculate offsets
 			}
-			// TODO: actually remove mod from the game
-			// need to write function on game for that
 			return nil
 		}
 
@@ -97,8 +124,6 @@ func makeModList(g *games.Game) *tview.Flex {
 
 		return event
 	})
-
-	modListFlex.AddItem(modList, 0, 1, true)
 
 	return modListFlex
 }

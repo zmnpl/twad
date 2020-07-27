@@ -1,6 +1,8 @@
 package tui
 
-import "github.com/rivo/tview"
+import (
+	"github.com/rivo/tview"
+)
 
 const (
 	confirmText = "Yep"
@@ -8,14 +10,13 @@ const (
 )
 
 // help for navigation
-func makeYouSureBox(question string, onOk func(), xOffset int, yOffset int) *tview.Flex {
+func makeYouSureBox(question string, onOk func(), onCancel func(), xOffset int, yOffset int) *tview.Flex {
 
 	youSureForm := tview.NewForm().
 		AddButton(confirmText, func() {
 			onOk()
-			appModeNormal()
 		}).
-		AddButton(abortText, appModeNormal)
+		AddButton(abortText, onCancel)
 	youSureForm.SetBorder(false)
 	youSureForm.SetFocus(1)
 
