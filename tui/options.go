@@ -29,7 +29,6 @@ const (
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
 	optsDetailPaneVertical       = "UI - Split right side detail pane vertically"
-	optsLegacyModView            = "UI - Add mods in game table"
 )
 
 func pathHasIwad(path string) (bool, error) {
@@ -104,9 +103,6 @@ func makeOptions() *tview.Flex {
 
 	detailPaneVertical := tview.NewCheckbox().SetLabel(optsDetailPaneVertical).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().DetailPaneSplitVertical)
 	o.AddFormItem(detailPaneVertical)
-
-	//legacyModView := tview.NewCheckbox().SetLabel(optsLegacyModView).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().ModsInTable)
-	//o.AddFormItem(legacyModView)
 
 	o.AddButton(optsOkButtonLabel, func() {
 		c := cfg.GetInstance()

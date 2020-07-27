@@ -37,7 +37,6 @@ type Cfg struct {
 	DefaultSaveDir          bool           `json:"default_save_dir"`
 	DeleteWithoutWarning    bool           `json:"delete_without_warning"`
 	HideHeader              bool           `json:"hide_header"`
-	ModsInTable             bool           `json:"mods_in_table"`
 	GameListAbsoluteWidth   int            `json:"game_list_absolute_width"`
 	GameListRelativeWidth   int            `json:"game_list_relative_width"`
 	DetailPaneSplitVertical bool           `json:"detail_pane_split_vertical"`

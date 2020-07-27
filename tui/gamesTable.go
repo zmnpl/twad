@@ -13,7 +13,6 @@ const (
 	gameTableHeaderName       = "Name"
 	gameTableHeaderSourcePort = "SourcePort"
 	gameTableHeaderIwad       = "Iwad"
-	gameTableHeaderMods       = "Mods"
 
 	deleteGameQuestion = "Delete '%v'?"
 	deleteModQuestion  = "Remove '%v' from '%v'?"
@@ -35,9 +34,6 @@ func populateGamesTable() {
 
 	fixRows, fixCols := 1, 4
 	rows, cols := len(allGames), 0
-	if config.ModsInTable {
-		cols = games.MaxModCount() - 1
-	}
 
 	for r := 0; r < rows+fixRows; r++ {
 		var game games.Game
@@ -57,8 +53,6 @@ func populateGamesTable() {
 					cell = tview.NewTableCell(gameTableHeaderSourcePort).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 3:
 					cell = tview.NewTableCell(gameTableHeaderIwad).SetTextColor(tview.Styles.SecondaryTextColor)
-				case 4:
-					cell = tview.NewTableCell(gameTableHeaderMods).SetTextColor(tview.Styles.SecondaryTextColor)
 				default:
 					cell = tview.NewTableCell("").SetTextColor(tview.Styles.SecondaryTextColor)
 				}
@@ -73,12 +67,7 @@ func populateGamesTable() {
 				case 3:
 					cell = tview.NewTableCell(game.Iwad).SetTextColor(tview.Styles.PrimaryTextColor)
 				default:
-					i := c - fixCols
-					if i < len(game.Mods) {
-						cell = tview.NewTableCell(game.Mods[i]).SetTextColor(tview.Styles.PrimaryTextColor)
-					} else {
-						cell = tview.NewTableCell("").SetTextColor(tview.Styles.PrimaryTextColor)
-					}
+					cell = tview.NewTableCell("").SetTextColor(tview.Styles.PrimaryTextColor)
 				}
 			}
 			gamesTable.SetCell(r, c, cell)
@@ -176,32 +165,6 @@ func populateGamesTable() {
 					app.SetFocus(modTree)
 					return nil
 				}
-
-			// remove last mod from game
-			// case 'r':
-			// 	mods := allGames[r-fixRows].Mods
-			// 	if len(mods) > 0 {
-			// 		removeMod := func() {
-			// 			if r > 0 {
-			// 				if len(mods) > 0 {
-			// 					allGames[r-fixRows].Mods = mods[:len(mods)-1]
-			// 					populateGamesTable()
-			// 					selectedGameChanged(&allGames[r-fixRows])
-			// 					games.Persist()
-			// 				}
-			// 			}
-			// 		}
-
-			// 		if config.DeleteWithoutWarning {
-			// 			removeMod()
-			// 			return nil
-			// 		}
-			// 		g := allGames[r-fixRows]
-			// 		contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[len(g.Mods)-1], g.Name), removeMod, 2, r+2), true, true)
-			// 		return nil
-
-			// 	}
-			// 	return nil
 
 			case 'e':
 				if r > 0 {

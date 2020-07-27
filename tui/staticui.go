@@ -72,29 +72,6 @@ func makeLicense() *tview.TextView {
 	return disclaimer
 }
 
-// button bar showing keys
-func makeButtonBar() *tview.Flex {
-	btnHome := tview.NewButton("(ESC) Reset UI")
-	btnRun := tview.NewButton("(Enter) Run Game")
-	btnInsert := tview.NewButton("(i) Add Game")
-	btnAddMod := tview.NewButton("(a) Add Mods To Game")
-	btnRemoveMod := tview.NewButton("(r) Remove Last Mod From Game")
-	btnDelete := tview.NewButton("(Delete) Remove Game")
-	btnLicenseAndCredits := tview.NewButton("(c) Credits/License")
-	btnQuit := tview.NewButton("(q) Quit")
-	buttonBar := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(btnHome, 0, 1, false).
-		AddItem(btnRun, 0, 1, false).
-		AddItem(btnInsert, 0, 1, false).
-		AddItem(btnAddMod, 0, 1, false).
-		AddItem(btnRemoveMod, 0, 1, false).
-		AddItem(btnDelete, 0, 1, false).
-		AddItem(btnLicenseAndCredits, 0, 1, false).
-		AddItem(btnQuit, 0, 1, false)
-
-	return buttonBar
-}
-
 // help for navigation
 func makeHelpPane() (*tview.Flex, int) {
 	home := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](ESC)[white]   - Reset UI")
@@ -102,7 +79,6 @@ func makeHelpPane() (*tview.Flex, int) {
 	insert := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](i)[white]     - Add New Game")
 	edit := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](e)[white]     - Edit Game")
 	add := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](a)[white]     - Add Mod To Game")
-	remove := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](r)[white]     - Remove Last Mod From Game")
 	delet := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](Del)[white]   - Remove Game")
 	license := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](c)[white]     - Credits/License")
 	quit := tview.NewTextView().SetDynamicColors(true).SetText(" [orange](q)[white]     - Quit")
@@ -121,12 +97,11 @@ func makeHelpPane() (*tview.Flex, int) {
 			AddItem(add, 1, 0, false),
 			0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(remove, 1, 0, false).
-			AddItem(delet, 1, 0, false).
-			AddItem(options, 1, 0, false),
+			AddItem(sort, 1, 0, false).
+			AddItem(options, 1, 0, false).
+			AddItem(delet, 1, 0, false),
 			0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(sort, 1, 0, false).
 			AddItem(license, 1, 0, false),
 			0, 1, false)
 	helpArea.SetBorder(true)
