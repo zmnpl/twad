@@ -74,12 +74,6 @@ func populateGamesTable() {
 		}
 	}
 
-	makeModTreeMaker := func(selectedGame *games.Game) func() *tview.TreeView {
-		return func() *tview.TreeView {
-			return makeModTree(selectedGame)
-		}
-	}
-
 	gamesTable.SetSelectionChangedFunc(func(r int, c int) {
 		var g *games.Game
 		//var cell *tview.TableCell
@@ -111,6 +105,7 @@ func populateGamesTable() {
 			// get out
 			case 'q':
 				app.Stop()
+				return nil
 
 			// show credits and license
 			case 'c':
@@ -133,8 +128,8 @@ func populateGamesTable() {
 				contentPages.SwitchToPage(pageOptions)
 				app.SetFocus(optionsDiag)
 
-			// open dialog to insert new game
-			case 'i':
+			// new game
+			case 'n':
 				newForm := makeAddEditGame(nil)
 				detailPages.AddPage(pageAddEdit, newForm, true, false)
 				detailPages.SwitchToPage(pageAddEdit)
@@ -144,28 +139,28 @@ func populateGamesTable() {
 			// increase game rating
 			case '+':
 				allGames[r-fixRows].Rate(1)
-				c := tview.NewTableCell(allGames[r-fixRows].RatingString()).SetTextColor(tview.Styles.SecondaryTextColor)
+				c := tview.NewTableCell(allGames[r-fixRows].RatingString()).SetTextColor(tview.Styles.TitleColor)
 				gamesTable.SetCell(r, 0, c)
 				games.Persist()
 
 			// decrease game rating
 			case '-':
 				allGames[r-fixRows].Rate(-1)
-				c := tview.NewTableCell(allGames[r-fixRows].RatingString()).SetTextColor(tview.Styles.SecondaryTextColor)
+				c := tview.NewTableCell(allGames[r-fixRows].RatingString()).SetTextColor(tview.Styles.TitleColor)
 				gamesTable.SetCell(r, 0, c)
 				games.Persist()
 
-			// open dialog to add mod to game
-			case 'a':
+			// add mod to game
+			case 'm':
 				if r > 0 {
-					mtm := makeModTreeMaker(&allGames[r-fixRows])
-					modTree := mtm()
+					modTree := makeModTree(&allGames[r-fixRows])
 					detailSidePagesSub2.AddPage(pageModSelector, modTree, true, false)
 					detailSidePagesSub2.SwitchToPage(pageModSelector)
 					app.SetFocus(modTree)
 					return nil
 				}
 
+			// edit selected game
 			case 'e':
 				if r > 0 {
 					addEdit := makeAddEditGame(&allGames[r-fixRows])
@@ -175,6 +170,7 @@ func populateGamesTable() {
 					return nil
 				}
 
+			// sort alphabetically
 			case 's':
 				games.SortAlph()
 				populateGamesTable()
@@ -182,6 +178,7 @@ func populateGamesTable() {
 			}
 		}
 
+		// delete selected game
 		if k == tcell.KeyDelete && r > 0 {
 			remove := func() {
 				if r == gamesTable.GetRowCount()-1 {
@@ -200,6 +197,7 @@ func populateGamesTable() {
 			return nil
 		}
 
+		// switch focus to mod list
 		if k == tcell.KeyTAB && r >= fixRows {
 			app.SetFocus(detailSidePagesSub1)
 		}

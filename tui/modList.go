@@ -84,11 +84,14 @@ func makeModList(g *games.Game) *tview.Flex {
 	// tab navigates back to games table; tab navigation on list is redundant
 	modList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
+
+		// switch back to game table
 		if k == tcell.KeyTab {
 			app.SetFocus(gamesTable)
 			return nil
 		}
 
+		// delete mod
 		if k == tcell.KeyDelete {
 			// when in edit mode, this is only confusing
 			if !editMode {
@@ -117,8 +120,18 @@ func makeModList(g *games.Game) *tview.Flex {
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
+			// add mod
+			case 'm':
+				modTree := makeModTree(g)
+				detailSidePagesSub2.AddPage(pageModSelector, modTree, true, false)
+				detailSidePagesSub2.SwitchToPage(pageModSelector)
+				app.SetFocus(modTree)
+				return nil
+
+			// quit app from here as well
 			case 'q':
 				app.Stop()
+				return nil
 			}
 		}
 

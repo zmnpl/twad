@@ -194,18 +194,18 @@ func appModeNormal() {
 }
 
 // used in options and such screens
-func tabNavigate(previous, next tview.Primitive) func(event *tcell.EventKey) *tcell.EventKey {
-	return func(event *tcell.EventKey) *tcell.EventKey {
-		k := event.Key()
-		switch k {
-		case tcell.KeyTab:
-			app.SetFocus(next)
-			return nil
-		case tcell.KeyBacktab:
-			app.SetFocus(previous)
-			return nil
-		}
-
-		return event
-	}
-}
+//func tabNavigate(previous, next tview.Primitive) func(event *tcell.EventKey) *tcell.EventKey {
+//	return func(event *tcell.EventKey) *tcell.EventKey {
+//		k := event.Key()
+//		switch k {
+//		case tcell.KeyTab:
+//			app.SetFocus(next)
+//			return nil
+//		case tcell.KeyBacktab:
+//			app.SetFocus(previous)
+//			return nil
+//		}
+//
+//		return event
+//	}
+//}

@@ -107,8 +107,14 @@ func (g *Game) Run() error {
 // String returns the string which is run when running
 func (g Game) String() string {
 	params := g.getLaunchParams()
-
 	return fmt.Sprintf("%s %s %s", g.EnvironmentString(), g.SourcePort, strings.TrimSpace(strings.Join(params, " ")))
+}
+
+func (g Game) CommandList() []string {
+	result := g.Environment
+	result = append(result, g.SourcePort)
+	result = append(result, g.getLaunchParams()...)
+	return result
 }
 
 // RatingString returns the string resulting from the games rating
