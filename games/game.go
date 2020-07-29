@@ -106,10 +106,10 @@ func (g *Game) Run() error {
 
 // String returns the string which is run when running
 func (g Game) String() string {
-	params := g.getLaunchParams()
-	return fmt.Sprintf("%s %s %s", g.EnvironmentString(), g.SourcePort, strings.TrimSpace(strings.Join(params, " ")))
+	return fmt.Sprintf("%s", strings.TrimSpace(strings.Join(g.CommandList(), " ")))
 }
 
+// CommandList returns the full slice of strings in order to launch the game
 func (g Game) CommandList() []string {
 	result := g.Environment
 	result = append(result, g.SourcePort)

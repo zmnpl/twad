@@ -2,8 +2,10 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/rivo/tview"
+	"github.com/zmnpl/twad/games"
 )
 
 const (
@@ -20,7 +22,27 @@ func makeCommandPreview() *tview.TextView {
 	return commandPreview
 }
 
-func populateCommandPreview(command string) {
+func populateCommandPreview(g *games.Game) {
 	commandPreview.Clear()
-	fmt.Fprintf(commandPreview, previewText+" $ %s", command)
+	fmt.Fprintf(commandPreview, previewText+" $ %s", stylizeCommandList(g.CommandList()))
+}
+
+func stylizeCommandList(params []string) string {
+	keywords := make(map[string]int)
+	keywords["-iwad"] = 1
+	keywords["-file"] = 1
+	keywords["-savedir"] = 1
+	keywords["zdoom"] = 1
+	keywords["gzdoom"] = 1
+	keywords["lzdoom"] = 1
+
+	var command strings.Builder
+	for _, s := range params {
+		if _, isKnown := keywords[s]; isKnown {
+			command.WriteString(fmt.Sprintf("%s%s%s", colorTagMoreContrast, s, colorTagPrimaryText))
+			continue
+		}
+		command.WriteString(fmt.Sprintf("%s", s))
+	}
+	return strings.TrimSpace(command.String())
 }

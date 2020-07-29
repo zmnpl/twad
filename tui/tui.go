@@ -25,6 +25,10 @@ const (
 	pageDefaultRight = "right"
 
 	tableBorders = false
+
+	colorTagPrimaryText  = "[white]"
+	colorTagContrast     = "[royalblue]"
+	colorTagMoreContrast = "[orange]"
 )
 
 var (
@@ -150,7 +154,7 @@ func getHeader() (tview.Primitive, int) {
 
 // update functions
 func selectedGameChanged(g *games.Game) {
-	populateCommandPreview(g.String())
+	populateCommandPreview(g)
 	detailSidePagesSub1.AddPage(pageMods, makeModList(g), true, true)
 	frontPage, _ := detailSidePagesSub2.GetFrontPage()
 	if frontPage != pageModSelector {
