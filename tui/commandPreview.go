@@ -9,14 +9,15 @@ import (
 )
 
 const (
-	previewText = "preview"
+	previewText = "~$"
 )
 
 // command preview
 func makeCommandPreview() *tview.TextView {
 	commandPreview = tview.NewTextView().
 		SetDynamicColors(true)
-	commandPreview.SetBackgroundColor(previewBackgroundColor)
+
+		//	commandPreview.SetBackgroundColor(previewBackgroundColor)
 	fmt.Fprintf(commandPreview, "")
 
 	return commandPreview
@@ -24,7 +25,7 @@ func makeCommandPreview() *tview.TextView {
 
 func populateCommandPreview(g *games.Game) {
 	commandPreview.Clear()
-	fmt.Fprintf(commandPreview, previewText+" $ %s", stylizeCommandList(g.CommandList()))
+	fmt.Fprintf(commandPreview, fmt.Sprintf("%s %s", previewText, stylizeCommandList(g.CommandList())))
 }
 
 func stylizeCommandList(params []string) string {
@@ -38,11 +39,14 @@ func stylizeCommandList(params []string) string {
 
 	var command strings.Builder
 	for _, s := range params {
-		if _, isKnown := keywords[s]; isKnown {
-			command.WriteString(fmt.Sprintf("%s%s%s", colorTagMoreContrast, s, colorTagPrimaryText))
+		if s == "" {
 			continue
 		}
-		command.WriteString(fmt.Sprintf("%s", s))
+		if _, isKnown := keywords[s]; isKnown {
+			command.WriteString(fmt.Sprintf(" %s%s%s", colorTagMoreContrast, s, colorTagPrimaryText))
+			continue
+		}
+		command.WriteString(fmt.Sprintf(" %s", s))
 	}
 	return strings.TrimSpace(command.String())
 }

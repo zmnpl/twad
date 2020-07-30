@@ -27,7 +27,7 @@ func makeModList(g *games.Game) *tview.Flex {
 	modList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
 	// populate list with data
 	for _, mod := range g.Mods {
-		modList.AddItem(path.Base(mod), path.Dir(mod), 'f', nil)
+		modList.AddItem(path.Base(mod), path.Dir(mod), '+', nil)
 	}
 
 	// edit functionality
