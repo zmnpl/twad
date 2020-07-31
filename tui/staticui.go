@@ -74,7 +74,7 @@ func makeLicense() *tview.TextView {
 
 // help for navigation
 func makeHelpPane() (*tview.Flex, int) {
-	template := "[orange](%v)[white]%v- %v"
+	template := colorTagMoreContrast + "(%v)" + colorTagPrimaryText + "%v- %v"
 
 	home := tview.NewTextView().SetDynamicColors(true).SetText(fmt.Sprintf(template, "ESC", "   ", "Reset UI"))
 	run := tview.NewTextView().SetDynamicColors(true).SetText(fmt.Sprintf(template, "Enter", " ", "Run Game"))
@@ -114,7 +114,6 @@ func makeHelpPane() (*tview.Flex, int) {
 	helpArea.SetBorder(true)
 
 	helpPane := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, 0, 1, false).
 		AddItem(helpArea, 5, 0, false)
 
 	return helpPane, 5

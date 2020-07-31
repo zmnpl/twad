@@ -14,10 +14,8 @@ const (
 
 // command preview
 func makeCommandPreview() *tview.TextView {
-	commandPreview = tview.NewTextView().
-		SetDynamicColors(true)
-
-		//	commandPreview.SetBackgroundColor(previewBackgroundColor)
+	commandPreview = tview.NewTextView().SetDynamicColors(true)
+	commandPreview.SetBorder(true)
 	fmt.Fprintf(commandPreview, "")
 
 	return commandPreview

@@ -129,15 +129,14 @@ func initUIElements() {
 		AddItem(detailSidePagesSub2, 0, 5, false)
 	detailPages.AddPage(pageDefaultRight, defaultDetailPage, true, true)
 
-	foo := tview.NewFlex()
-	foo.SetBorder(true)
-	foo.AddItem(commandPreview, 0, 1, false)
 	mainContentPage.
-		AddItem(foo, 3, 0, false).
+		AddItem(commandPreview, 4, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
+			AddItem(nil, 1, 0, false).
 			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
 			AddItem(nil, 2, 0, false).
-			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, false), 0, 2, true)
+			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, false), 0, 2, true).
+		AddItem(nil, 1, 0, false)
 
 	// center with main content
 	contentPages = tview.NewPages()
