@@ -72,6 +72,27 @@ func makeLicense() *tview.TextView {
 	return disclaimer
 }
 
+func printHelpPane() (*tview.Grid, int) {
+	helpPane := tview.NewGrid()
+	helpPane.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
+	helpPane.SetBorder(true)
+
+	keyInfos := make([]string, 10)
+	keyInfos = append(keyInfos, "ESC   - Reset UI")
+	keyInfos = append(keyInfos, "Enter - Run Game")
+	keyInfos = append(keyInfos, "q - Quit")
+	keyInfos = append(keyInfos, "e - Edit Game")
+	keyInfos = append(keyInfos, "n - New Game")
+	keyInfos = append(keyInfos, "m - Add Mod To Game")
+	keyInfos = append(keyInfos, "Del - Remove Game")
+	keyInfos = append(keyInfos, "s - Sort Games Alphabetically")
+	keyInfos = append(keyInfos, "+/- - Rate Game")
+	keyInfos = append(keyInfos, "c - Credits/License")
+	keyInfos = append(keyInfos, "o - Options")
+
+	return helpPane, 5
+}
+
 // help for navigation
 func makeHelpPane() (*tview.Flex, int) {
 	template := colorTagMoreContrast + "(%v)" + colorTagPrimaryText + "%v- %v"
@@ -91,12 +112,11 @@ func makeHelpPane() (*tview.Flex, int) {
 	license := tview.NewTextView().SetDynamicColors(true).SetText(fmt.Sprintf(template, "c", "     ", "Credits/License"))
 	options := tview.NewTextView().SetDynamicColors(true).SetText(fmt.Sprintf(template, "o", "     ", "Options"))
 
-	helpArea := tview.NewFlex().SetDirection(tview.FlexColumn).
-		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
-			AddItem(run, 1, 0, false).
-			AddItem(home, 1, 0, false).
-			AddItem(quit, 1, 0, false),
-			0, 1, false).
+	helpArea := tview.NewFlex().SetDirection(tview.FlexColumn).AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(run, 1, 0, false).
+		AddItem(home, 1, 0, false).
+		AddItem(quit, 1, 0, false),
+		0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 			AddItem(insert, 1, 0, false).
 			AddItem(add, 1, 0, false).
@@ -112,9 +132,7 @@ func makeHelpPane() (*tview.Flex, int) {
 			AddItem(license, 1, 0, false),
 			0, 1, false)
 	helpArea.SetBorder(true)
+	helpArea.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
 
-	helpPane := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(helpArea, 5, 0, false)
-
-	return helpPane, 5
+	return helpArea, 5
 }
