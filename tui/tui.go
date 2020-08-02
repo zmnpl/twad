@@ -109,9 +109,6 @@ func initUIElements() {
 	// main view to select games
 	gamesTable = makeGamesTable()
 
-	// main page containing all the content
-	mainContentPage = tview.NewFlex().SetDirection(tview.FlexRow)
-
 	// right side
 	detailPages = tview.NewPages()
 	detailSidePagesSub1 = tview.NewPages()
@@ -128,6 +125,9 @@ func initUIElements() {
 		AddItem(nil, 2, 0, false).
 		AddItem(detailSidePagesSub2, 0, 5, false)
 	detailPages.AddPage(pageDefaultRight, defaultDetailPage, true, true)
+
+	// main page containing all the content
+	mainContentPage = tview.NewFlex().SetDirection(tview.FlexRow)
 
 	mainContentPage.
 		AddItem(commandPreview, 4, 0, false).
