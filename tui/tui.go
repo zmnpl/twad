@@ -81,14 +81,6 @@ func Draw() {
 		contentPages.AddPage(pageFirstSetup, makeFirstTimeSetup(), true, true)
 	}
 
-	// main layout
-	// header, headerHeight := getHeader()
-	// helpPane, helpPaneHeight := makeHelpPane()
-	// canvas := tview.NewFlex().SetDirection(tview.FlexRow).
-	// 	AddItem(header, headerHeight, 0, false).
-	// 	AddItem(contentPages, 0, 1, true).
-	// 	AddItem(helpPane, helpPaneHeight, 0, false)
-
 	// populate
 	selectedGameChanged(&games.Game{})
 	populateGamesTable()
@@ -140,15 +132,15 @@ func initUIElements() {
 	// responsive detail grid
 	detailGrid := tview.NewGrid()
 	detailGrid.SetRows(-1, -1)
-	detailGrid.SetColumns(-1, -1)
+	detailGrid.SetColumns(-4, -6)
 	detailSidePagesSub1 = tview.NewPages()
 	detailSidePagesSub2 = tview.NewPages()
 	// not so wide screens
 	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 1, 2, 0, 0, false)
 	detailGrid.AddItem(detailSidePagesSub2, 1, 0, 1, 2, 0, 0, false)
 	// wide screens
-	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 2, 1, 0, 100, false)
-	detailGrid.AddItem(detailSidePagesSub2, 0, 1, 2, 1, 0, 100, false)
+	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 2, 1, 0, 75, false)
+	detailGrid.AddItem(detailSidePagesSub2, 0, 1, 2, 1, 0, 75, false)
 
 	detailPages = tview.NewPages()
 	detailPages.AddPage(pageContentMain, detailGrid, true, true)
@@ -161,34 +153,6 @@ func initUIElements() {
 			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
-
-	// // detail layout based on options
-	// detailLayout := tview.FlexColumn
-	// if config.DetailPaneSplitVertical {
-	// 	detailLayout = tview.FlexRow
-	// }
-	// defaultDetailPage := tview.NewFlex().SetDirection(detailLayout)
-	// defaultDetailPage.
-	// 	AddItem(detailSidePagesSub1, 0, 5, false).
-	// 	AddItem(nil, 2, 0, false).
-	// 	AddItem(detailSidePagesSub2, 0, 5, false)
-	// detailPages.AddPage(pageDefaultRight, defaultDetailPage, true, true)
-
-	// // main page containing all the content
-	// mainContentPage = tview.NewFlex().SetDirection(tview.FlexRow)
-
-	// mainContentPage.
-	// 	AddItem(commandPreview, 4, 0, false).
-	// 	AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-	// 		AddItem(nil, 1, 0, false).
-	// 		AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
-	// 		AddItem(nil, 2, 0, false).
-	// 		AddItem(detailPages, 0, 100-config.GameListRelativeWidth, false), 0, 2, true).
-	// 	AddItem(nil, 1, 0, false)
-
-	// // center with main content
-	// contentPages = tview.NewPages()
-	// contentPages.AddPage(pageMain, mainContentPage, true, true)
 }
 
 // small or big header
