@@ -9,6 +9,7 @@ import (
 const (
 	keyResetUIText    = "Reset UI"
 	keyRunGameText    = "Run Game"
+	keyQuickload      = "Run Last Savegame"
 	keyQuitText       = "Quit"
 	keyEditGameText   = "Edit Game"
 	keyNewGameText    = "New Game"
@@ -30,7 +31,7 @@ func init() {
 	keyInfosMain = make([]string, 0, 10)
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "ESC", keyResetUIText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "ENTER", keyRunGameText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "q", keyQuitText))
+	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "F9", keyQuickload))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "e", keyEditGameText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "n", keyNewGameText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "m", keyAddModText))
@@ -39,6 +40,7 @@ func init() {
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "+/-", keyRateText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "c", keyCreditsText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "o", keyOptionsText))
+	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "q", keyQuitText))
 }
 
 func makeHelpPane() (*tview.Grid, int) {

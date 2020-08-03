@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"time"
@@ -77,8 +78,11 @@ func (g *Game) RemoveMod(i int) {
 }
 
 // Run executes given configuration and launches the mod
-func (g *Game) Run() error {
+func (g *Game) Run(loadLastSave bool) error {
 	params := g.getLaunchParams()
+	if loadLastSave {
+		params = append(params, g.getLastSaveLaunchParams()...)
+	}
 
 	start := time.Now()
 
@@ -114,6 +118,7 @@ func (g Game) CommandList() []string {
 	result := g.Environment
 	result = append(result, g.SourcePort)
 	result = append(result, g.getLaunchParams()...)
+	result = append(result, g.getLastSaveLaunchParams()...)
 	return result
 }
 
@@ -176,10 +181,13 @@ func (g Game) getLaunchParams() []string {
 	}
 
 	if config.DefaultSaveDir == false {
+		// making dir seems to be redundant, since engines do that already
+		// still keeping it to possibly keep track of it / handle errors
 		err := os.MkdirAll(g.getSaveDir(), 0755)
-		// only use separate save dir if directory has been craeted
+
+		// only use separate save dir if directory has been craeted or path exists already
 		if err == nil {
-			params = append(params, "-savedir")
+			params = append(params, "-savedir") // -savedir works for zdoom and chocolate-doom derivates
 			params = append(params, g.getSaveDir())
 		}
 	}
@@ -188,6 +196,47 @@ func (g Game) getLaunchParams() []string {
 	params = append(params, g.Parameters...)
 
 	return params
+}
+
+func (g Game) getLastSaveLaunchParams() (params []string) {
+	params = []string{}
+
+	// if the default savedir is used, it can not be made sure
+	// that the savegame belongs to the game/mod combindation
+	// therefore it doesn't make sense to do
+	if config.DefaultSaveDir {
+		return
+	}
+
+	// only if the last savegame could be determined successfully
+	// otherwise params will stay empty
+	if lastSave, err := g.lastSave(); err == nil {
+		params = append(params, []string{"-loadgame", lastSave}...)
+	}
+	return
+}
+
+func (g Game) lastSave() (save string, err error) {
+	saveDir := g.getSaveDir()
+	saves, err := ioutil.ReadDir(saveDir)
+	if err != nil {
+		return
+	}
+
+	newestTime, _ := time.Parse(time.RFC3339, "1900-01-01T00:00:00+00:00")
+	for _, file := range saves {
+		extension := strings.ToLower(filepath.Ext(file.Name()))
+		if file.Mode().IsRegular() && file.ModTime().After(newestTime) && (extension == ".zds" || extension == ".dsg") {
+			save = filepath.Join(saveDir, file.Name())
+			newestTime = file.ModTime()
+		}
+	}
+
+	if save == "" {
+		err = os.ErrNotExist
+	}
+
+	return
 }
 
 func (g Game) getSaveDir() string {

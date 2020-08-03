@@ -91,7 +91,7 @@ func populateGamesTable() {
 	gamesTable.SetSelectedFunc(func(r int, c int) {
 		switch {
 		case r > 0:
-			allGames[r-fixRows].Run()
+			allGames[r-fixRows].Run(false)
 		}
 	})
 
@@ -178,6 +178,11 @@ func populateGamesTable() {
 			}
 		}
 
+		// "quickload" tries to load the latest savegame
+		if k == tcell.KeyF9 && r > 0 {
+			allGames[r-fixRows].Run(true)
+		}
+
 		// delete selected game
 		if k == tcell.KeyDelete && r > 0 {
 			remove := func() {
@@ -185,6 +190,8 @@ func populateGamesTable() {
 					gamesTable.Select(r-1, 0)
 				}
 				games.RemoveGameAt(r - fixRows)
+				contentPages.RemovePage(pageYouSure)
+				app.SetFocus(gamesTable)
 			}
 
 			if config.DeleteWithoutWarning {

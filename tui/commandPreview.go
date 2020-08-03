@@ -35,6 +35,9 @@ func stylizeCommandList(params []string) string {
 	keywords["gzdoom"] = 1
 	keywords["lzdoom"] = 1
 
+	optionals := make(map[string]int)
+	optionals["-loadgame"] = 1
+
 	var command strings.Builder
 	for _, s := range params {
 		if s == "" {
@@ -42,6 +45,10 @@ func stylizeCommandList(params []string) string {
 		}
 		if _, isKnown := keywords[s]; isKnown {
 			command.WriteString(fmt.Sprintf(" %s%s%s", colorTagMoreContrast, s, colorTagPrimaryText))
+			continue
+		}
+		if _, isKnownOptional := optionals[s]; isKnownOptional {
+			command.WriteString(fmt.Sprintf(" %s%s%s", colorTagContrast, s, colorTagPrimaryText))
 			continue
 		}
 		command.WriteString(fmt.Sprintf(" %s", s))
