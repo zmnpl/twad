@@ -54,6 +54,7 @@ func makeHeader() *tview.TextView {
 		SetDynamicColors(true).
 		SetRegions(true)
 	fmt.Fprintf(header, "%s", doomLogo)
+	header.SetBorderPadding(0, 0, 1, 1)
 
 	return header
 }

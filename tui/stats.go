@@ -14,6 +14,7 @@ func makeStatsTable(g *games.Game) *tview.Table {
 		SetFixed(1, 1).
 		SetSelectable(false, false).
 		SetBorders(tableBorders).SetSeparator(':')
+	stats.SetBorderPadding(0, 0, 1, 1)
 
 	if g == nil {
 		return stats

@@ -109,6 +109,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		AddItem(tview.NewTextView().SetText(aeOtherParamsDetail), 1, 0, false)
 	addEditGameForm.SetBorder(true)
 	addEditGameForm.SetTitle(title)
+	addEditGameForm.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
 	addEditGameForm.SetBorderPadding(1, 1, 1, 1)
 
 	return addEditGameForm

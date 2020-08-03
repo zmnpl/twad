@@ -24,7 +24,7 @@ func makeGamesTable() *tview.Table {
 		SetFixed(1, 1).
 		SetSelectable(true, false).
 		SetBorders(tableBorders).SetSeparator('|')
-
+	gamesTable.SetBorderPadding(0, 0, 1, 2)
 	return gamesTable
 }
 
