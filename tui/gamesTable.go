@@ -91,7 +91,7 @@ func populateGamesTable() {
 	gamesTable.SetSelectedFunc(func(r int, c int) {
 		switch {
 		case r > 0:
-			allGames[r-fixRows].Run(false)
+			allGames[r-fixRows].Run()
 		}
 	})
 
@@ -180,7 +180,7 @@ func populateGamesTable() {
 
 		// "quickload" tries to load the latest savegame
 		if k == tcell.KeyF9 && r > 0 {
-			allGames[r-fixRows].Run(true)
+			allGames[r-fixRows].Quickload()
 		}
 
 		// delete selected game

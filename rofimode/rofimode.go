@@ -48,7 +48,7 @@ func RunRofiMode(command string) {
 
 	// run selected game
 	if i, exists := rofiToGame[result]; exists {
-		games.GetInstance()[i].Run(false)
+		games.GetInstance()[i].Run()
 	}
 }
 

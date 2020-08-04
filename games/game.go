@@ -84,23 +84,33 @@ func (g *Game) RemoveMod(i int) {
 }
 
 // Run executes given configuration and launches the mod
-func (g *Game) Run(loadLastSave bool) error {
-	params := g.getLaunchParams()
-	if loadLastSave {
-		params = append(params, g.getLastSaveLaunchParams()...)
-	}
+// Just a wrapper for game.run
+func (g *Game) Run() (err error) {
+	g.run(*NewRunConfig())
+	return
+}
 
+// Quickload starts the game from it's last savegame
+// Just a wrapper for game.run
+func (g *Game) Quickload() (err error) {
+	g.run(*NewRunConfig().Quickload(true))
+	return
+}
+
+// Warp lets you select episode and level to start in
+// Just a wrapper for game.run
+func (g *Game) Warp(episode, level int) (err error) {
+	g.run(*NewRunConfig().Warp(true, episode, level))
+	return
+}
+
+func (g *Game) run(rcfg runconfig) (err error) {
 	start := time.Now()
 
-	// execute and capture output
-	proc := exec.Command(g.SourcePort, params...)
-
-	// add environment variables
-	proc.Env = os.Environ()
-	proc.Env = append(proc.Env, g.Environment...)
-
 	// rip and tear!
-	output, err := proc.CombinedOutput()
+	doom := g.composeProcess(g.getLaunchParams(rcfg))
+
+	output, err := doom.CombinedOutput()
 	if err != nil {
 		return err
 	}
@@ -111,7 +121,73 @@ func (g *Game) Run(loadLastSave bool) error {
 
 	go processOutput(string(output), g)
 
-	return nil
+	return
+}
+
+func (g Game) composeProcess(params []string) (cmd *exec.Cmd) {
+	// execute and capture output
+	cmd = exec.Command(g.SourcePort, params...)
+	// add environment variables; use os environment as basis
+	cmd.Env = os.Environ()
+	cmd.Env = append(cmd.Env, g.Environment...)
+	return
+}
+
+func (g Game) getLaunchParams(rcfg runconfig) []string {
+	params := make([]string, 1, 10)
+	config := cfg.GetInstance()
+
+	// IWAD
+	if g.Iwad != "" {
+		params = append(params, "-iwad", g.Iwad) // -iwad seems to be universal across zdoom, boom and chocolate doom
+	}
+
+	// mods
+	if len(g.Mods) > 0 {
+		params = append(params, "-file") // -file seems to be universal across zdoom, boom and chocolate doom
+		params = append(params, g.Mods...)
+	}
+
+	// custom game save directory
+	if config.DefaultSaveDir == false {
+		// making dir seems to be redundant, since engines do that already
+		// still keeping it to possibly keep track of it / handle errors
+		err := os.MkdirAll(g.getSaveDir(), 0755)
+
+		// only use separate save dir if directory has been craeted or path exists already
+		if err == nil {
+			params = append(params, g.saveDirParam())
+			params = append(params, g.getSaveDir())
+		}
+	}
+
+	// quickload
+	if rcfg.quickload {
+		params = append(params, g.getLastSaveLaunchParams()...)
+	}
+
+	// add custom parameters here
+	params = append(params, g.Parameters...)
+
+	return params
+}
+
+func (g Game) getLastSaveLaunchParams() (params []string) {
+	params = []string{}
+
+	// if the default savedir is used, it can not be made sure
+	// that the savegame belongs to the game/mod combindation
+	// therefore it doesn't make sense to do
+	if config.DefaultSaveDir {
+		return
+	}
+
+	// only if the last savegame could be determined successfully
+	// otherwise params will stay empty
+	if lastSave, err := g.lastSave(); err == nil {
+		params = append(params, []string{"-loadgame", lastSave}...) // -loadgame seems to be universal across zdoom, boom and chocolate doom
+	}
+	return
 }
 
 // String returns the string which is run when running
@@ -120,12 +196,12 @@ func (g Game) String() string {
 }
 
 // CommandList returns the full slice of strings in order to launch the game
-func (g Game) CommandList() []string {
-	result := g.Environment
-	result = append(result, g.SourcePort)
-	result = append(result, g.getLaunchParams()...)
-	result = append(result, g.getLastSaveLaunchParams()...)
-	return result
+//
+func (g Game) CommandList() (command []string) {
+	command = g.Environment
+	command = append(command, g.SourcePort)
+	command = append(command, g.getLaunchParams(*NewRunConfig().Quickload(true))...)
+	return
 }
 
 // RatingString returns the string resulting from the games rating
@@ -173,37 +249,6 @@ func (g *Game) SwitchMods(a, b int) {
 	}
 }
 
-func (g Game) getLaunchParams() []string {
-	params := make([]string, 1, 10)
-	config := cfg.GetInstance()
-
-	if g.Iwad != "" {
-		params = append(params, "-iwad", g.Iwad) // -iwad seems to be universal across zdoom, boom and chocolate doom
-	}
-
-	if len(g.Mods) > 0 {
-		params = append(params, "-file") // -file seems to be universal across zdoom, boom and chocolate doom
-		params = append(params, g.Mods...)
-	}
-
-	if config.DefaultSaveDir == false {
-		// making dir seems to be redundant, since engines do that already
-		// still keeping it to possibly keep track of it / handle errors
-		err := os.MkdirAll(g.getSaveDir(), 0755)
-
-		// only use separate save dir if directory has been craeted or path exists already
-		if err == nil {
-			params = append(params, g.saveDirParam())
-			params = append(params, g.getSaveDir())
-		}
-	}
-
-	// add custom parameters here
-	params = append(params, g.Parameters...)
-
-	return params
-}
-
 // saveDirParam returns the right paramter key for specifying the savegame directory
 // accounts for zdoom-, chocolate-doom and boom ports at the moments
 func (g Game) saveDirParam() (parameter string) {
@@ -220,24 +265,7 @@ func (g Game) saveDirParam() (parameter string) {
 	return
 }
 
-func (g Game) getLastSaveLaunchParams() (params []string) {
-	params = []string{}
-
-	// if the default savedir is used, it can not be made sure
-	// that the savegame belongs to the game/mod combindation
-	// therefore it doesn't make sense to do
-	if config.DefaultSaveDir {
-		return
-	}
-
-	// only if the last savegame could be determined successfully
-	// otherwise params will stay empty
-	if lastSave, err := g.lastSave(); err == nil {
-		params = append(params, []string{"-loadgame", lastSave}...) // -loadgame seems to be universal across zdoom, boom and chocolate doom
-	}
-	return
-}
-
+// lastSave returns the the file name or slotnumber (depending on source port) for the game
 func (g Game) lastSave() (save string, err error) {
 	saveDir := g.getSaveDir()
 	saves, err := ioutil.ReadDir(saveDir)
@@ -298,6 +326,9 @@ func (g Game) cleansedName() string {
 
 // processOutput processes the terminal output of the zdoom port
 func processOutput(output string, g *Game) {
+	if g.Stats == nil {
+		g.Stats = make(map[string]int)
+	}
 	for _, v := range strings.Split(output, "\n") {
 		if stat, increment := parseStatline(v, g); stat != "" {
 			g.Stats[stat] = g.Stats[stat] + increment
