@@ -14,19 +14,25 @@ import (
 	"github.com/zmnpl/twad/cfg"
 )
 
+const (
+	zdoom = iota
+	chocolate
+	boom
+)
+
 // Game represents one game configuration
 type Game struct {
-	Name          string         `json:"name,omitempty"`
-	SourcePort    string         `json:"source_port,omitempty"`
-	Iwad          string         `json:"iwad,omitempty"`
-	Environment   []string       `json:"environment,omitempty"`
-	Mods          []string       `json:"mods,omitempty"`
-	Parameters    []string       `json:"parameters,omitempty"`
-	Stats         map[string]int `json:"stats,omitempty"`
-	Playtime      int64          `json:"playtime,omitempty"`
-	LastPlayed    string         `json:"last_played,omitempty"`
-	SaveGameCount int            `json:"savegame_coutn,omitempty"`
-	Rating        int            `json:"rating,omitempty"`
+	Name          string         `json:"name"`
+	SourcePort    string         `json:"source_port"`
+	Iwad          string         `json:"iwad"`
+	Environment   []string       `json:"environment"`
+	Mods          []string       `json:"mods"`
+	Parameters    []string       `json:"parameters"`
+	Stats         map[string]int `json:"stats"`
+	Playtime      int64          `json:"playtime"`
+	LastPlayed    string         `json:"last_played"`
+	SaveGameCount int            `json:"save_game_count"`
+	Rating        int            `json:"rating"`
 }
 
 // NewGame creates new instance of a game
@@ -172,11 +178,11 @@ func (g Game) getLaunchParams() []string {
 	config := cfg.GetInstance()
 
 	if g.Iwad != "" {
-		params = append(params, "-iwad", g.Iwad)
+		params = append(params, "-iwad", g.Iwad) // -iwad seems to be universal across zdoom, boom and chocolate doom
 	}
 
 	if len(g.Mods) > 0 {
-		params = append(params, "-file")
+		params = append(params, "-file") // -file seems to be universal across zdoom, boom and chocolate doom
 		params = append(params, g.Mods...)
 	}
 
@@ -187,7 +193,7 @@ func (g Game) getLaunchParams() []string {
 
 		// only use separate save dir if directory has been craeted or path exists already
 		if err == nil {
-			params = append(params, "-savedir") // -savedir works for zdoom and chocolate-doom derivates
+			params = append(params, g.saveDirParam())
 			params = append(params, g.getSaveDir())
 		}
 	}
@@ -196,6 +202,22 @@ func (g Game) getLaunchParams() []string {
 	params = append(params, g.Parameters...)
 
 	return params
+}
+
+// saveDirParam returns the right paramter key for specifying the savegame directory
+// accounts for zdoom-, chocolate-doom and boom ports at the moments
+func (g Game) saveDirParam() (parameter string) {
+	sp := g.sourcePortFamily()
+
+	// assume zdoom port
+	// works for chocolate-doom family as well
+	parameter = "-savedir"
+
+	// boom derivates
+	if sp == boom {
+		parameter = "-save"
+	}
+	return
 }
 
 func (g Game) getLastSaveLaunchParams() (params []string) {
@@ -211,7 +233,7 @@ func (g Game) getLastSaveLaunchParams() (params []string) {
 	// only if the last savegame could be determined successfully
 	// otherwise params will stay empty
 	if lastSave, err := g.lastSave(); err == nil {
-		params = append(params, []string{"-loadgame", lastSave}...)
+		params = append(params, []string{"-loadgame", lastSave}...) // -loadgame seems to be universal across zdoom, boom and chocolate doom
 	}
 	return
 }
@@ -223,13 +245,33 @@ func (g Game) lastSave() (save string, err error) {
 		return
 	}
 
+	// retrieve source port family; do once since it is not the fastet function
+	sp := g.sourcePortFamily()
+
+	// assume zdoom
+	portSaveFileExtension := ".zds"
+	// chocolate doom + ports
+	if sp == chocolate {
+		portSaveFileExtension = ".dsg"
+	}
+
+	// find the newest file
 	newestTime, _ := time.Parse(time.RFC3339, "1900-01-01T00:00:00+00:00")
 	for _, file := range saves {
 		extension := strings.ToLower(filepath.Ext(file.Name()))
-		if file.Mode().IsRegular() && file.ModTime().After(newestTime) && (extension == ".zds" || extension == ".dsg") {
+		if file.Mode().IsRegular() && file.ModTime().After(newestTime) && extension == portSaveFileExtension {
 			save = filepath.Join(saveDir, file.Name())
 			newestTime = file.ModTime()
 		}
+	}
+
+	// chocolate doom and boom take a slot from 0-7 as parameter
+	// the filenames usually look like this: doomsav0.dsg
+	// the zero is just cut out and returned
+	if (sp == chocolate || sp == boom) && save != "" {
+		tmp := []rune(save)
+		save = string(tmp[len(tmp)-5 : len(tmp)-4])
+		return
 	}
 
 	if save == "" {
@@ -283,4 +325,27 @@ func parseStatline(line string, g *Game) (string, int) {
 	default:
 		return "", 0
 	}
+}
+
+// checks the games engine type by inspecting the string
+// known keyphrases will be interpreted as a certain source port family
+func (g Game) sourcePortFamily() (t int) {
+	// assume zdoom family
+	t = zdoom
+
+	sp := strings.ToLower(g.SourcePort)
+
+	// chocolate doom family
+	if strings.Contains(sp, "crispy") || strings.Contains(sp, "chocolate") {
+		t = chocolate
+		return
+	}
+
+	// boom family
+	if strings.Contains(sp, "boom") {
+		t = boom
+		return
+	}
+
+	return
 }

@@ -31,9 +31,12 @@ func stylizeCommandList(params []string) string {
 	keywords["-iwad"] = 1
 	keywords["-file"] = 1
 	keywords["-savedir"] = 1
+	keywords["-save"] = 1
 	keywords["zdoom"] = 1
 	keywords["gzdoom"] = 1
 	keywords["lzdoom"] = 1
+	keywords["chocolate-doom"] = 1
+	keywords["crispy-doom"] = 1
 
 	optionals := make(map[string]int)
 	optionals["-loadgame"] = 1
