@@ -26,27 +26,29 @@ go get -u github.com/zmnpl/twad
 
 ### Binary Download
 
-I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just download and run it.
+I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just download and run it (on *nix systems atm).
 
 ## Initial Config
 
-1) Create a base directory which gets to hold all your DOOM files
+1) Create a base directory which gets to hold all your DOOM files (long time ago, this was known as DOOMWADDIR)
 2) Put your **doom.wad** and **doom2.wad** in that base dir
 3) Drop all your mods in here (Subdirectories are of course possible)
 4) Within twad create games
 5) Add mods to your games
 666) __Rip and Tear__
 
-## Engine Setup
+## DOOMWADDIR
 
-Your DOOM engine needs to know about the base folder of your mods and IWADs to work properly, since it works with relative paths (right now). For that a line in the respective config needs to be added in the *FileSearch.Directories* section. Like this:
+Your DOOM engine needs to know about the base folder of your mods and IWADs to work properly. Twad's default method for this is to set the ***DOOMWADDIR*** environment variable when starting a game. This is only set for the current game session.
+
+An alternative method is to add paths to the respective source ports config. For *zdoom* ports it could look like this:
 ```
 # in your doom engine .ini
 [FileSearch.Directories]
-PATH=/home/doomguy/Games/Doom
+PATH=/home/doomguy/Doom
 ```
 
-Twad will try to do this automatically for these engines if it finds the respective config:
+There is flag in the options which lets Twad try to do this automatically for these engines if it finds the respective config:
 - **Zandronum** *(~/.config/zandronum/zandronum.ini)*
 - **LZDoom** *(~/.config/lzdoom/lzdoom.ini)*
 - **GZDoom** *(~/.config/gzdoom/gzdoom.ini)*
@@ -76,10 +78,11 @@ twad --dmenu
 - ~~Opions scren~~
 - ~~Ability to hide the header for screens with few rows~~
 - ~~Add button for path setup~~
-- Import for downloaded Zips(?)
-- Autoupdate mods(?)
+- ~~Quickload~~
+- WSL support
+- Warp to map
+- Demo recording / viewing
 - More statistics
-- Fading popup highlight where somthing was added
 - All the TODO flags
 
 ## Credit where credit is due
