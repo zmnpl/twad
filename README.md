@@ -2,23 +2,21 @@
 
 ![demo](demo.gif)
 
-If you love __DOOM__ and rather not leave your terminal like me, then you might be one of the few that might like **twad**. It is a terminal based WAD manager and launcher for ZDoom engine games. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with a couple of key strokes.
+If you love __DOOM__ and rather not leave your terminal like me, then you might be one of the few that might like **twad**. It is a terminal based WAD manager and launcher for doom source ports. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with a couple of key strokes.
 
-There are already great alternatives to manage and launch your WADs out there for many years and twad will probably never be as sophisticated. Though I figured: there are not so many for the terminal. Twad let's you stay in the terminal and on your keyboard as long as possible. Simple as that.
+There are already great alternatives to manage and launch your WADs out there for many years and twad will probably never be as sophisticated. Though I figured: there are not so many for the terminal. Twad let's you stay in the terminal and on your keyboard as long as possible until you decide to rip and tear. Simple as that.
 
-As a little bonus, twad collects some statistics for you (of course doesn't send them anywhere!) and organizes savegames for each mod combination in a separate folder.
+Needless to say, that this mostly was designed for *nix systems. However, with WSL this might as well be usable in Windows as well. Though quite some testing needs to go into this.
 
-## Watch Out
-
-This tool is still in very early state and might contain bugs.
+**Watch Out**: This tool is still in very early state and might contain bugs.
 
 ## Installation
 
-### AUR
+### Arch Linux: AUR
 
 https://aur.archlinux.org/packages/twad-git
 
-### Manually
+### Compile yourself
 
 ```golang
 go get -u github.com/zmnpl/twad
@@ -26,26 +24,29 @@ go get -u github.com/zmnpl/twad
 
 ### Binary Download
 
-I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just download and run it (on *nix systems atm).
+I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it** (on *nix systems).
 
-## Initial Config
+## Initial Configuration
 
-1) Create a base directory which gets to hold all your DOOM files (long time ago, this was known as DOOMWADDIR)
-2) Put your **doom.wad** and **doom2.wad** in that base dir
-3) Drop all your mods in here (Subdirectories are of course possible)
-4) Within twad create games
-5) Add mods to your games
-666) __Rip and Tear__
+### Setup Your Environment
 
-## DOOMWADDIR
+***twad*** assumes, you have **one folder**, where your IWADs *doom.wad* and *doom2.wad* are placed and all your pwads (such as mapsets, gameplay mods etc. ...) are put in the same folder oder subfolder of this. The folder, where you put your IWADs is known as **DOOMWADDIR**.
 
-Your DOOM engine needs to know about the base folder of your mods and IWADs to work properly. Twad's default method for this is to set the ***DOOMWADDIR*** environment variable when starting a game. This is only set for the current game session.
+1) Setup your **DOOMWADDIR** as described above
+2) twad's first start will ask you for the path of **DOOMWADDIR**
+3) Within twad create games
+4) Add mods to your games
+666)   __Rip and Tear__
 
-An alternative method is to add paths to the respective source ports config. For *zdoom* ports it could look like this:
-```
+### More on DOOMWADDIR
+
+Your DOOM engine needs to know about the base folder of your mods and IWADs to work properly. Twad's default method for this is to set the ***DOOMWADDIR*** environment variable when starting a game. This is only set for the current game session. (Should you already have set DOOMWADDIR, twad will shadow it with whatever is set in its configuration)
+
+An alternative/additional method is to add paths to the respective source ports config. For *zdoom* ports it could look like this:
+```bash
 # in your doom engine .ini
 [FileSearch.Directories]
-PATH=/home/doomguy/Doom
+PATH=/home/doomguy/Doom # path to DOOMWADDIR
 ```
 
 There is flag in the options which lets Twad try to do this automatically for these engines if it finds the respective config:
@@ -66,6 +67,7 @@ twad --dmenu
 **For instant Rip & Tear:** Bind this to a keyboard shortcut
 
 ![rofimode](rofimode.png)
+
 
 ## Plans / Ideas
 
