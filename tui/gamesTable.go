@@ -150,6 +150,15 @@ func populateGamesTable() {
 				gamesTable.SetCell(r, 0, c)
 				games.Persist()
 
+				// warp
+			case 'w':
+				if r > 0 {
+					warp := makeWarp(allGames[r-fixRows], appModeNormal, 2, r+2)
+					contentPages.AddPage(pageWarp, warp, true, true)
+					app.SetFocus(warp)
+					return nil
+				}
+
 			// add mod to game
 			case 'm':
 				if r > 0 {
@@ -175,7 +184,9 @@ func populateGamesTable() {
 				games.SortAlph()
 				populateGamesTable()
 				return nil
+
 			}
+
 		}
 
 		// "quickload" tries to load the latest savegame

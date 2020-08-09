@@ -27,6 +27,7 @@ const (
 	pageYouSure      = "yousure"
 	pageMods         = "mods"
 	pageDefaultRight = "right"
+	pageWarp         = "warp"
 
 	tableBorders = false
 
@@ -49,9 +50,8 @@ var (
 	detailSidePagesSub1 *tview.Pages
 	detailSidePagesSub2 *tview.Pages
 
-	mainContentPage *tview.Flex
-	gamesTable      *tview.Table
-	commandPreview  *tview.TextView
+	gamesTable     *tview.Table
+	commandPreview *tview.TextView
 )
 
 func init() {
@@ -190,14 +190,17 @@ func appModeNormal() {
 	contentPages.SwitchToPage(pageContent)
 
 	// clear bigMainPager
-	if contentPages.HasPage(pageYouSure) {
-		contentPages.RemovePage(pageYouSure)
-	}
-	if contentPages.HasPage(pageFirstSetup) {
-		contentPages.RemovePage(pageFirstSetup)
-	}
+	//if contentPages.HasPage(pageYouSure) {
+	contentPages.RemovePage(pageYouSure)
+	//}
+	//if contentPages.HasPage(pageFirstSetup) {
+	contentPages.RemovePage(pageFirstSetup)
+	//}
 	if contentPages.HasPage(pageOptions) {
 		contentPages.RemovePage(pageOptions)
+	}
+	if contentPages.HasPage(pageWarp) {
+		contentPages.RemovePage(pageWarp)
 	}
 
 	// clear actionPager
