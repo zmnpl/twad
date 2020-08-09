@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -86,21 +87,21 @@ func (g *Game) RemoveMod(i int) {
 // Run executes given configuration and launches the mod
 // Just a wrapper for game.run
 func (g *Game) Run() (err error) {
-	g.run(*NewRunConfig())
+	g.run(*newRunConfig())
 	return
 }
 
 // Quickload starts the game from it's last savegame
 // Just a wrapper for game.run
 func (g *Game) Quickload() (err error) {
-	g.run(*NewRunConfig().Quickload(true))
+	g.run(*newRunConfig().quickload())
 	return
 }
 
 // Warp lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) Warp(episode, level int) (err error) {
-	g.run(*NewRunConfig().Warp(true, episode, level))
+	g.run(*newRunConfig().warp(episode, level))
 	return
 }
 
@@ -162,8 +163,19 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	}
 
 	// quickload
-	if rcfg.quickload {
+	if rcfg.loadLastSave {
 		params = append(params, g.getLastSaveLaunchParams()...)
+	}
+
+	// warp
+	if rcfg.beam {
+		params = append(params, "-warp")
+		if rcfg.warpEpisode > 0 {
+			params = append(params, strconv.Itoa(rcfg.warpEpisode))
+		}
+		if rcfg.warpLevel > 0 {
+			params = append(params, strconv.Itoa(rcfg.warpLevel))
+		}
 	}
 
 	// add custom parameters here
@@ -200,7 +212,7 @@ func (g Game) String() string {
 func (g Game) CommandList() (command []string) {
 	command = g.Environment
 	command = append(command, g.SourcePort)
-	command = append(command, g.getLaunchParams(*NewRunConfig().Quickload(true))...)
+	command = append(command, g.getLaunchParams(*newRunConfig().quickload())...)
 	return
 }
 

@@ -1,40 +1,41 @@
 package games
 
 type runconfig struct {
-	quickload   bool
-	warp        bool
-	warpEpisode int
-	warpLevel   int
+	loadLastSave bool
+	beam         bool
+	warpEpisode  int
+	warpLevel    int
 }
 
-func NewRunConfig() *runconfig {
+// newRunConfig returns an insance of *runconfig
+func newRunConfig() *runconfig {
 	var rcfg runconfig
 	return &rcfg
 }
 
-func (rcfg *runconfig) Quickload(quickload bool) *runconfig {
-	rcfg.quickload = quickload
+func (rcfg *runconfig) quickload() *runconfig {
+	rcfg.loadLastSave = true
 	return rcfg
 }
 
-func (rcfg *runconfig) Warp(warp bool, episode, level int) *runconfig {
-	rcfg.warp = warp
+func (rcfg *runconfig) warp(episode, level int) *runconfig {
+	rcfg.beam = true
 	rcfg.warpEpisode = episode
 	rcfg.warpLevel = level
 	return rcfg
 }
 
-func (rcfg *runconfig) Skill(skill int) *runconfig {
+func (rcfg *runconfig) setSkill(skillLevel int) *runconfig {
 
 	return rcfg
 }
 
-func (rcfg *runconfig) RecordDemo(name string) *runconfig {
+func (rcfg *runconfig) recordDemo(name string) *runconfig {
 
 	return rcfg
 }
 
-func (rcfg *runconfig) PlayDemo(name string) *runconfig {
+func (rcfg *runconfig) palyDemo(name string) *runconfig {
 
 	return rcfg
 }
