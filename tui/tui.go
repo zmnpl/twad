@@ -184,33 +184,21 @@ func whenGamesChanged() {
 
 // reset ui
 func appModeNormal() {
+	// cleanup
+	// clear bigMainPager
+	contentPages.RemovePage(pageYouSure)
+	contentPages.RemovePage(pageFirstSetup)
+	contentPages.RemovePage(pageOptions)
+	contentPages.RemovePage(pageWarp)
+	// clear actionPager
+	detailPages.RemovePage(pageAddEdit)
+	detailSidePagesSub1.RemovePage(pageYouSure)
+
+	// set ui state
 	detailPages.SwitchToPage(pageContentMain)
 	detailSidePagesSub1.SwitchToPage(pageMods)
 	detailSidePagesSub2.SwitchToPage(pageStats)
 	contentPages.SwitchToPage(pageContent)
-
-	// clear bigMainPager
-	//if contentPages.HasPage(pageYouSure) {
-	contentPages.RemovePage(pageYouSure)
-	//}
-	//if contentPages.HasPage(pageFirstSetup) {
-	contentPages.RemovePage(pageFirstSetup)
-	//}
-	if contentPages.HasPage(pageOptions) {
-		contentPages.RemovePage(pageOptions)
-	}
-	if contentPages.HasPage(pageWarp) {
-		contentPages.RemovePage(pageWarp)
-	}
-
-	// clear actionPager
-	if detailPages.HasPage(pageAddEdit) {
-		detailPages.RemovePage(pageAddEdit)
-	}
-
-	if detailSidePagesSub1.HasPage(pageYouSure) {
-		detailSidePagesSub1.RemovePage(pageYouSure)
-	}
 
 	app.SetFocus(gamesTable)
 }
