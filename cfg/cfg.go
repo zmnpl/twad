@@ -148,6 +148,11 @@ func GetSavegameFolder() string {
 	return GetConfigFolder() + "/savegames"
 }
 
+// GetDemoFolder returns the folder where demos are stored
+func GetDemoFolder() string {
+	return GetConfigFolder() + "/demos"
+}
+
 // Persist writes all games into the according JSON file
 func Persist() error {
 	JSON, err := json.MarshalIndent(instance, "", "    ")

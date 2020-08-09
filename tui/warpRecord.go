@@ -39,9 +39,17 @@ func splitWarpString(warp string) (episode, level int) {
 }
 
 // warp dialog
-func makeWarp(game games.Game, onCancel func(), xOffset int, yOffset int) *tview.Flex {
+func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int) *tview.Flex {
 	episode := 0
 	level := 0
+
+	// TODO:
+	// Create Form
+	// Add it on detail-pager
+	// Add Skill (Set Default 3)
+	// Add Demo-Recording
+	//   Warn when name exists
+	//   Default to none
 
 	warpTo := tview.NewInputField().SetLabel(warpText).
 		SetAcceptanceFunc(warpStringAcceptance).

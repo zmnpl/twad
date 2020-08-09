@@ -23,17 +23,17 @@ const (
 
 // Game represents one game configuration
 type Game struct {
-	Name          string         `json:"name"`
-	SourcePort    string         `json:"source_port"`
-	Iwad          string         `json:"iwad"`
-	Environment   []string       `json:"environment"`
-	Mods          []string       `json:"mods"`
-	Parameters    []string       `json:"parameters"`
-	Stats         map[string]int `json:"stats"`
-	Playtime      int64          `json:"playtime"`
-	LastPlayed    string         `json:"last_played"`
-	SaveGameCount int            `json:"save_game_count"`
-	Rating        int            `json:"rating"`
+	Name             string         `json:"name"`
+	SourcePort       string         `json:"source_port"`
+	Iwad             string         `json:"iwad"`
+	Environment      []string       `json:"environment"`
+	Mods             []string       `json:"mods"`
+	CustomParameters []string       `json:"custom_parameters"`
+	Stats            map[string]int `json:"stats"`
+	Playtime         int64          `json:"playtime"`
+	LastPlayed       string         `json:"last_played"`
+	SaveGameCount    int            `json:"save_game_count"`
+	Rating           int            `json:"rating"`
 }
 
 // NewGame creates new instance of a game
@@ -65,7 +65,7 @@ func NewGame(name, sourceport, iwad string) Game {
 	}
 
 	game.Environment = make([]string, 0)
-	game.Parameters = make([]string, 0)
+	game.CustomParameters = make([]string, 0)
 	game.Mods = make([]string, 0)
 	game.Stats = make(map[string]int)
 
@@ -168,7 +168,7 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	}
 
 	// warp
-	if rcfg.beam {
+	if rcfg.beam && (rcfg.warpEpisode > 0 || rcfg.warpLevel > 0) {
 		params = append(params, "-warp")
 		if rcfg.warpEpisode > 0 {
 			params = append(params, strconv.Itoa(rcfg.warpEpisode))
@@ -179,7 +179,7 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	}
 
 	// add custom parameters here
-	params = append(params, g.Parameters...)
+	params = append(params, g.CustomParameters...)
 
 	return params
 }
@@ -208,7 +208,6 @@ func (g Game) String() string {
 }
 
 // CommandList returns the full slice of strings in order to launch the game
-//
 func (g Game) CommandList() (command []string) {
 	command = g.Environment
 	command = append(command, g.SourcePort)
@@ -228,7 +227,7 @@ func (g Game) EnvironmentString() string {
 
 // ParamsString returns a join of all prefix parameters
 func (g Game) ParamsString() string {
-	return strings.TrimSpace(strings.Join(g.Parameters, " "))
+	return strings.TrimSpace(strings.Join(g.CustomParameters, " "))
 }
 
 // SaveCount returns the number of savegames existing for this game
@@ -323,6 +322,10 @@ func (g Game) lastSave() (save string, err error) {
 
 func (g Game) getSaveDir() string {
 	return cfg.GetSavegameFolder() + "/" + g.cleansedName()
+}
+
+func (g Game) getDemoDir() string {
+	return cfg.GetDemoFolder() + "/" + g.cleansedName()
 }
 
 // cleansedName removes all but alphanumeric characters from name
