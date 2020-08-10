@@ -90,7 +90,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		_, g.SourcePort = inputSourcePort.GetCurrentOption()
 		_, g.Iwad = inputIwad.GetCurrentOption()
 		g.Environment = splitParams(inputEnvVars.GetText())
-		g.Parameters = splitParams(inputCustomParams.GetText())
+		g.CustomParameters = splitParams(inputCustomParams.GetText())
 
 		if gWasNil {
 			games.AddGame(*g)

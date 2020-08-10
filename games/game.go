@@ -100,8 +100,8 @@ func (g *Game) Quickload() (err error) {
 
 // Warp lets you select episode and level to start in
 // Just a wrapper for game.run
-func (g *Game) Warp(episode, level int) (err error) {
-	g.run(*newRunConfig().warp(episode, level))
+func (g *Game) Warp(episode, level, skill int) (err error) {
+	g.run(*newRunConfig().warp(episode, level).setSkill(g.skillForPort(skill)))
 	return
 }
 
@@ -153,14 +153,14 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	if config.DefaultSaveDir == false {
 		// making dir seems to be redundant, since engines do that already
 		// still keeping it to possibly keep track of it / handle errors
-		err := os.MkdirAll(g.getSaveDir(), 0755)
-
 		// only use separate save dir if directory has been craeted or path exists already
-		if err == nil {
+		if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
 			params = append(params, g.saveDirParam())
 			params = append(params, g.getSaveDir())
 		}
 	}
+
+	// TODO: Check if select case works better for different modes
 
 	// quickload
 	if rcfg.loadLastSave {
@@ -176,12 +176,25 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 		if rcfg.warpLevel > 0 {
 			params = append(params, strconv.Itoa(rcfg.warpLevel))
 		}
+
+		// add skill
+		params = append(params, "-skill")
+		params = append(params, strconv.Itoa(rcfg.skill))
 	}
 
-	// add custom parameters here
-	params = append(params, g.CustomParameters...)
+	// demo recording
+	if rcfg.recDemo {
+		if err := os.MkdirAll(g.getDemoDir(), 0755); err == nil {
+			// TODO: Add recording parameter
+		}
+	}
 
-	return params
+	// play demo
+	if rcfg.plyDemo {
+		// TODO: write this piece
+	}
+
+	return append(params, g.CustomParameters...)
 }
 
 func (g Game) getLastSaveLaunchParams() (params []string) {
@@ -274,6 +287,21 @@ func (g Game) saveDirParam() (parameter string) {
 		parameter = "-save"
 	}
 	return
+}
+
+// adjust skill for source port
+// default(zdoom): 0-4 (documenation seems wrong?, so 1-5)
+// chocolate: 1-5
+// boom: 1-5
+func (g Game) skillForPort(inSkill int) int {
+	switch g.sourcePortFamily() {
+	case chocolate:
+		return inSkill + 1
+	case boom:
+		return inSkill + 1
+	default:
+		return inSkill + 1
+	}
 }
 
 // lastSave returns the the file name or slotnumber (depending on source port) for the game

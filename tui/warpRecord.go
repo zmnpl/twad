@@ -5,14 +5,24 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
 )
 
 const (
-	warpText = "Warp to episode level"
+	warpText     = "Warp e l"
+	skillText    = "Difficulty"
+	demoText     = "Demo Name"
+	warpOkButton = "Rip And Tear!"
 )
+
+var (
+	skillLevels []string
+)
+
+func init() {
+	skillLevels = []string{"I'M TOO YOUNG TO DIE.", "HEY, NOT TOO ROUGH.", "HURT ME PLENTY.", "ULTRA-VIOLENCE.", "NIGHTMARE!"}
+}
 
 // warp strings are expected to be of form
 // "e l"
@@ -51,33 +61,44 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int) 
 	//   Warn when name exists
 	//   Default to none
 
-	warpTo := tview.NewInputField().SetLabel(warpText).
-		SetAcceptanceFunc(warpStringAcceptance).
-		SetFieldWidth(5)
+	formHeight := 5
+	warpRecordForm := tview.NewForm()
+	warpRecordForm.SetBorder(true)
+	warpRecordForm.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
 
-	warpTo.SetDoneFunc(func(key tcell.Key) {
+	// warp
+	warpTo := tview.NewInputField().SetLabel(warpText).SetAcceptanceFunc(warpStringAcceptance).SetFieldWidth(5)
+	warpRecordForm.AddFormItem(warpTo)
+
+	// skill level
+	formHeight += 2
+	skl := tview.NewDropDown().SetOptions(skillLevels, nil).SetCurrentOption(2).SetLabel(skillText)
+	warpRecordForm.AddFormItem(skl)
+
+	// to record a demo, specify a name
+	formHeight += 2
+	demoName := tview.NewInputField().SetLabel(demoText).SetFieldWidth(15)
+	warpRecordForm.AddFormItem(demoName)
+
+	// TODO: trigger game recording
+
+	// confirm button
+	warpRecordForm.AddButton(warpOkButton, func() {
 		episode, level = splitWarpString(warpTo.GetText())
 		appModeNormal()
-		game.Warp(episode, level)
+		s, _ := skl.GetCurrentOption()
+		game.Warp(episode, level, s)
 	})
 
-	// inner box
-	// needed to set nice looking border + background color
-	youSureBox := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(warpTo, 1, 0, true)
-	youSureBox.SetBorder(true)
-	youSureBox.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
-
-	width := len([]rune(warpText)) + 10
-
 	// surrounding layout
+	width := len([]rune(skillText)) + 26
 	youSureLayout := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, yOffset, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
 			AddItem(nil, xOffset, 1, false).
-			AddItem(youSureBox, width, 0, true).
+			AddItem(warpRecordForm, width, 0, true).
 			AddItem(nil, 0, 1, false),
-			3, 1, true).
+			formHeight+2, 1, true).
 		AddItem(nil, 0, 1, false)
 
 	return youSureLayout
