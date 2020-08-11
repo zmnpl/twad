@@ -153,7 +153,7 @@ func populateGamesTable() {
 			// warp
 			case 'w':
 				if r > 0 {
-					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, 7, r+1)
+					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, 27, r+4)
 					contentPages.AddPage(pageWarp, warp, true, true)
 					app.SetFocus(warp)
 					return nil

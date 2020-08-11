@@ -10,10 +10,11 @@ import (
 )
 
 const (
-	warpText     = "Warp e l"
-	skillText    = "Difficulty"
-	demoText     = "Demo Name"
-	warpOkButton = "Rip And Tear!"
+	warpText          = "Warp e l"
+	skillText         = "Difficulty"
+	demoText          = "Demo Name"
+	demoTextOverwrite = "Overwriting"
+	warpOkButton      = "Rip And Tear!"
 )
 
 var (
@@ -53,14 +54,6 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int) 
 	episode := 0
 	level := 0
 
-	// TODO:
-	// Create Form
-	// Add it on detail-pager
-	// Add Skill (Set Default 3)
-	// Add Demo-Recording
-	//   Warn when name exists
-	//   Default to none
-
 	formHeight := 5
 	warpRecordForm := tview.NewForm()
 	warpRecordForm.SetBorder(true)
@@ -77,17 +70,27 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int) 
 
 	// to record a demo, specify a name
 	formHeight += 2
-	demoName := tview.NewInputField().SetLabel(demoText).SetFieldWidth(15)
-	warpRecordForm.AddFormItem(demoName)
+	demoName := tview.NewInputField().SetLabel(demoText).SetFieldWidth(21)
 
-	// TODO: trigger game recording
+	demoName.SetChangedFunc(func(text string) {
+		demoName.SetLabel(demoText)
+		if game.HasDemoFile(demoName.GetText()) {
+			demoName.SetLabel(optsWarnColor + demoTextOverwrite)
+		}
+	})
+	warpRecordForm.AddFormItem(demoName)
 
 	// confirm button
 	warpRecordForm.AddButton(warpOkButton, func() {
 		episode, level = splitWarpString(warpTo.GetText())
 		appModeNormal()
-		s, _ := skl.GetCurrentOption()
-		game.Warp(episode, level, s)
+		difficulty, _ := skl.GetCurrentOption()
+		// supplying a demoname automatically starts recording
+		if len(demoName.GetText()) > 0 {
+			game.WarpRecord(episode, level, difficulty, demoName.GetText())
+		} else {
+			game.Warp(episode, level, difficulty)
+		}
 	})
 
 	// surrounding layout

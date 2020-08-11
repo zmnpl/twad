@@ -105,6 +105,13 @@ func (g *Game) Warp(episode, level, skill int) (err error) {
 	return
 }
 
+// WarpRecord lets you select episode and level to start in
+// Just a wrapper for game.run
+func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error) {
+	g.run(*newRunConfig().warp(episode, level).setSkill(g.skillForPort(skill)).recordDemo(demoName))
+	return
+}
+
 func (g *Game) run(rcfg runconfig) (err error) {
 	start := time.Now()
 
@@ -185,7 +192,8 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	// demo recording
 	if rcfg.recDemo {
 		if err := os.MkdirAll(g.getDemoDir(), 0755); err == nil {
-			// TODO: Add recording parameter
+			params = append(params, "-record") // TODO: Does -record behave equally across ports?
+			params = append(params, g.getDemoDir()+"/"+rcfg.demoName)
 		}
 	}
 
@@ -354,6 +362,19 @@ func (g Game) getSaveDir() string {
 
 func (g Game) getDemoDir() string {
 	return cfg.GetDemoFolder() + "/" + g.cleansedName()
+}
+
+// HasDemoFile checks if a file with the same name already exists in the default demo dir
+func (g Game) HasDemoFile(name string) bool {
+	if files, err := ioutil.ReadDir(g.getDemoDir()); err == nil {
+		for _, f := range files {
+			nameWithouthExt := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
+			if nameWithouthExt == name {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // cleansedName removes all but alphanumeric characters from name
