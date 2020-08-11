@@ -54,22 +54,22 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	episode := 0
 	level := 0
 
-	height := 7
 	warpRecordForm := tview.NewForm()
-	warpRecordForm.SetBorder(true).SetTitle(game.Name)
-	warpRecordForm.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
+	warpRecordForm.
+		SetBorder(true).
+		SetTitle(game.Name).
+		SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
 
 	// warp
 	warpTo := tview.NewInputField().SetLabel(warpText).SetAcceptanceFunc(warpStringAcceptance).SetFieldWidth(5)
 	warpRecordForm.AddFormItem(warpTo)
 
 	// skill level
-	height += 2
 	skl := tview.NewDropDown().SetOptions(skillLevels, nil).SetCurrentOption(2).SetLabel(skillText)
 	warpRecordForm.AddFormItem(skl)
 
 	// to record a demo, specify a name
-	height += 2
+
 	demoName := tview.NewInputField().SetLabel(demoText).SetFieldWidth(21)
 
 	demoName.SetChangedFunc(func(text string) {
@@ -94,13 +94,13 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	})
 
 	// surrounding layout
-	_, _, _, containerHeight := container.GetRect()
 	helpHeight := 5
 	width := 50
-	// default: right below the selected game
-	yOffset = yOffset + int(height/2)
+	_, _, _, height := warpRecordForm.GetRect()
+	_, _, _, containerHeight := container.GetRect()
+
 	// though, if it flows out of the screen, then on top of the game
-	if yOffset-int(height/2)+height >= containerHeight+helpHeight {
+	if yOffset+height > containerHeight+helpHeight {
 		yOffset = yOffset - height - 1
 	}
 

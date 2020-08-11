@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"fmt"
 	"path"
 
 	"github.com/gdamore/tcell"
@@ -103,7 +102,7 @@ func makeModList(g *games.Game) *tview.Flex {
 				}
 
 				detailSidePagesSub1.AddPage(pageYouSure,
-					makeYouSureBox(fmt.Sprintf(deleteModQuestion, g.Mods[ci], g.Name),
+					makeYouSureBox(*g,
 						func() {
 							removeMod(ci)
 							detailSidePagesSub1.RemovePage(pageYouSure)
@@ -114,7 +113,7 @@ func makeModList(g *games.Game) *tview.Flex {
 							detailSidePagesSub1.RemovePage(pageYouSure)
 							app.SetFocus(modList)
 						},
-						2, 2), true, true) // TODO: calculate offsets
+						2, 2, modList.Box), true, true) // TODO: calculate offsets
 			}
 			return nil
 		}

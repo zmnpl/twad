@@ -2,51 +2,44 @@ package tui
 
 import (
 	"github.com/rivo/tview"
+	"github.com/zmnpl/twad/games"
 )
 
 const (
-	confirmText = "Yep"
-	abortText   = "Hell No"
+	confirmText = "Delete"
+	abortText   = "Hell No!"
 )
 
 // help for navigation
-func makeYouSureBox(question string, onOk func(), onCancel func(), xOffset int, yOffset int) *tview.Flex {
-
+func makeYouSureBox(g games.Game, onOk func(), onCancel func(), xOffset int, yOffset int, container *tview.Box) *tview.Flex {
 	youSureForm := tview.NewForm().
-		AddButton(confirmText, func() {
-			onOk()
-		}).
+		AddButton(confirmText, onOk).
 		AddButton(abortText, onCancel)
-	youSureForm.SetBorder(false)
+	youSureForm.
+		SetBorder(true).
+		SetTitle(g.Name)
 	youSureForm.SetFocus(1)
 
-	//	youSureForm.SetBackgroundColor(tview.Styles.ContrastBackgroundColor)
+	height := 5
+	width := 50
 
-	description := tview.NewTextView().SetText(question)
-	description.SetBorderPadding(1, 0, 1, 1)
-	//	description.SetBackgroundColor(tview.Styles.ContrastBackgroundColor)
+	// surrounding layout
+	_, _, _, containerHeight := container.GetRect()
+	helpHeight := 5
 
-	youSureBox := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(description, 2, 0, false).
-		AddItem(youSureForm, 3, 0, true)
-		//	youSureBox.SetBackgroundColor(tview.Styles.ContrastBackgroundColor)
-	youSureBox.SetBorder(true)
-
-	width := len(question) + 4
-	minWidth := 11 + len(confirmText) + len(abortText)
-	if width < minWidth {
-		width = minWidth
+	// default: right below the selected game
+	// though, if it flows out of the screen, then on top of the game
+	if yOffset+height > containerHeight+helpHeight {
+		yOffset = yOffset - height - 1
 	}
 
-	// TODO: catch yOffset if popup flows out of the windows
-
 	youSureLayout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, yOffset, 1, false).
+		AddItem(nil, yOffset, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(nil, xOffset, 1, false).
-			AddItem(youSureBox, width, 0, true).
+			AddItem(nil, xOffset, 0, false).
+			AddItem(youSureForm, width, 0, true).
 			AddItem(nil, 0, 1, false),
-			7, 1, true).
+			height, 1, true).
 		AddItem(nil, 0, 1, false)
 
 	return youSureLayout

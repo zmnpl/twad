@@ -1,8 +1,6 @@
 package tui
 
 import (
-	"fmt"
-
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
@@ -98,6 +96,7 @@ func populateGamesTable() {
 	gamesTable.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 		r, _ := gamesTable.GetSelection()
+		dialogXOffset := 7
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
@@ -153,8 +152,9 @@ func populateGamesTable() {
 			// warp
 			case 'w':
 				if r > 0 {
+					_, _, _, commandPreviewHeight := commandPreview.GetRect()
 					rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
-					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, 7, r-rowOffset, gamesTable.Box)
+					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, dialogXOffset, commandPreviewHeight+(r+1)-rowOffset, contentPages.Box)
 					contentPages.AddPage(pageWarp, warp, true, true)
 					app.SetFocus(warp)
 					return nil
@@ -197,8 +197,6 @@ func populateGamesTable() {
 
 		// delete selected game
 		if k == tcell.KeyDelete && r > 0 {
-			rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
-
 			remove := func() {
 				if r == gamesTable.GetRowCount()-1 {
 					gamesTable.Select(r-1, 0)
@@ -213,8 +211,10 @@ func populateGamesTable() {
 				return nil
 			}
 
-			g := allGames[r-fixRows]
-			contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, appModeNormal, 2, r-rowOffset+2), true, true)
+			rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
+			_, _, _, commandPreviewHeight := commandPreview.GetRect()
+			youSure := makeYouSureBox(allGames[r-fixRows], remove, appModeNormal, dialogXOffset, commandPreviewHeight+(r+1)-rowOffset, contentPages.Box)
+			contentPages.AddPage(pageYouSure, youSure, true, true)
 			return nil
 		}
 
