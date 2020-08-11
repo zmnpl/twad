@@ -259,6 +259,14 @@ func (g Game) SaveCount() int {
 	return 0
 }
 
+// DemoCount returns the number of demos existing for this game
+func (g Game) DemoCount() int {
+	if demos, err := ioutil.ReadDir(g.getDemoDir()); err == nil {
+		return len(demos)
+	}
+	return 0
+}
+
 // Rate increases or decreases the games rating
 func (g *Game) Rate(increment int) {
 	g.Rating += increment

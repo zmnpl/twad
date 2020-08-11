@@ -50,13 +50,13 @@ func splitWarpString(warp string) (episode, level int) {
 }
 
 // warp dialog
-func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int) *tview.Flex {
+func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, container *tview.Box) *tview.Flex {
 	episode := 0
 	level := 0
 
-	formHeight := 5
+	height := 7
 	warpRecordForm := tview.NewForm()
-	warpRecordForm.SetBorder(true)
+	warpRecordForm.SetBorder(true).SetTitle(game.Name)
 	warpRecordForm.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
 
 	// warp
@@ -64,12 +64,12 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int) 
 	warpRecordForm.AddFormItem(warpTo)
 
 	// skill level
-	formHeight += 2
+	height += 2
 	skl := tview.NewDropDown().SetOptions(skillLevels, nil).SetCurrentOption(2).SetLabel(skillText)
 	warpRecordForm.AddFormItem(skl)
 
 	// to record a demo, specify a name
-	formHeight += 2
+	height += 2
 	demoName := tview.NewInputField().SetLabel(demoText).SetFieldWidth(21)
 
 	demoName.SetChangedFunc(func(text string) {
@@ -94,14 +94,23 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int) 
 	})
 
 	// surrounding layout
-	width := len([]rune(skillText)) + 26
+	_, _, _, containerHeight := container.GetRect()
+	helpHeight := 5
+	width := 50
+	// default: right below the selected game
+	yOffset = yOffset + int(height/2)
+	// though, if it flows out of the screen, then on top of the game
+	if yOffset-int(height/2)+height >= containerHeight+helpHeight {
+		yOffset = yOffset - height - 1
+	}
+
 	youSureLayout := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, yOffset, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
 			AddItem(nil, xOffset, 1, false).
 			AddItem(warpRecordForm, width, 0, true).
 			AddItem(nil, 0, 1, false),
-			formHeight+2, 1, true).
+			height, 1, true).
 		AddItem(nil, 0, 1, false)
 
 	return youSureLayout

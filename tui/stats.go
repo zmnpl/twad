@@ -22,10 +22,12 @@ func makeStatsTable(g *games.Game) *tview.Table {
 
 	row := 0
 	pts := float64(g.Playtime) / 1000 / 60
-	saves := g.SaveCount()
 
 	stats.SetCell(row, 0, tview.NewTableCell("# Savegames").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", saves)).SetAlign(tview.AlignLeft))
+	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.SaveCount())).SetAlign(tview.AlignLeft))
+	row++
+	stats.SetCell(row, 0, tview.NewTableCell("# Demos").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.DemoCount())).SetAlign(tview.AlignLeft))
 	row++
 	stats.SetCell(row, 0, tview.NewTableCell("Playtime").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%.2f min", pts)).SetAlign(tview.AlignLeft))

@@ -153,7 +153,8 @@ func populateGamesTable() {
 			// warp
 			case 'w':
 				if r > 0 {
-					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, 27, r+4)
+					rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
+					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, 7, r-rowOffset, gamesTable.Box)
 					contentPages.AddPage(pageWarp, warp, true, true)
 					app.SetFocus(warp)
 					return nil
@@ -196,6 +197,8 @@ func populateGamesTable() {
 
 		// delete selected game
 		if k == tcell.KeyDelete && r > 0 {
+			rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
+
 			remove := func() {
 				if r == gamesTable.GetRowCount()-1 {
 					gamesTable.Select(r-1, 0)
@@ -211,7 +214,7 @@ func populateGamesTable() {
 			}
 
 			g := allGames[r-fixRows]
-			contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, appModeNormal, 2, r+2), true, true)
+			contentPages.AddPage(pageYouSure, makeYouSureBox(fmt.Sprintf(deleteGameQuestion, g.Name), remove, appModeNormal, 2, r-rowOffset+2), true, true)
 			return nil
 		}
 
