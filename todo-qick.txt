@@ -1,7 +1,12 @@
-- options for h/v right side
-- switch to grid layout, to make it responsive
-- start from last / specific savegame
-- start in specific map
+- play demo
+-- demo selection list
+-- can remove demos
+- error control
+-- display errors somewhere
+- DONE options for h/v right side
+- DONE switch to grid layout, to make it responsive
+- DONE start from last / specific savegame
+- DONE start in specific map
 - DONE revamp options to regular form
 - DONE revamp addedit game to regular form
 - use DOOMWADDIR
