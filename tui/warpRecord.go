@@ -74,7 +74,7 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 
 	demoName.SetChangedFunc(func(text string) {
 		demoName.SetLabel(demoText)
-		if game.HasDemoFile(demoName.GetText()) {
+		if game.DemoExists(demoName.GetText()) {
 			demoName.SetLabel(optsWarnColor + demoTextOverwrite)
 		}
 	})

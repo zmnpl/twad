@@ -94,7 +94,7 @@ func makeModList(g *games.Game) *tview.Flex {
 		// delete mod
 		if k == tcell.KeyDelete {
 			// when in edit mode, this is only confusing
-			if !editMode {
+			if !editMode && modList.GetItemCount() > 0 {
 				ci := modList.GetCurrentItem()
 				if cfg.GetInstance().DeleteWithoutWarning {
 					removeMod(ci)

@@ -160,6 +160,19 @@ func populateGamesTable() {
 					return nil
 				}
 
+			// demos
+			case 'd':
+				if r > 0 {
+					g := allGames[r-fixRows]
+					demos, _ := g.Demos()
+					if len(demos) > 0 {
+						demoList := makeDemoList(&g)
+						detailSidePagesSub1.AddPage(pageDemos, demoList, true, true)
+						app.SetFocus(demoList)
+					}
+					return nil
+				}
+
 			// add mod to game
 			case 'm':
 				if r > 0 {

@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -372,8 +373,9 @@ func (g Game) getDemoDir() string {
 	return cfg.GetDemoFolder() + "/" + g.cleansedName()
 }
 
-// HasDemoFile checks if a file with the same name already exists in the default demo dir
-func (g Game) HasDemoFile(name string) bool {
+// DemoExists checks if a file with the same name already exists in the default demo dir
+// Doesn't use standard library to ignore file ending; design decision
+func (g Game) DemoExists(name string) bool {
 	if files, err := ioutil.ReadDir(g.getDemoDir()); err == nil {
 		for _, f := range files {
 			nameWithouthExt := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
@@ -383,6 +385,18 @@ func (g Game) HasDemoFile(name string) bool {
 		}
 	}
 	return false
+}
+
+// Demos returns the demo files existing for the game
+func (g Game) Demos() ([]os.FileInfo, error) {
+	demos, err := ioutil.ReadDir(g.getDemoDir())
+	if err != nil {
+		// TODO
+	}
+	sort.Slice(demos, func(i, j int) bool {
+		return demos[i].ModTime().After(demos[j].ModTime())
+	})
+	return demos, err
 }
 
 // cleansedName removes all but alphanumeric characters from name

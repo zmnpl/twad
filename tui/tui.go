@@ -28,6 +28,7 @@ const (
 	pageMods         = "mods"
 	pageDefaultRight = "right"
 	pageWarp         = "warp"
+	pageDemos        = "demos"
 
 	tableBorders = false
 
@@ -193,6 +194,7 @@ func appModeNormal() {
 	// clear actionPager
 	detailPages.RemovePage(pageAddEdit)
 	detailSidePagesSub1.RemovePage(pageYouSure)
+	detailSidePagesSub1.RemovePage(pageDemos)
 
 	// set ui state
 	detailPages.SwitchToPage(pageContentMain)
