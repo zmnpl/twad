@@ -93,7 +93,7 @@ func firstStart() {
 func loadConfig() error {
 	dConf := defaultConfig()
 
-	content, err := ioutil.ReadFile(configFullPath())
+	content, err := ioutil.ReadFile(configFullPath()) // TODO: Resolve simlinks
 	if err != nil {
 		instance = &dConf
 		return err

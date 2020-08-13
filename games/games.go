@@ -114,7 +114,7 @@ func Persist() error {
 }
 
 func loadGames() error {
-	content, err := ioutil.ReadFile(cfg.GetConfigFolder() + "/" + gamesJSONName)
+	content, err := ioutil.ReadFile(cfg.GetConfigFolder() + "/" + gamesJSONName) // TODO: Resolve simlinks
 	if err != nil {
 		return err
 	}
