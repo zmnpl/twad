@@ -1,6 +1,6 @@
-- play demo
--- demo selection list
--- can remove demos
+- DONE play demo
+-- DONE demo selection list
+-- DONE can remove demos
 - error control
 -- display errors somewhere
 - DONE options for h/v right side
