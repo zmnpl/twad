@@ -101,19 +101,21 @@ func makeModList(g *games.Game) *tview.Flex {
 					return nil
 				}
 
+				youSure := makeYouSureBox(*g,
+					func() {
+						removeMod(ci)
+						detailSidePagesSub1.RemovePage(pageYouSure)
+						app.SetFocus(modList)
+					},
+					func() {
+						//appModeNormal()
+						detailSidePagesSub1.RemovePage(pageYouSure)
+						app.SetFocus(modList)
+					},
+					2, 2, modList.Box)
 				detailSidePagesSub1.AddPage(pageYouSure,
-					makeYouSureBox(*g,
-						func() {
-							removeMod(ci)
-							detailSidePagesSub1.RemovePage(pageYouSure)
-							app.SetFocus(modList)
-						},
-						func() {
-							//appModeNormal()
-							detailSidePagesSub1.RemovePage(pageYouSure)
-							app.SetFocus(modList)
-						},
-						2, 2, modList.Box), true, true) // TODO: calculate offsets
+					youSure, true, true) // TODO: calculate offsets
+				app.SetFocus(youSure)
 			}
 			return nil
 		}

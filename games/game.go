@@ -387,11 +387,21 @@ func (g Game) DemoExists(name string) bool {
 	return false
 }
 
+// RemoveDemo removes the demo file with the given name
+// and returns the new set of demos
+func (g *Game) RemoveDemo(name string) ([]os.FileInfo, error) {
+	err := os.Remove(g.getDemoDir() + "/" + name)
+	if err != nil {
+		return nil, err
+	}
+	return g.Demos()
+}
+
 // Demos returns the demo files existing for the game
 func (g Game) Demos() ([]os.FileInfo, error) {
 	demos, err := ioutil.ReadDir(g.getDemoDir())
 	if err != nil {
-		// TODO
+		return nil, err
 	}
 	sort.Slice(demos, func(i, j int) bool {
 		return demos[i].ModTime().After(demos[j].ModTime())

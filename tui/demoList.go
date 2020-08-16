@@ -32,9 +32,13 @@ func makeDemoList(g *games.Game) *tview.Flex {
 		// TODO
 	}
 
-	for _, demo := range demos {
-		demoList.AddItem(demo.Name(), fmt.Sprintf("%v (%.2f KiB)", demo.ModTime().Format("2006-01-02 15:04"), float32(demo.Size())/1024), '|', nil)
+	populate := func() {
+		demoList.Clear()
+		for _, demo := range demos {
+			demoList.AddItem(demo.Name(), fmt.Sprintf("%v (%.2f KiB)", demo.ModTime().Format("2006-01-02 15:04"), float32(demo.Size())/1024), '|', nil)
+		}
 	}
+	populate()
 
 	demoList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
 		// TODO: Play Demo Here
@@ -45,8 +49,9 @@ func makeDemoList(g *games.Game) *tview.Flex {
 		// Existing change func when deleting zero item
 		// created pull request; setting nil and resetting is temp workaround
 		demoList.SetChangedFunc(nil) // BUG WORKAROUND
-		demoList.RemoveItem(i)
-		//g.RemoveMod(i) // TODO: Remove Demo, not mod
+		//demoList.RemoveItem(i)
+		demos, err = g.RemoveDemo(demos[i].Name())
+		populate()
 		games.Persist()
 		//demoList.SetChangedFunc(changeFunc) // BUG WORKAROUND
 	}
