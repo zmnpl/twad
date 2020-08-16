@@ -226,7 +226,7 @@ func populateGamesTable() {
 
 			rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
 			_, _, _, commandPreviewHeight := commandPreview.GetRect()
-			youSure := makeYouSureBox(allGames[r-fixRows], remove, appModeNormal, dialogXOffset, commandPreviewHeight+(r+1)-rowOffset, contentPages.Box)
+			youSure := makeYouSureBox(allGames[r-fixRows].Name, remove, appModeNormal, dialogXOffset, commandPreviewHeight+(r+1)-rowOffset, contentPages.Box)
 			contentPages.AddPage(pageYouSure, youSure, true, true)
 			return nil
 		}

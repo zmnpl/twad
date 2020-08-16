@@ -2,7 +2,6 @@ package tui
 
 import (
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/games"
 )
 
 const (
@@ -11,13 +10,13 @@ const (
 )
 
 // help for navigation
-func makeYouSureBox(g games.Game, onOk func(), onCancel func(), xOffset int, yOffset int, container *tview.Box) *tview.Flex {
+func makeYouSureBox(title string, onOk func(), onCancel func(), xOffset int, yOffset int, container *tview.Box) *tview.Flex {
 	youSureForm := tview.NewForm().
 		AddButton(confirmText, onOk).
 		AddButton(abortText, onCancel)
 	youSureForm.
 		SetBorder(true).
-		SetTitle(g.Name)
+		SetTitle(title)
 	youSureForm.SetFocus(1)
 
 	height := 5

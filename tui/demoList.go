@@ -26,19 +26,25 @@ func makeDemoList(g *games.Game) *tview.Flex {
 	demoFlex.AddItem(demoList, 0, 1, true)
 	demoList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
 
-	// populate list with data
+	// get demos
 	demos, err := g.Demos()
-	if err != nil {
-		// TODO
-	}
 
+	// how to populate the list
 	populate := func() {
 		demoList.Clear()
 		for _, demo := range demos {
 			demoList.AddItem(demo.Name(), fmt.Sprintf("%v (%.2f KiB)", demo.ModTime().Format("2006-01-02 15:04"), float32(demo.Size())/1024), '|', nil)
 		}
 	}
-	populate()
+
+	if demos != nil {
+		populate()
+	}
+
+	// handle error if demos couldn't be retrieved
+	if err != nil {
+		// TODO
+	}
 
 	demoList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
 		// TODO: Play Demo Here
@@ -49,9 +55,9 @@ func makeDemoList(g *games.Game) *tview.Flex {
 		// Existing change func when deleting zero item
 		// created pull request; setting nil and resetting is temp workaround
 		demoList.SetChangedFunc(nil) // BUG WORKAROUND
-		//demoList.RemoveItem(i)
-		demos, err = g.RemoveDemo(demos[i].Name())
-		populate()
+		if demos, err = g.RemoveDemo(demos[i].Name()); demos != nil {
+			populate()
+		}
 		games.Persist()
 		//demoList.SetChangedFunc(changeFunc) // BUG WORKAROUND
 	}
@@ -70,18 +76,20 @@ func makeDemoList(g *games.Game) *tview.Flex {
 					return nil
 				}
 
+				youSure := makeYouSureBox(demos[ci].Name(),
+					func() {
+						removeDemo(ci)
+						detailSidePagesSub1.RemovePage(pageYouSure)
+						app.SetFocus(demoList)
+					},
+					func() {
+						detailSidePagesSub1.RemovePage(pageYouSure)
+						app.SetFocus(demoList)
+					},
+					2, 2, demoList.Box)
 				detailSidePagesSub1.AddPage(pageYouSure,
-					makeYouSureBox(*g,
-						func() {
-							removeDemo(ci)
-							detailSidePagesSub1.RemovePage(pageYouSure)
-							app.SetFocus(demoList)
-						},
-						func() {
-							detailSidePagesSub1.RemovePage(pageYouSure)
-							app.SetFocus(demoList)
-						},
-						2, 2, demoList.Box), true, true) // TODO: calculate offsets
+					youSure, true, true) // TODO: calculate offsets
+				app.SetFocus(youSure)
 			}
 			return nil
 		}

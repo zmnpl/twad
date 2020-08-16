@@ -101,7 +101,7 @@ func makeModList(g *games.Game) *tview.Flex {
 					return nil
 				}
 
-				youSure := makeYouSureBox(*g,
+				youSure := makeYouSureBox(g.Mods[ci],
 					func() {
 						removeMod(ci)
 						detailSidePagesSub1.RemovePage(pageYouSure)
