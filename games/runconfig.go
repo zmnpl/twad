@@ -42,7 +42,7 @@ func (rcfg *runconfig) recordDemo(name string) *runconfig {
 	return rcfg
 }
 
-func (rcfg *runconfig) palyDemo(name string) *runconfig {
+func (rcfg *runconfig) playDemo(name string) *runconfig {
 	rcfg.demoName = name
 	rcfg.plyDemo = true
 	return rcfg

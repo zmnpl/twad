@@ -113,6 +113,11 @@ func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error
 	return
 }
 
+//
+func (g Game) PlayDemo(name string) {
+	g.run(*newRunConfig().playDemo(name))
+}
+
 func (g *Game) run(rcfg runconfig) (err error) {
 	start := time.Now()
 
@@ -200,7 +205,8 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 
 	// play demo
 	if rcfg.plyDemo {
-		// TODO: write this piece
+		params = append(params, "-playdemo")
+		params = append(params, g.getDemoDir()+"/"+rcfg.demoName)
 	}
 
 	return append(params, g.CustomParameters...)

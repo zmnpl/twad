@@ -47,7 +47,7 @@ func makeDemoList(g *games.Game) *tview.Flex {
 	}
 
 	demoList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
-		// TODO: Play Demo Here
+		g.PlayDemo(demos[index].Name())
 	})
 
 	removeDemo := func(i int) {
