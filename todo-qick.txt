@@ -1,15 +1,29 @@
 - DONE play demo
 -- DONE demo selection list
 -- DONE can remove demos
-- error control
--- display errors somewhere
+
+- DONE error control
+-- DONE display errors somewhere
+
 - DONE options for h/v right side
+
 - DONE switch to grid layout, to make it responsive
+
 - DONE start from last / specific savegame
+
 - DONE start in specific map
+
 - DONE revamp options to regular form
+
 - DONE revamp addedit game to regular form
+
 - use DOOMWADDIR
 -- check if exists on start
 -- if not, set to selected base-dir
 -- explain basedir = doomwaddir to user
+
+- Write tester to check integrity
+-- of a game / mod configuration (all files existing?)
+-- config (i.e. doomwaddir ok?)
+
+- Remove option to select default save dir; this makes no sense for the programm. This is opionionated

@@ -110,7 +110,7 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 			AddItem(nil, xOffset, 1, false).
 			AddItem(warpRecordForm, width, 0, true).
 			AddItem(nil, 0, 1, false),
-			height, 1, true).
+			height+1, 1, true).
 		AddItem(nil, 0, 1, false)
 
 	return youSureLayout

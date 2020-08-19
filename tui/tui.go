@@ -29,6 +29,7 @@ const (
 	pageDefaultRight = "right"
 	pageWarp         = "warp"
 	pageDemos        = "demos"
+	pageError        = "error"
 
 	tableBorders = false
 
@@ -154,6 +155,7 @@ func initUIElements() {
 			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
+	showError("foo", "bar", func() {})
 }
 
 // small or big header
@@ -191,6 +193,7 @@ func appModeNormal() {
 	contentPages.RemovePage(pageFirstSetup)
 	contentPages.RemovePage(pageOptions)
 	contentPages.RemovePage(pageWarp)
+	contentPages.RemovePage(pageError)
 	// clear actionPager
 	detailPages.RemovePage(pageAddEdit)
 	detailSidePagesSub1.RemovePage(pageYouSure)
