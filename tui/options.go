@@ -25,7 +25,6 @@ const (
 	optsSourcePortLabel          = "Source Ports"
 	optsIwadsLabel               = "IWADs"
 	optsNextTimeFirstStart       = "Show path selection dialog on next start"
-	optsDefaultSaveDirs          = "Use default save dir"
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
 	optsDetailPaneVertical       = "UI - Split right side detail pane vertically"
@@ -82,9 +81,6 @@ func makeOptions() *tview.Flex {
 	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.GetInstance().IWADs, ","))
 	o.AddFormItem(iwads)
 
-	defaultSaveDirs := tview.NewCheckbox().SetLabel(optsDefaultSaveDirs).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().DefaultSaveDir)
-	o.AddFormItem(defaultSaveDirs)
-
 	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
@@ -123,7 +119,6 @@ func makeOptions() *tview.Flex {
 
 		c.HideHeader = printHeader.IsChecked()
 		c.DeleteWithoutWarning = dontWarn.IsChecked()
-		c.DefaultSaveDir = defaultSaveDirs.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
 		c.DetailPaneSplitVertical = detailPaneVertical.IsChecked()
 		//c.ModsInTable = legacyModView.IsChecked()

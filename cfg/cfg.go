@@ -34,7 +34,6 @@ type Cfg struct {
 	SourcePorts             []string       `json:"source_ports"`
 	IWADs                   []string       `json:"iwa_ds"`
 	Configured              bool           `json:"configured"`
-	DefaultSaveDir          bool           `json:"default_save_dir"`
 	DeleteWithoutWarning    bool           `json:"delete_without_warning"`
 	HideHeader              bool           `json:"hide_header"`
 	GameListAbsoluteWidth   int            `json:"game_list_absolute_width"`

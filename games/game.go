@@ -149,7 +149,6 @@ func (g Game) composeProcess(params []string) (cmd *exec.Cmd) {
 
 func (g Game) getLaunchParams(rcfg runconfig) []string {
 	params := make([]string, 1, 10)
-	config := cfg.GetInstance()
 
 	// IWAD
 	if g.Iwad != "" {
@@ -163,14 +162,12 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	}
 
 	// custom game save directory
-	if config.DefaultSaveDir == false {
-		// making dir seems to be redundant, since engines do that already
-		// still keeping it to possibly keep track of it / handle errors
-		// only use separate save dir if directory has been craeted or path exists already
-		if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
-			params = append(params, g.saveDirParam())
-			params = append(params, g.getSaveDir())
-		}
+	// making dir seems to be redundant, since engines do that already
+	// still keeping it to possibly keep track of it / handle errors
+	// only use separate save dir if directory has been craeted or path exists already
+	if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
+		params = append(params, g.saveDirParam())
+		params = append(params, g.getSaveDir())
 	}
 
 	// TODO: Check if select case works better for different modes
@@ -214,13 +211,6 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 
 func (g Game) getLastSaveLaunchParams() (params []string) {
 	params = []string{}
-
-	// if the default savedir is used, it can not be made sure
-	// that the savegame belongs to the game/mod combindation
-	// therefore it doesn't make sense to do
-	if config.DefaultSaveDir {
-		return
-	}
 
 	// only if the last savegame could be determined successfully
 	// otherwise params will stay empty
