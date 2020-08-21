@@ -27,18 +27,17 @@ const (
 // Cfg holds basic configuration settings
 // Should only be instantiated via GetInstance
 type Cfg struct {
-	WadDir                  string         `json:"wad_dir"`
-	WriteWadDirToEngineCfg  bool           `json:"write_wad_dir_to_engine_cfg"`
-	DontSetDoomwaddir       bool           `json:"dont_set_doomwaddir"`
-	ModExtensions           map[string]int `json:"mod_extensions"`
-	SourcePorts             []string       `json:"source_ports"`
-	IWADs                   []string       `json:"iwa_ds"`
-	Configured              bool           `json:"configured"`
-	DeleteWithoutWarning    bool           `json:"delete_without_warning"`
-	HideHeader              bool           `json:"hide_header"`
-	GameListAbsoluteWidth   int            `json:"game_list_absolute_width"`
-	GameListRelativeWidth   int            `json:"game_list_relative_width"`
-	DetailPaneSplitVertical bool           `json:"detail_pane_split_vertical"`
+	WadDir                 string         `json:"wad_dir"`
+	WriteWadDirToEngineCfg bool           `json:"write_wad_dir_to_engine_cfg"`
+	DontSetDoomwaddir      bool           `json:"dont_set_doomwaddir"`
+	ModExtensions          map[string]int `json:"mod_extensions"`
+	SourcePorts            []string       `json:"source_ports"`
+	IWADs                  []string       `json:"iwa_ds"`
+	Configured             bool           `json:"configured"`
+	DeleteWithoutWarning   bool           `json:"delete_without_warning"`
+	HideHeader             bool           `json:"hide_header"`
+	GameListAbsoluteWidth  int            `json:"game_list_absolute_width"`
+	GameListRelativeWidth  int            `json:"game_list_relative_width"`
 }
 
 func init() {

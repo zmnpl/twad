@@ -27,7 +27,6 @@ const (
 	optsNextTimeFirstStart       = "Show path selection dialog on next start"
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
-	optsDetailPaneVertical       = "UI - Split right side detail pane vertically"
 )
 
 func pathHasIwad(path string) (bool, error) {
@@ -97,9 +96,6 @@ func makeOptions() *tview.Flex {
 	gameListRelWidth.SetText(strconv.Itoa(cfg.GetInstance().GameListRelativeWidth))
 	o.AddFormItem(gameListRelWidth)
 
-	detailPaneVertical := tview.NewCheckbox().SetLabel(optsDetailPaneVertical).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().DetailPaneSplitVertical)
-	o.AddFormItem(detailPaneVertical)
-
 	o.AddButton(optsOkButtonLabel, func() {
 		c := cfg.GetInstance()
 
@@ -120,7 +116,6 @@ func makeOptions() *tview.Flex {
 		c.HideHeader = printHeader.IsChecked()
 		c.DeleteWithoutWarning = dontWarn.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
-		c.DetailPaneSplitVertical = detailPaneVertical.IsChecked()
 		//c.ModsInTable = legacyModView.IsChecked()
 		c.Configured = !firstStart.IsChecked()
 
