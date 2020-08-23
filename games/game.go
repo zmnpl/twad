@@ -3,7 +3,6 @@ package games
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -133,6 +132,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 	g.Playtime = g.Playtime + playtime
 	g.LastPlayed = time.Now().Format("2006-01-02 15:04:05MST")
 
+	// could take a while ...
 	go processOutput(string(output), g)
 
 	return
@@ -406,13 +406,9 @@ func (g Game) Demos() ([]os.FileInfo, error) {
 }
 
 // cleansedName removes all but alphanumeric characters from name
-// i.e. used for directory names
+// used for directory names
 func (g Game) cleansedName() string {
-	cleanser, err := regexp.Compile("[^a-zA-Z0-9]+")
-	if err != nil {
-		log.Fatal(err)
-	}
-
+	cleanser, _ := regexp.Compile("[^a-zA-Z0-9]+")
 	return cleanser.ReplaceAllString(g.Name, "")
 }
 
@@ -450,7 +446,7 @@ func parseStatline(line string, g *Game) (string, int) {
 	}
 }
 
-// checks the games engine type by inspecting the string
+// sourcePortFamily checks the games engine type by inspecting the string
 // known keyphrases will be interpreted as a certain source port family
 func (g Game) sourcePortFamily() (t int) {
 	// assume zdoom family
