@@ -15,21 +15,24 @@ const (
 // can show errors prominently on the screen
 // if a function is supplied, the user gets the choice to proceed
 // without fixing what might have cause this on his/her own risk
-func showError(errTitle string, errString string, lastFocus tview.Primitive, onIDontCare func()) {
+func showError(errTitle string, errString string, handFocusBackTo tview.Primitive, YOLO func()) {
 	// form with buttons
 	errForm := tview.NewForm()
 
+	// sets focus to the given primitive
+	// if nil was given, then the apps default state will be restored
 	resetFocus := func() {
-		if lastFocus != nil {
-			app.SetFocus(lastFocus)
+		if handFocusBackTo != nil {
+			app.SetFocus(handFocusBackTo)
 		} else {
 			appModeNormal()
 		}
 	}
 
-	if onIDontCare != nil {
+	// YOLO lets the user execute and action despite the error
+	if YOLO != nil {
 		errForm.AddButton(errYolo, func() {
-			onIDontCare()
+			YOLO()
 			contentPages.RemovePage(pageError)
 			resetFocus()
 		})

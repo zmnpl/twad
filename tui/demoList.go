@@ -13,7 +13,7 @@ const (
 	demosHeader = "Demos (descending by date)"
 )
 
-func makeDemoList(g *games.Game) *tview.Flex {
+func makeDemoList(g *games.Game) (*tview.Flex, error) {
 	// surrounding container
 	demoFlex := tview.NewFlex().SetDirection(tview.FlexRow)
 	demoFlex.SetBorderPadding(0, 0, 1, 1)
@@ -28,6 +28,12 @@ func makeDemoList(g *games.Game) *tview.Flex {
 
 	// get demos
 	demos, err := g.Demos()
+	if err != nil {
+		return nil, err
+	}
+	if len(demos) == 0 {
+		return nil, fmt.Errorf("no demos in demo dir")
+	}
 
 	// how to populate the list
 	populate := func() {
@@ -37,28 +43,35 @@ func makeDemoList(g *games.Game) *tview.Flex {
 		}
 	}
 
+	// do it
 	if demos != nil {
 		populate()
 	}
 
-	// handle error if demos couldn't be retrieved
-	if err != nil {
-		// TODO
-	}
-
+	// hit enter plays demo
 	demoList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
 		g.PlayDemo(demos[index].Name())
 	})
 
+	// removes demo at given index and focuses app properly
 	removeDemo := func(i int) {
-		// TODO: bug in tview
-		// Existing change func when deleting zero item
-		// created pull request; setting nil and resetting is temp workaround
+		// TODO: bug in tview; remove when fixed
 		demoList.SetChangedFunc(nil) // BUG WORKAROUND
-		if demos, err = g.RemoveDemo(demos[i].Name()); demos != nil {
+
+		demos, err = g.RemoveDemo(demos[i].Name())
+		if err != nil {
+			showError("could not remove demo", err.Error(), nil, nil)
+			return
+		}
+
+		if demos != nil && len(demos) != 0 {
 			populate()
+			app.SetFocus(demoList)
+		} else {
+			appModeNormal()
 		}
 		games.Persist()
+
 		//demoList.SetChangedFunc(changeFunc) // BUG WORKAROUND
 	}
 
@@ -80,7 +93,6 @@ func makeDemoList(g *games.Game) *tview.Flex {
 					func() {
 						removeDemo(ci)
 						detailSidePagesSub1.RemovePage(pageYouSure)
-						app.SetFocus(demoList)
 					},
 					func() {
 						detailSidePagesSub1.RemovePage(pageYouSure)
@@ -106,5 +118,5 @@ func makeDemoList(g *games.Game) *tview.Flex {
 		return event
 	})
 
-	return demoFlex
+	return demoFlex, nil
 }

@@ -164,12 +164,12 @@ func populateGamesTable() {
 			case 'd':
 				if r > 0 {
 					g := allGames[r-fixRows]
-					demos, _ := g.Demos()
-					if len(demos) > 0 {
-						demoList := makeDemoList(&g)
-						detailSidePagesSub1.AddPage(pageDemos, demoList, true, true)
-						app.SetFocus(demoList)
+					demoList, err := makeDemoList(&g)
+					if err != nil {
+						return nil
 					}
+					detailSidePagesSub1.AddPage(pageDemos, demoList, true, true)
+					app.SetFocus(demoList)
 					return nil
 				}
 
