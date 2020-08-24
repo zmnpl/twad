@@ -117,6 +117,7 @@ func initUIElements() {
 	mainFlex = tview.NewFlex().SetDirection(tview.FlexRow)
 	canvas.AddPage(pageMain, mainFlex, true, true)
 	// header
+	// TODO: wrap header in grid and make it responsive -> not so high screens hide it
 	header, headerHeight := getHeader()
 	headerPages.AddPage(pageHeader, header, true, true)
 	mainFlex.AddItem(headerPages, headerHeight, 0, false)
