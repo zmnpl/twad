@@ -155,7 +155,6 @@ func initUIElements() {
 			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
-	showError("foo", "bar", func() {})
 }
 
 // small or big header
