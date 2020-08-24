@@ -52,7 +52,7 @@ func makeOptions() *tview.Flex {
 
 	path := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.GetInstance().WadDir)
 	o.AddFormItem(path)
-	path.SetDoneFunc(func(key tcell.Key) {
+	pathDoneCheck := func() {
 		// does this path exist?
 		if _, err := os.Stat(path.GetText()); os.IsNotExist(err) {
 			path.SetLabel(optsPathLabel + optsWarnColor + optsErrPathDoesntExist)
@@ -69,6 +69,12 @@ func makeOptions() *tview.Flex {
 		}
 
 		path.SetLabel(optsPathLabel)
+	}
+	// initial check of configured path
+	pathDoneCheck()
+	// check after entry
+	path.SetDoneFunc(func(key tcell.Key) {
+		pathDoneCheck()
 	})
 
 	firstStart := tview.NewCheckbox().SetLabel(optsNextTimeFirstStart).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(!cfg.GetInstance().Configured)

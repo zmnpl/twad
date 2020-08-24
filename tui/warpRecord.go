@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	warpText          = "Warp e l"
+	warpText          = "Warp E L"
 	skillText         = "Difficulty"
 	demoText          = "Demo Name"
 	demoTextOverwrite = "Overwriting"
@@ -69,7 +69,6 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	warpRecordForm.AddFormItem(skl)
 
 	// to record a demo, specify a name
-
 	demoName := tview.NewInputField().SetLabel(demoText).SetFieldWidth(21)
 
 	demoName.SetChangedFunc(func(text string) {
@@ -83,8 +82,10 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	// confirm button
 	warpRecordForm.AddButton(warpOkButton, func() {
 		episode, level = splitWarpString(warpTo.GetText())
-		appModeNormal()
 		difficulty, _ := skl.GetCurrentOption()
+
+		appModeNormal() // TODO: looks like this is only executed after the game closed; not sure why
+
 		// supplying a demoname automatically starts recording
 		if len(demoName.GetText()) > 0 {
 			game.WarpRecord(episode, level, difficulty, demoName.GetText())
@@ -104,7 +105,7 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 		yOffset = yOffset - height - 1
 	}
 
-	youSureLayout := tview.NewFlex().SetDirection(tview.FlexRow).
+	warpWindowLayout := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, yOffset, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
 			AddItem(nil, xOffset, 1, false).
@@ -113,5 +114,5 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 			height+1, 1, true).
 		AddItem(nil, 0, 1, false)
 
-	return youSureLayout
+	return warpWindowLayout
 }

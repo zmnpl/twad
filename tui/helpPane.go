@@ -10,6 +10,8 @@ const (
 	keyResetUIText    = "Reset UI"
 	keyRunGameText    = "Run Game"
 	keyQuickload      = "Run Last Savegame"
+	keyWarp           = "Warp (+Record)"
+	keyDemos          = "Demos"
 	keyQuitText       = "Quit"
 	keyEditGameText   = "Edit Game"
 	keyNewGameText    = "New Game"
@@ -32,6 +34,8 @@ func init() {
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "ESC", keyResetUIText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "ENTER", keyRunGameText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "F9", keyQuickload))
+	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "w", keyWarp))
+	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "d", keyDemos))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "e", keyEditGameText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "n", keyNewGameText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "m", keyAddModText))
@@ -45,7 +49,7 @@ func init() {
 
 func makeHelpPane() (*tview.Grid, int) {
 	// could be easier / more static, but like this the layout can maybe be made more dynamic in the future
-	rows := 3
+	rows := 4
 	rowDimens := make([]int, rows)
 	for i := range rowDimens {
 		rowDimens[i] = 1
