@@ -6,7 +6,7 @@ import (
 )
 
 const (
-	errTitleStart = "A pinky demon bit your ass!"
+	errTitleStart = "ERROR"
 	errYolo       = "I don't care. Go ahead."
 	errNotYet     = "Let me fix that first!"
 	errAbort      = "Ok"
