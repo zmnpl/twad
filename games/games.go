@@ -75,6 +75,7 @@ func RemoveGameAt(i int) {
 	Persist()
 }
 
+// SortAlph sorts games alphabetically
 func SortAlph() {
 	sort.Slice(instance, func(i, j int) bool {
 		return instance[i].Name < instance[j].Name

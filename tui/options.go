@@ -13,8 +13,10 @@ import (
 
 const (
 	optsWarnColor          = "[red]"
+	optsGoodColor          = "[green]"
 	optsErrPathDoesntExist = " (doesn't exist)"
 	optsErrPathNoIWads     = " (doesn't contain IWADs)"
+	optsLooksGood          = " (looks good)"
 
 	optsHeader                   = "Options"
 	optsOkButtonLabel            = "Save"
@@ -68,7 +70,7 @@ func makeOptions() *tview.Flex {
 			return
 		}
 
-		path.SetLabel(optsPathLabel)
+		path.SetLabel(optsPathLabel + optsGoodColor + optsLooksGood)
 	}
 	// initial check of configured path
 	pathDoneCheck()

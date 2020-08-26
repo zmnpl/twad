@@ -15,12 +15,6 @@ import (
 	"github.com/zmnpl/twad/cfg"
 )
 
-const (
-	zdoom = iota
-	chocolate
-	boom
-)
-
 // Game represents one game configuration
 type Game struct {
 	Name             string         `json:"name"`
@@ -72,18 +66,6 @@ func NewGame(name, sourceport, iwad string) Game {
 	return game
 }
 
-// AddMod adds mod
-func (g *Game) AddMod(modFile string) {
-	g.Mods = append(g.Mods, modFile)
-	InformChangeListeners()
-	Persist()
-}
-
-// RemoveMod removes mod at the given index
-func (g *Game) RemoveMod(i int) {
-	g.Mods = append(g.Mods[0:i], g.Mods[i+1:]...)
-}
-
 // Run executes given configuration and launches the mod
 // Just a wrapper for game.run
 func (g *Game) Run() (err error) {
@@ -101,28 +83,40 @@ func (g *Game) Quickload() (err error) {
 // Warp lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) Warp(episode, level, skill int) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(g.skillForPort(skill)))
+	g.run(*newRunConfig().warp(episode, level).setSkill(g.spAdjustedSkill(skill)))
 	return
 }
 
 // WarpRecord lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(g.skillForPort(skill)).recordDemo(demoName))
+	g.run(*newRunConfig().warp(episode, level).setSkill(g.spAdjustedSkill(skill)).recordDemo(demoName))
 	return
 }
 
-//
+// PlayDemo replays the given demo file
+// Wrapper for game.run
 func (g Game) PlayDemo(name string) {
 	g.run(*newRunConfig().playDemo(name))
+}
+
+// AddMod adds mod
+func (g *Game) AddMod(modFile string) {
+	g.Mods = append(g.Mods, modFile)
+	InformChangeListeners()
+	Persist()
+}
+
+// RemoveMod removes mod at the given index
+func (g *Game) RemoveMod(i int) {
+	g.Mods = append(g.Mods[0:i], g.Mods[i+1:]...)
 }
 
 func (g *Game) run(rcfg runconfig) (err error) {
 	start := time.Now()
 
 	// rip and tear!
-	doom := g.composeProcess(g.getLaunchParams(rcfg))
-
+	doom := g.composeProcess(rcfg)
 	output, err := doom.CombinedOutput()
 	if err != nil {
 		return err
@@ -138,8 +132,9 @@ func (g *Game) run(rcfg runconfig) (err error) {
 	return
 }
 
-func (g Game) composeProcess(params []string) (cmd *exec.Cmd) {
-	// execute and capture output
+func (g Game) composeProcess(rcfg runconfig) (cmd *exec.Cmd) {
+	params := g.getLaunchParams(rcfg)
+	// create process object
 	cmd = exec.Command(g.SourcePort, params...)
 	// add environment variables; use os environment as basis
 	cmd.Env = os.Environ()
@@ -166,11 +161,9 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	// still keeping it to possibly keep track of it / handle errors
 	// only use separate save dir if directory has been craeted or path exists already
 	if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
-		params = append(params, g.saveDirParam())
+		params = append(params, g.spSaveDirParam())
 		params = append(params, g.getSaveDir())
 	}
-
-	// TODO: Check if select case works better for different modes
 
 	// quickload
 	if rcfg.loadLastSave {
@@ -212,17 +205,10 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 func (g Game) getLastSaveLaunchParams() (params []string) {
 	params = []string{}
 
-	// only if the last savegame could be determined successfully
-	// otherwise params will stay empty
 	if lastSave, err := g.lastSave(); err == nil {
 		params = append(params, []string{"-loadgame", lastSave}...) // -loadgame seems to be universal across zdoom, boom and chocolate doom
 	}
 	return
-}
-
-// String returns the string which is run when running
-func (g Game) String() string {
-	return fmt.Sprintf("%s", strings.TrimSpace(strings.Join(g.CommandList(), " ")))
 }
 
 // CommandList returns the full slice of strings in order to launch the game
@@ -231,21 +217,6 @@ func (g Game) CommandList() (command []string) {
 	command = append(command, g.SourcePort)
 	command = append(command, g.getLaunchParams(*newRunConfig().quickload())...)
 	return
-}
-
-// RatingString returns the string resulting from the games rating
-func (g Game) RatingString() string {
-	return strings.Repeat("*", g.Rating) + strings.Repeat("-", 5-g.Rating)
-}
-
-// EnvironmentString returns a join of all prefix parameters
-func (g Game) EnvironmentString() string {
-	return strings.TrimSpace(strings.Join(g.Environment, " "))
-}
-
-// ParamsString returns a join of all prefix parameters
-func (g Game) ParamsString() string {
-	return strings.TrimSpace(strings.Join(g.CustomParameters, " "))
 }
 
 // SaveCount returns the number of savegames existing for this game
@@ -286,37 +257,6 @@ func (g *Game) SwitchMods(a, b int) {
 	}
 }
 
-// saveDirParam returns the right paramter key for specifying the savegame directory
-// accounts for zdoom-, chocolate-doom and boom ports at the moments
-func (g Game) saveDirParam() (parameter string) {
-	sp := g.sourcePortFamily()
-
-	// assume zdoom port
-	// works for chocolate-doom family as well
-	parameter = "-savedir"
-
-	// boom derivates
-	if sp == boom {
-		parameter = "-save"
-	}
-	return
-}
-
-// adjust skill for source port
-// default(zdoom): 0-4 (documenation seems wrong?, so 1-5)
-// chocolate: 1-5
-// boom: 1-5
-func (g Game) skillForPort(inSkill int) int {
-	switch g.sourcePortFamily() {
-	case chocolate:
-		return inSkill + 1
-	case boom:
-		return inSkill + 1
-	default:
-		return inSkill + 1
-	}
-}
-
 // lastSave returns the the file name or slotnumber (depending on source port) for the game
 func (g Game) lastSave() (save string, err error) {
 	saveDir := g.getSaveDir()
@@ -325,15 +265,8 @@ func (g Game) lastSave() (save string, err error) {
 		return
 	}
 
-	// retrieve source port family; do once since it is not the fastet function
-	sp := g.sourcePortFamily()
-
 	// assume zdoom
-	portSaveFileExtension := ".zds"
-	// chocolate doom + ports
-	if sp == chocolate {
-		portSaveFileExtension = ".dsg"
-	}
+	portSaveFileExtension := g.spSaveFileExtension()
 
 	// find the newest file
 	newestTime, _ := time.Parse(time.RFC3339, "1900-01-01T00:00:00+00:00")
@@ -345,14 +278,8 @@ func (g Game) lastSave() (save string, err error) {
 		}
 	}
 
-	// chocolate doom and boom take a slot from 0-7 as parameter
-	// the filenames usually look like this: doomsav0.dsg
-	// the zero is just cut out and returned
-	if (sp == chocolate || sp == boom) && save != "" {
-		tmp := []rune(save)
-		save = string(tmp[len(tmp)-5 : len(tmp)-4])
-		return
-	}
+	// adjust for different souce ports
+	save = g.spSaveGameName(save)
 
 	if save == "" {
 		err = os.ErrNotExist
@@ -446,25 +373,23 @@ func parseStatline(line string, g *Game) (string, int) {
 	}
 }
 
-// sourcePortFamily checks the games engine type by inspecting the string
-// known keyphrases will be interpreted as a certain source port family
-func (g Game) sourcePortFamily() (t int) {
-	// assume zdoom family
-	t = zdoom
+// Printing Methods
+// String returns the string which is run when running
+func (g Game) String() string {
+	return fmt.Sprintf("%s", strings.TrimSpace(strings.Join(g.CommandList(), " ")))
+}
 
-	sp := strings.ToLower(g.SourcePort)
+// RatingString returns the string resulting from the games rating
+func (g Game) RatingString() string {
+	return strings.Repeat("*", g.Rating) + strings.Repeat("-", 5-g.Rating)
+}
 
-	// chocolate doom family
-	if strings.Contains(sp, "crispy") || strings.Contains(sp, "chocolate") {
-		t = chocolate
-		return
-	}
+// EnvironmentString returns a join of all prefix parameters
+func (g Game) EnvironmentString() string {
+	return strings.TrimSpace(strings.Join(g.Environment, " "))
+}
 
-	// boom family
-	if strings.Contains(sp, "boom") {
-		t = boom
-		return
-	}
-
-	return
+// ParamsString returns a join of all prefix parameters
+func (g Game) ParamsString() string {
+	return strings.TrimSpace(strings.Join(g.CustomParameters, " "))
 }
