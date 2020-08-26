@@ -114,13 +114,27 @@ func initUIElements() {
 	contentPages = tview.NewPages()
 	footerPages = tview.NewPages()
 
-	mainFlex = tview.NewFlex().SetDirection(tview.FlexRow)
-	canvas.AddPage(pageMain, mainFlex, true, true)
-	// header
-	// TODO: wrap header in grid and make it responsive -> not so high screens hide it
 	header, headerHeight := getHeader()
 	headerPages.AddPage(pageHeader, header, true, true)
-	mainFlex.AddItem(headerPages, headerHeight, 0, false)
+
+	mainFlex = tview.NewFlex().SetDirection(tview.FlexRow)
+
+	mainGrid := tview.NewGrid()
+	mainGrid.SetRows(1, headerHeight-1, -1)
+
+	// not so high screens
+	//mainGrid.AddItem(tview.NewTextView().SetDynamicColors(true).SetText(subtitle), 0, 0, 1, 1, 1, 1, false)
+	mainGrid.AddItem(mainFlex, 1, 0, 2, 1, 0, 0, false)
+
+	// regular layout
+	mainGrid.AddItem(headerPages, 0, 0, 2, 1, 42, 0, false)
+	mainGrid.AddItem(mainFlex, 2, 0, 1, 1, 42, 0, false)
+
+	canvas.AddPage(pageMain, mainGrid, true, true)
+	//canvas.AddPage(pageMain, mainFlex, true, true)
+	// header
+	// TODO: wrap header in grid and make it responsive -> not so high screens hide it
+	//mainFlex.AddItem(headerPages, headerHeight, 0, false)
 	// content
 	mainFlex.AddItem(contentPages, 0, 1, true)
 	// footer
@@ -159,15 +173,15 @@ func initUIElements() {
 }
 
 // small or big header
-func getHeader() (tview.Primitive, int) {
-	headerHeight := 20
-	var header tview.Primitive
-	header = makeHeader()
+func getHeader() (header tview.Primitive, headerHeight int) {
+	headerHeight = 19
 	if cfg.GetInstance().HideHeader {
 		headerHeight = 1
 		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
+		return
 	}
-	return header, headerHeight
+	header = makeHeader()
+	return
 }
 
 // update functions
