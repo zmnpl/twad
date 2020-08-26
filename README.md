@@ -23,29 +23,45 @@ Needless to say, that this mostly was designed for *nix systems. However, with W
 * Run games from rofi or dmenu
 * Separate savegame / demo folders for games (in **~/.config/twad/...***)
 
-## Installation
+## Installation Options
 
-### Arch Linux: AUR
+### a) Arch Linux: AUR
 
 https://aur.archlinux.org/packages/twad-git
 
-### Compile yourself
+### b) Binary Download
+
+I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it** (on *nix systems).
+
+### c) Compile yourself
 
 ```golang
 go get -u github.com/zmnpl/twad
 ```
 
-### Binary Download
+## Setup your environment
 
-I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it** (on *nix systems).
+***twad*** assumes, you have **one folder**, where your IWADs are located. All your pwads (mapsets, gameplay mods, ...) need to be in the same folder or subfolder of this. The folder, where you put your IWADs is known to source ports as **DOOMWADDIR**.
 
-## Initial Configuration
-
-### Setup Your Environment
-
-***twad*** assumes, you have **one folder**, where your IWADs *doom.wad* and *doom2.wad* are placed and all your pwads (such as mapsets, gameplay mods etc. ...) are put in the same folder oder subfolder of this. The folder, where you put your IWADs is known as **DOOMWADDIR**.
-The bad thing about this is, you need to organize modfiles yourself. However, this is the good thing as well. No unclear storage format or location. You have full control over your DOOMWADDIR. And since ***twad*** stores relative paths, your DOOMWADDIR is quickly migrated to another location if need be.
-
+An example could look like this:
+```bash
+~/DOOM ❯❯❯ tree
+.
+├── Ashes 2063
+│   ├── Ashes2063Maps115.wad
+│   └── Ashes2063Mod115.pk3
+├── Back To Saturn X e1
+│   ├── btsx_e1a.wad
+│   ├── btsx_e1b.wad
+│   └── btsx_e1.deh
+├── D4T
+│   └── D4Tv2.5.pk3
+├── Sigil
+│   ├── SIGIL_COMPAT.wad
+│   └── SIGIL.wad
+├── doom2.wad
+└── doom.wad
+```
 1) Setup your **DOOMWADDIR** as described above
 2) twad's first start will ask you for the path of **DOOMWADDIR**
 3) Within twad create games
@@ -54,7 +70,7 @@ The bad thing about this is, you need to organize modfiles yourself. However, th
 
 ### More on DOOMWADDIR
 
-Your DOOM engine needs to know about the base folder of your mods and IWADs to work properly, since ***twad*** uses relative paths. Twad's default method for this is to set the ***DOOMWADDIR*** environment variable when starting a game. This is only set for the current game session. (Should you already have set DOOMWADDIR, twad will shadow it with whatever is set in its configuration)
+Your DOOM source port needs to know about the base folder of your mods and IWADs to work properly, since ***twad*** uses relative paths. ***twad**'s default method for this is to set the ***DOOMWADDIR*** environment variable when starting a game. This is only set for the current game session. (Should you already have set DOOMWADDIR, twad will shadow it with whatever is set in its configuration)
 
 An alternative/additional method is to add paths to the respective source ports config. For *zdoom* ports it could look like this:
 ```bash
