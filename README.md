@@ -10,7 +10,7 @@ Needless to say, that this mostly was designed for *nix systems. However, with W
 
 **Watch Out**: This tool is still in very early state and might contain bugs.
 
-## Features
+# Features
 
 * Configure *games* you want to play (basically a combination of IWAD, Source Port and Mod Files)
 * Run games
@@ -23,25 +23,25 @@ Needless to say, that this mostly was designed for *nix systems. However, with W
 * Run games from rofi or dmenu
 * Separate savegame / demo folders for games (in **~/.config/twad/...***)
 
-## Installation
+# Installation
 
-### Arch Linux: AUR
+## Arch Linux: AUR
 
 https://aur.archlinux.org/packages/twad-git
 
-### Compile yourself
+## Compile yourself
 
 ```golang
 go get -u github.com/zmnpl/twad
 ```
 
-### Binary Download
+## Binary Download
 
 I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it** (on *nix systems).
 
-## Initial Configuration
+# Initial Configuration
 
-### Setup Your Environment
+## Setup Your Environment
 
 ***twad*** assumes, you have **one folder**, where your IWADs *doom.wad* and *doom2.wad* are placed and all your pwads (such as mapsets, gameplay mods etc. ...) are put in the same folder oder subfolder of this. The folder, where you put your IWADs is known as **DOOMWADDIR**.
 The bad thing about this is, you need to organize modfiles yourself. However, this is the good thing as well. No unclear storage format or location. You have full control over your DOOMWADDIR. And since ***twad*** stores relative paths, your DOOMWADDIR is quickly migrated to another location if need be.
@@ -52,7 +52,7 @@ The bad thing about this is, you need to organize modfiles yourself. However, th
 4) Add mods to your games
 666)   __Rip and Tear__
 
-### More on DOOMWADDIR
+## More on DOOMWADDIR
 
 Your DOOM engine needs to know about the base folder of your mods and IWADs to work properly, since ***twad*** uses relative paths. Twad's default method for this is to set the ***DOOMWADDIR*** environment variable when starting a game. This is only set for the current game session. (Should you already have set DOOMWADDIR, twad will shadow it with whatever is set in its configuration)
 
@@ -70,7 +70,7 @@ There is flag in the options which lets Twad try to do this automatically for th
 
 If you are using something different, please configure it accoridingly or send in an issue or pull request ;)
 
-## Rofi Mode
+# Rofi Mode
 
 You can use [***rofi***](https://github.com/davatorium/rofi) or [***dmenu***](https://tools.suckless.org/dmenu/) to launch your games. Run twad like this to use the respective programm. This will open rofi/dmenu and show a list of all games you already have. Select one you want to play and hit enter. Of course this will also track your statistics.
 ```bash
@@ -83,7 +83,7 @@ twad --dmenu
 ![rofimode](rofimode.png)
 
 
-## Plans / Ideas
+# Plans / Ideas
 
 - ~~Separate savegames folders per game~~
 - ~~AUR package~~
@@ -102,14 +102,14 @@ twad --dmenu
 - All the TODO flags
 - Error Handling
 
-## Credit where credit is due
+# Credit where credit is due
 
-### Doom logo
+## Doom logo
 
 The use of the DOOM ASCII logo has been nicely permitted by Frans P. de Vries. Find it's history [here](http://www.gamers.org/~fpv/doomlogo.html)
 
 DOOM and Quake are registered trademarks of id Software, Inc. The DOOM, Quake and id logos are trademarks of id Software, Inc. The ASCII version of the DOOM logo is Copyright © 1994 by F.P. de Vries.
 
-### tview
+## tview
 
 [tview](https://github.com/rivo/tview) is used for the terminal ui elements.
