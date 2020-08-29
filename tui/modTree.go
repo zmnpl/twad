@@ -1,10 +1,8 @@
 package tui
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
-	"sort"
 	"strings"
 
 	"github.com/rivo/tview"
@@ -23,47 +21,16 @@ func makeModTree(g *games.Game) *tview.TreeView {
 		}
 		return nil
 	}
-	root := tview.NewTreeNode(rootDir).SetColor(tview.Styles.TitleColor)
-	modFolderTree := tview.NewTreeView().
-		SetRoot(root).
-		SetCurrentNode(root)
-	modFolderTree.SetBorder(true)
-	modFolderTree.SetTitle(modTreeTitle)
 
-	// A helper function which adds the files and directories of the given path
-	// to the given target node.
-	add := func(target *tview.TreeNode, path string) {
-		files, err := ioutil.ReadDir(path)
-		files = filterExtensions(files)
+	modFolderTree, rootNode := newTree(rootDir)
+	add := makeFileTreeAddFunc(filterExtensions)
+	add(rootNode, rootDir)
 
-		sort.Slice(files, func(i, j int) bool {
-			return strings.ToLower(files[i].Name()) < strings.ToLower(files[j].Name())
-		})
-
-		if err != nil {
-			panic(err)
-		}
-		for _, file := range files {
-			node := tview.NewTreeNode(file.Name()).
-				SetReference(filepath.Join(path, file.Name())).
-				SetSelectable(true)
-			node.SetColor(tview.Styles.SecondaryTextColor)
-			if file.IsDir() {
-				node.SetColor(tview.Styles.PrimaryTextColor)
-			}
-			target.AddChild(node)
-		}
-	}
-
-	// Add the current directory to the root node.
-	add(root, rootDir)
-
-	// If a directory was selected, open it.
 	modFolderTree.SetSelectedFunc(func(node *tview.TreeNode) {
 		reference := node.GetReference()
 
 		if reference == nil {
-			return // Selecting the root node does nothing.
+			return
 		}
 		children := node.GetChildren()
 		if len(children) == 0 {
@@ -75,15 +42,12 @@ func makeModTree(g *games.Game) *tview.TreeView {
 			case err != nil:
 				// handle the error and return
 			case fi.IsDir():
-				// it's a directory
 				add(node, path)
 			default:
-				// it's not a directory
 				g.AddMod(strings.TrimPrefix(path, config.WadDir+"/"))
 				selectedGameChanged(g)
 			}
 		} else {
-			// Collapse if visible, expand if collapsed.
 			node.SetExpanded(!node.IsExpanded())
 		}
 	})
@@ -91,16 +55,15 @@ func makeModTree(g *games.Game) *tview.TreeView {
 	return modFolderTree
 }
 
-// helper functions
-
 func filterExtensions(files []os.FileInfo) []os.FileInfo {
-	tmp := files
-	files = files[:0]
-	for _, v := range tmp {
-		ext := strings.ToLower(filepath.Ext(v.Name()))
-		if _, found := config.ModExtensions[ext]; found || v.IsDir() {
-			files = append(files, v)
+	n := 0
+	for _, f := range files {
+		ext := strings.ToLower(filepath.Ext(f.Name()))
+		if _, found := config.ModExtensions[ext]; found || f.IsDir() {
+			files[n] = f
+			n++
 		}
 	}
+	files = files[:n]
 	return files
 }

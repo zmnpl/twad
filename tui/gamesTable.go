@@ -183,6 +183,13 @@ func populateGamesTable() {
 					return nil
 				}
 
+			case 'i':
+				zipSelect := makeZipSelect()
+				detailSidePagesSub2.AddPage(pageZipSelect, zipSelect, true, false)
+				detailSidePagesSub2.SwitchToPage(pageZipSelect)
+				app.SetFocus(zipSelect)
+				return nil
+
 			// edit selected game
 			case 'e':
 				if r > 0 {

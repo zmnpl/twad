@@ -1,13 +1,17 @@
 package cfg
 
 import (
+	"archive/zip"
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
+	"path/filepath"
 	"strings"
 	"sync"
 )
@@ -49,7 +53,7 @@ func init() {
 
 func defaultConfig() Cfg {
 	var dConf Cfg
-	dConf.WadDir = home() + "/DOOM"
+	dConf.WadDir = filepath.Join(Home(), "/DOOM")
 	if dwd, exists := os.LookupEnv("DOOMWADDIR"); exists {
 		dConf.WadDir = dwd
 	}
@@ -138,17 +142,17 @@ func GetInstance() *Cfg {
 
 // GetConfigFolder returns the folder where configuration is stored
 func GetConfigFolder() string {
-	return home() + configPath
+	return Home() + configPath
 }
 
 // GetSavegameFolder returns the folder where savegames are stored
 func GetSavegameFolder() string {
-	return GetConfigFolder() + "/savegames"
+	return filepath.Join(GetConfigFolder(), "savegames")
 }
 
 // GetDemoFolder returns the folder where demos are stored
 func GetDemoFolder() string {
-	return GetConfigFolder() + "/demos"
+	return filepath.Join(GetConfigFolder(), "demos")
 }
 
 // Persist writes all games into the according JSON file
@@ -158,7 +162,7 @@ func Persist() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(GetConfigFolder()+"/"+configName, JSON, 0755)
+	err = ioutil.WriteFile(filepath.Join(GetConfigFolder(), configName), JSON, 0755)
 	if err != nil {
 		return err
 	}
@@ -176,15 +180,81 @@ func EnableBasePath() error {
 
 	// Engine-Configs
 	if instance.WriteWadDirToEngineCfg {
-		go processEngineCfg(home() + "/.config/gzdoom/gzdoom.ini")
-		go processEngineCfg(home() + "/.config/zandronum/zandronum.ini")
-		go processEngineCfg(home() + "/.config/lzdoom/lzdoom.ini")
+		go processEngineCfg(Home() + "/.config/gzdoom/gzdoom.ini")
+		go processEngineCfg(Home() + "/.config/zandronum/zandronum.ini")
+		go processEngineCfg(Home() + "/.config/lzdoom/lzdoom.ini")
 	}
 
 	return nil
 }
 
+// ImportArchive imports given archive into a subfolder of the base path
+func ImportArchive(zipPath, modName string) (err error) {
+	modName = "testimport"
+	_, err = unzip(zipPath, filepath.Join(instance.WadDir, modName))
+	return
+}
+
 // Helper functions
+
+// unzip will decompress a zip archive, moving all files and folders
+// within the zip file (parameter 1) to an output directory (parameter 2).
+// shamelessly copied from https://golangcode.com/unzip-files-in-go/
+func unzip(src string, dest string) ([]string, error) {
+
+	var filenames []string
+
+	r, err := zip.OpenReader(src)
+	if err != nil {
+		return filenames, err
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+
+		// Store filename/path for returning and using later on
+		fpath := filepath.Join(dest, f.Name)
+
+		// Check for ZipSlip. More Info: http://bit.ly/2MsjAWE
+		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
+			return filenames, fmt.Errorf("%s: illegal file path", fpath)
+		}
+
+		filenames = append(filenames, fpath)
+
+		if f.FileInfo().IsDir() {
+			// Make Folder
+			os.MkdirAll(fpath, os.ModePerm)
+			continue
+		}
+
+		// Make File
+		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
+			return filenames, err
+		}
+
+		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+		if err != nil {
+			return filenames, err
+		}
+
+		rc, err := f.Open()
+		if err != nil {
+			return filenames, err
+		}
+
+		_, err = io.Copy(outFile, rc)
+
+		// Close the file without defer to close before next iteration of loop
+		outFile.Close()
+		rc.Close()
+
+		if err != nil {
+			return filenames, err
+		}
+	}
+	return filenames, nil
+}
 
 func processEngineCfg(path string) {
 	lines := configLines(path)
@@ -234,10 +304,11 @@ func configLines(path string) []string {
 }
 
 func configFullPath() string {
-	return GetConfigFolder() + "/" + configName
+	return filepath.Join(GetConfigFolder(), configName)
 }
 
-func home() string {
+// Home returns the users home directory
+func Home() string {
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatal(err)

@@ -30,6 +30,7 @@ const (
 	pageWarp         = "warp"
 	pageDemos        = "demos"
 	pageError        = "error"
+	pageZipSelect    = "zipselect"
 
 	tableBorders = false
 
