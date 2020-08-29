@@ -12,25 +12,25 @@ const (
 	previewBackgroundColor = tcell.ColorRoyalBlue
 	accentColor            = tcell.ColorOrange
 
-	pageOptions      = "options"
-	pageStats        = "stats"
-	pageAddEdit      = "addEdit"
-	pageModSelector  = "modselector"
-	pageFirstSetup   = "firstsetup"
-	pageHeader       = "header"
-	pageMain         = "main"
-	pageDetailGrid   = "detailgrid"
-	pageContent      = "content"
-	pageContentMain  = "maincontent"
-	pageHelp         = "help"
-	pageLicense      = "license"
-	pageYouSure      = "yousure"
-	pageMods         = "mods"
-	pageDefaultRight = "right"
-	pageWarp         = "warp"
-	pageDemos        = "demos"
-	pageError        = "error"
-	pageZipSelect    = "zipselect"
+	pageOptions       = "options"
+	pageStats         = "stats"
+	pageAddEdit       = "addEdit"
+	pageModSelector   = "modselector"
+	pageFirstSetup    = "firstsetup"
+	pageHeader        = "header"
+	pageMain          = "main"
+	pageDetailGrid    = "detailgrid"
+	pageContent       = "content"
+	pageContentMain   = "maincontent"
+	pageHelp          = "help"
+	pageLicense       = "license"
+	pageYouSure       = "yousure"
+	pageMods          = "mods"
+	pageDefaultRight  = "right"
+	pageWarp          = "warp"
+	pageDemos         = "demos"
+	pageError         = "error"
+	pageImportArchive = "zipselect"
 
 	tableBorders = false
 
@@ -195,6 +195,7 @@ func appModeNormal() {
 	contentPages.RemovePage(pageOptions)
 	contentPages.RemovePage(pageWarp)
 	contentPages.RemovePage(pageError)
+	contentPages.RemovePage(pageImportArchive)
 	// clear actionPager
 	detailPages.RemovePage(pageAddEdit)
 	detailSidePagesSub1.RemovePage(pageYouSure)

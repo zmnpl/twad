@@ -2,6 +2,7 @@ package tui
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
@@ -11,7 +12,9 @@ import (
 )
 
 const (
-	zipSelectTitle = "Archive to import"
+	zipSelectTitle         = "Archive to import"
+	zipImportToLabel       = "Import folder name"
+	zipImportToExistsLabel = "Mod folder exists already"
 )
 
 // tree view for selecting additional mods TODO
@@ -45,24 +48,25 @@ func makeZipSelect() *tview.TreeView {
 			case fi.IsDir():
 				add(node, path)
 			default:
-				extractArchive()
-				cfg.ImportArchive(path, "")
+				//extractArchive()
 			}
 		} else {
 			node.SetExpanded(!node.IsExpanded())
+
 		}
 	})
 
 	return zipSelect
 }
 
-func extractArchive() {
+func extractArchive(archivePath, modName string) {
+	cfg.ImportArchive(archivePath, modName)
 
 }
 
 // help for navigation
-func archiveImportFolderName() *tview.Flex {
-	modNameInput := tview.NewInputField().SetLabel("").SetText("")
+func archiveImportFolderName(archivePath string) *tview.Flex {
+	modName := tview.NewInputField().SetLabel(zipImportToLabel).SetText(path.Base(archivePath))
 	modNameDoneCheck := func() {
 		// does this path exist?
 		// TODO: check if valid folder name
@@ -70,20 +74,25 @@ func archiveImportFolderName() *tview.Flex {
 
 		// TODO: check if exists already
 		// if yes, warn with label
+		if _, err := os.Stat(modName.GetText()); os.IsNotExist(err) {
+			modName.SetLabel(zipImportToLabel + optsWarnColor + zipImportToExistsLabel)
+			return
+		}
+
 	}
 
-	modNameInput.SetDoneFunc(func(key tcell.Key) {
+	modName.SetDoneFunc(func(key tcell.Key) {
 		modNameDoneCheck()
 	})
 
 	archiveImportForm := tview.NewForm().
-		AddFormItem(modNameInput).
+		AddFormItem(modName).
 		AddButton("ok", func() {
 		})
 
 	archiveImportForm.
 		SetBorder(true).
-		SetTitle("")
+		SetTitle("Mod Folder Name")
 	archiveImportForm.SetFocus(1)
 
 	youSureLayout := tview.NewFlex().SetDirection(tview.FlexRow).

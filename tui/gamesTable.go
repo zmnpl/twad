@@ -185,8 +185,8 @@ func populateGamesTable() {
 
 			case 'i':
 				zipSelect := makeZipSelect()
-				detailSidePagesSub2.AddPage(pageZipSelect, zipSelect, true, false)
-				detailSidePagesSub2.SwitchToPage(pageZipSelect)
+				contentPages.AddPage(pageImportArchive, zipSelect, true, false)
+				contentPages.SwitchToPage(pageImportArchive)
 				app.SetFocus(zipSelect)
 				return nil
 
