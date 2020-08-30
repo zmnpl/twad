@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"fmt"
+
 	"github.com/zmnpl/twad/cfg"
 	"github.com/zmnpl/twad/games"
 
@@ -12,25 +14,25 @@ const (
 	previewBackgroundColor = tcell.ColorRoyalBlue
 	accentColor            = tcell.ColorOrange
 
-	pageOptions       = "options"
-	pageStats         = "stats"
-	pageAddEdit       = "addEdit"
-	pageModSelector   = "modselector"
-	pageFirstSetup    = "firstsetup"
-	pageHeader        = "header"
-	pageMain          = "main"
-	pageDetailGrid    = "detailgrid"
-	pageContent       = "content"
-	pageContentMain   = "maincontent"
-	pageHelp          = "help"
-	pageLicense       = "license"
-	pageYouSure       = "yousure"
-	pageMods          = "mods"
-	pageDefaultRight  = "right"
-	pageWarp          = "warp"
-	pageDemos         = "demos"
-	pageError         = "error"
-	pageImportArchive = "zipselect"
+	pageOptions      = "options"
+	pageStats        = "stats"
+	pageAddEdit      = "addEdit"
+	pageModSelector  = "modselector"
+	pageFirstSetup   = "firstsetup"
+	pageHeader       = "header"
+	pageMain         = "main"
+	pageDetailGrid   = "detailgrid"
+	pageContent      = "content"
+	pageContentMain  = "maincontent"
+	pageHelp         = "help"
+	pageLicense      = "license"
+	pageYouSure      = "yousure"
+	pageMods         = "mods"
+	pageDefaultRight = "right"
+	pageWarp         = "warp"
+	pageDemos        = "demos"
+	pageError        = "error"
+	pageZipImport    = "zipselect"
 
 	tableBorders = false
 
@@ -55,6 +57,8 @@ var (
 
 	gamesTable     *tview.Table
 	commandPreview *tview.TextView
+
+	zipInput *zipImportUI
 )
 
 func init() {
@@ -156,6 +160,13 @@ func initUIElements() {
 			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
 			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
 
+	// zip import page
+	zipInput = newZipImportUI()
+	fmt.Println(zipInput)
+	contentPages.AddPage(pageZipImport, tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(zipInput.selectTree, 0, 1, true).
+		AddItem(zipInput.modNameForm, 7, 0, false), true, true)
+
 	contentPages.AddPage(pageContent, contentFlex, true, true)
 }
 
@@ -195,11 +206,14 @@ func appModeNormal() {
 	contentPages.RemovePage(pageOptions)
 	contentPages.RemovePage(pageWarp)
 	contentPages.RemovePage(pageError)
-	contentPages.RemovePage(pageImportArchive)
+
 	// clear actionPager
 	detailPages.RemovePage(pageAddEdit)
 	detailSidePagesSub1.RemovePage(pageYouSure)
 	detailSidePagesSub1.RemovePage(pageDemos)
+
+	// reset import
+	zipInput.reset()
 
 	// set ui state
 	detailPages.SwitchToPage(pageContentMain)

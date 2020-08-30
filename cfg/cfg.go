@@ -190,9 +190,25 @@ func EnableBasePath() error {
 
 // ImportArchive imports given archive into a subfolder of the base path
 func ImportArchive(zipPath, modName string) (err error) {
-	modName = "testimport"
 	_, err = unzip(zipPath, filepath.Join(instance.WadDir, modName))
 	return
+}
+
+// IsFileNameValid tests if the given file name can be used
+func IsFileNameValid(fp string) bool {
+	// Check if file already exists
+	if _, err := os.Stat(fp); err == nil {
+		return true
+	}
+
+	// Attempt to create it
+	var d []byte
+	if err := ioutil.WriteFile(fp, d, 0644); err == nil {
+		os.Remove(fp) // And delete it
+		return true
+	}
+
+	return false
 }
 
 // Helper functions

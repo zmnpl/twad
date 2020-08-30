@@ -11,26 +11,49 @@ import (
 	"github.com/zmnpl/twad/cfg"
 )
 
+// TODO: check if doomwaddir in config is something sane to avoid critical damage
+// such as not = "/"
+
 const (
-	zipSelectTitle         = "Archive to import"
-	zipImportToLabel       = "Import folder name"
-	zipImportToExistsLabel = "Mod folder exists already"
+	zipSelectTitle          = "Archive to import"
+	zipImportToLabel        = "Folder name"
+	zipImportToExistsLabel  = " (exists already)"
+	zipImportToBadNameLabel = " (cannot use that name)"
+	zipImportFormTitle      = "Mod folder name"
+	zipImportFormOk         = "Import"
+	zipImportCancel         = "Back to selection"
 )
 
-// tree view for selecting additional mods TODO
-func makeZipSelect() *tview.TreeView {
-	rootDir := cfg.Home()
+type zipImportUI struct {
+	selectTree   *tview.TreeView
+	modNameInput *tview.InputField
+	modNameForm  *tview.Form
+
+	zipPath string
+	modName string
+}
+
+func newZipImportUI() *zipImportUI {
+	var zui zipImportUI
+	zui.initZipSelect()
+	zui.initZipImportForm("")
+	return &zui
+}
+
+func (z *zipImportUI) initZipSelect() {
+	rootDir := cfg.Home() // TODO: Start from / but preselect /home/user
 	if _, err := os.Stat(rootDir); err != nil {
 		if os.IsNotExist(err) {
+			// TODO
 		}
-		return nil
 	}
 
-	zipSelect, rootNode := newTree(rootDir)
+	var rootNode *tview.TreeNode
+	z.selectTree, rootNode = newTree(rootDir)
 	add := makeFileTreeAddFunc(filterKnownArchives)
 	add(rootNode, rootDir)
 
-	zipSelect.SetSelectedFunc(func(node *tview.TreeNode) {
+	z.selectTree.SetSelectedFunc(func(node *tview.TreeNode) {
 		reference := node.GetReference()
 
 		if reference == nil {
@@ -39,68 +62,77 @@ func makeZipSelect() *tview.TreeView {
 		children := node.GetChildren()
 		if len(children) == 0 {
 			// Load and show files in this directory.
-			path := reference.(string)
+			selPath := reference.(string)
 
-			fi, err := os.Stat(path)
+			fi, err := os.Stat(selPath)
 			switch {
 			case err != nil:
 				// handle the error and return
 			case fi.IsDir():
-				add(node, path)
+				add(node, selPath)
 			default:
-				//extractArchive()
+				z.zipPath = selPath
+				z.modNameInput.SetText(strings.TrimSuffix(path.Base(selPath), path.Ext(selPath)))
+				app.SetFocus(z.modNameForm)
 			}
 		} else {
 			node.SetExpanded(!node.IsExpanded())
 
 		}
 	})
-
-	return zipSelect
 }
 
-func extractArchive(archivePath, modName string) {
-	cfg.ImportArchive(archivePath, modName)
-
-}
-
-// help for navigation
-func archiveImportFolderName(archivePath string) *tview.Flex {
-	modName := tview.NewInputField().SetLabel(zipImportToLabel).SetText(path.Base(archivePath))
-	modNameDoneCheck := func() {
-		// does this path exist?
-		// TODO: check if valid folder name
-		// if not, dactivate ok button
-
-		// TODO: check if exists already
-		// if yes, warn with label
-		if _, err := os.Stat(modName.GetText()); os.IsNotExist(err) {
-			modName.SetLabel(zipImportToLabel + optsWarnColor + zipImportToExistsLabel)
-			return
-		}
-
+func (z *zipImportUI) initZipImportForm(archivePath string) {
+	z.modNameInput = tview.NewInputField().SetLabel(zipImportToLabel).SetText(path.Base(archivePath))
+	if archivePath == "" {
+		z.modNameInput.SetText("")
 	}
 
-	modName.SetDoneFunc(func(key tcell.Key) {
+	modNameDoneCheck := func() {
+		suggestedName := z.modNameInput.GetText()
+		if !cfg.IsFileNameValid(suggestedName) {
+			z.modNameInput.SetLabel(zipImportToLabel + optsWarnColor + zipImportToBadNameLabel)
+			// TODO: deactivate ok button
+			return
+		}
+		if _, err := os.Stat(path.Join(cfg.GetInstance().WadDir, suggestedName)); !os.IsNotExist(err) {
+			z.modNameInput.SetLabel(zipImportToLabel + optsWarnColor + zipImportToExistsLabel)
+			return
+		}
+		z.modNameInput.SetLabel(zipImportToLabel)
+	}
+
+	z.modNameInput.SetDoneFunc(func(key tcell.Key) {
 		modNameDoneCheck()
 	})
 
-	archiveImportForm := tview.NewForm().
-		AddFormItem(modName).
-		AddButton("ok", func() {
+	z.modNameForm = tview.NewForm().
+		AddFormItem(z.modNameInput).
+		AddButton(zipImportFormOk, func() {
+			if _, err := os.Stat(z.zipPath); os.IsNotExist(err) {
+				// TODO
+				return
+			}
+			z.modName = z.modNameInput.GetText()
+			cfg.ImportArchive(z.zipPath, z.modName)
+			z.reset()
+		}).
+		AddButton(zipImportCancel, func() {
+			z.reset()
 		})
 
-	archiveImportForm.
+	z.modNameForm.
 		SetBorder(true).
-		SetTitle("Mod Folder Name")
-	archiveImportForm.SetFocus(1)
+		SetTitle(zipImportFormTitle)
+	z.modNameForm.SetFocus(0)
+}
 
-	youSureLayout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, 0, 1, false).
-		AddItem(archiveImportForm, 10, 0, true).
-		AddItem(nil, 0, 1, false)
-
-	return youSureLayout
+func (z *zipImportUI) reset() {
+	z.modNameInput.SetText("").SetLabel(zipImportToLabel)
+	z.modNameForm.SetFocus(0)
+	z.modName = ""
+	z.zipPath = ""
+	app.SetFocus(z.selectTree)
 }
 
 func filterKnownArchives(files []os.FileInfo) []os.FileInfo {

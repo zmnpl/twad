@@ -184,10 +184,8 @@ func populateGamesTable() {
 				}
 
 			case 'i':
-				zipSelect := makeZipSelect()
-				contentPages.AddPage(pageImportArchive, zipSelect, true, false)
-				contentPages.SwitchToPage(pageImportArchive)
-				app.SetFocus(zipSelect)
+				contentPages.SwitchToPage(pageZipImport)
+				app.SetFocus(zipInput.selectTree)
 				return nil
 
 			// edit selected game
