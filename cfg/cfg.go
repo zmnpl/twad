@@ -50,21 +50,21 @@ func init() {
 }
 
 func defaultConfig() Cfg {
-	var dConf Cfg
-	dConf.WadDir = filepath.Join(helper.Home(), "/DOOM")
-	if dwd, exists := os.LookupEnv("DOOMWADDIR"); exists {
-		dConf.WadDir = dwd
+	config := Cfg{
+		WadDir:                filepath.Join(helper.Home(), "/DOOM"),
+		ModExtensions:         map[string]int{".wad": 1, ".pk3": 1, ".ipk3": 1},
+		SourcePorts:           []string{"gzdoom", "zandronum", "lzdoom"},
+		IWADs:                 []string{"doom2.wad", "doom.wad"},
+		GameListRelativeWidth: 40,
+		GameListAbsoluteWidth: 0,
 	}
-	dConf.ModExtensions = make(map[string]int)
-	dConf.ModExtensions[".wad"] = 1
-	dConf.ModExtensions[".pk3"] = 1
-	dConf.ModExtensions[".ipk3"] = 1
-	dConf.SourcePorts = []string{"gzdoom", "zandronum", "lzdoom"}
-	dConf.IWADs = []string{"doom2.wad", "doom.wad"}
-	dConf.GameListRelativeWidth = 40
-	dConf.GameListAbsoluteWidth = 0
 
-	return dConf
+	// check if user has set DOOMWADDIR
+	if dwd, exists := os.LookupEnv("DOOMWADDIR"); exists {
+		config.WadDir = dwd
+	}
+
+	return config
 }
 
 func firstStart() {
@@ -178,9 +178,9 @@ func EnableBasePath() error {
 
 	// Engine-Configs
 	if instance.WriteWadDirToEngineCfg {
-		go processEngineCfg(helper.Home() + "/.config/gzdoom/gzdoom.ini")
-		go processEngineCfg(helper.Home() + "/.config/zandronum/zandronum.ini")
-		go processEngineCfg(helper.Home() + "/.config/lzdoom/lzdoom.ini")
+		go processSourcePortCfg(helper.Home() + "/.config/gzdoom/gzdoom.ini")
+		go processSourcePortCfg(helper.Home() + "/.config/zandronum/zandronum.ini")
+		go processSourcePortCfg(helper.Home() + "/.config/lzdoom/lzdoom.ini")
 	}
 
 	return nil
@@ -194,8 +194,8 @@ func ImportArchive(zipPath, modName string) (err error) {
 
 // Helper functions
 
-func processEngineCfg(path string) {
-	lines := configLines(path)
+func processSourcePortCfg(path string) {
+	lines := sourcePortIniLines(path)
 	// if there are not lines for the respective config that is considered ok; maybe that config is not installed
 	if lines == nil {
 		return
@@ -225,7 +225,7 @@ func processEngineCfg(path string) {
 	}
 }
 
-func configLines(path string) []string {
+func sourcePortIniLines(path string) []string {
 	lines := make([]string, 0, 1500)
 	doomini, err := os.Open(path)
 	if err != nil {

@@ -33,35 +33,34 @@ type Game struct {
 // NewGame creates new instance of a game
 func NewGame(name, sourceport, iwad string) Game {
 	config := cfg.Instance()
-	var game Game
-	game.Name = name
 
-	// default source port
-	game.SourcePort = "gzdoom"
-	if len(config.SourcePorts) > 0 {
-		game.SourcePort = config.SourcePorts[0]
+	game := Game{
+		Name:             name,
+		SourcePort:       "gzdoom",
+		Iwad:             "doom2.wad",
+		Environment:      make([]string, 0),
+		CustomParameters: make([]string, 0),
+		Mods:             make([]string, 0),
+		Stats:            make(map[string]int),
 	}
 
-	// replace with given
+	// replace with given or first list entry
 	if sourceport != "" {
 		game.SourcePort = sourceport
+	} else {
+		if len(config.SourcePorts) > 0 {
+			game.SourcePort = config.SourcePorts[0]
+		}
 	}
 
-	// default iwad
-	game.Iwad = "doom2.wad"
-	if len(config.IWADs) > 0 {
-		game.Iwad = config.IWADs[0]
-	}
-
-	// replace with given
+	// replace with given or first list entry
 	if iwad != "" {
 		game.Iwad = iwad
+	} else {
+		if len(config.IWADs) > 0 {
+			game.Iwad = config.IWADs[0]
+		}
 	}
-
-	game.Environment = make([]string, 0)
-	game.CustomParameters = make([]string, 0)
-	game.Mods = make([]string, 0)
-	game.Stats = make(map[string]int)
 
 	return game
 }
