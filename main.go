@@ -11,7 +11,7 @@ import (
 func main() {
 	args := os.Args[1:]
 
-	cfg.GetInstance()
+	cfg.Instance()
 
 	for _, v := range args {
 		switch v {

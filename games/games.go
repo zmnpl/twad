@@ -21,7 +21,7 @@ var (
 )
 
 func init() {
-	config = cfg.GetInstance()
+	config = cfg.Instance()
 	GetInstance()
 	changeListeners = make([]func(), 0)
 }

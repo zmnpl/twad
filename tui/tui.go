@@ -62,7 +62,7 @@ var (
 )
 
 func init() {
-	config = cfg.GetInstance()
+	config = cfg.Instance()
 	games.RegisterChangeListener(whenGamesChanged)
 
 	// ui stylepageSettings
@@ -175,7 +175,7 @@ func getHeader() (tview.Primitive, int) {
 	headerHeight := 20
 	var header tview.Primitive
 	header = makeHeader()
-	if cfg.GetInstance().HideHeader {
+	if cfg.Instance().HideHeader {
 		headerHeight = 1
 		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
 	}

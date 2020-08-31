@@ -52,7 +52,7 @@ func pathHasIwad(path string) (bool, error) {
 func makeOptions() *tview.Flex {
 	o := tview.NewForm()
 
-	path := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.GetInstance().WadDir)
+	path := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.Instance().WadDir)
 	o.AddFormItem(path)
 	pathDoneCheck := func() {
 		// does this path exist?
@@ -79,19 +79,19 @@ func makeOptions() *tview.Flex {
 		pathDoneCheck()
 	})
 
-	firstStart := tview.NewCheckbox().SetLabel(optsNextTimeFirstStart).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(!cfg.GetInstance().Configured)
+	firstStart := tview.NewCheckbox().SetLabel(optsNextTimeFirstStart).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(!cfg.Instance().Configured)
 	o.AddFormItem(firstStart)
 
-	sourcePorts := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.GetInstance().SourcePorts, ","))
+	sourcePorts := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().SourcePorts, ","))
 	o.AddFormItem(sourcePorts)
 
-	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.GetInstance().IWADs, ","))
+	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().IWADs, ","))
 	o.AddFormItem(iwads)
 
-	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().DeleteWithoutWarning)
+	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
-	printHeader := tview.NewCheckbox().SetLabel(optsHideHeader).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.GetInstance().HideHeader)
+	printHeader := tview.NewCheckbox().SetLabel(optsHideHeader).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().HideHeader)
 	o.AddFormItem(printHeader)
 
 	gameListRelWidth := tview.NewInputField().SetLabel(optsGamesListRelativeWitdh).SetLabelColor(tview.Styles.SecondaryTextColor).SetAcceptanceFunc(func(text string, char rune) bool {
@@ -101,11 +101,11 @@ func makeOptions() *tview.Flex {
 		i, err := strconv.Atoi(text)
 		return err == nil && i > 0 && i <= 100
 	})
-	gameListRelWidth.SetText(strconv.Itoa(cfg.GetInstance().GameListRelativeWidth))
+	gameListRelWidth.SetText(strconv.Itoa(cfg.Instance().GameListRelativeWidth))
 	o.AddFormItem(gameListRelWidth)
 
 	o.AddButton(optsOkButtonLabel, func() {
-		c := cfg.GetInstance()
+		c := cfg.Instance()
 
 		c.WadDir = path.GetText()
 

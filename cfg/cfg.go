@@ -1,19 +1,17 @@
 package cfg
 
 import (
-	"archive/zip"
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
-	"os/user"
 	"path/filepath"
 	"strings"
 	"sync"
+
+	"github.com/zmnpl/twad/helper"
 )
 
 var (
@@ -46,14 +44,14 @@ type Cfg struct {
 
 func init() {
 	firstStart()
-	GetInstance()
+	Instance()
 	Persist() // just in case new settings made it into the programm
 	EnableBasePath()
 }
 
 func defaultConfig() Cfg {
 	var dConf Cfg
-	dConf.WadDir = filepath.Join(Home(), "/DOOM")
+	dConf.WadDir = filepath.Join(helper.Home(), "/DOOM")
 	if dwd, exists := os.LookupEnv("DOOMWADDIR"); exists {
 		dConf.WadDir = dwd
 	}
@@ -131,8 +129,8 @@ func loadConfig() error {
 
 // Exported functions
 
-// GetInstance sets up and returns the singleton instance of config
-func GetInstance() *Cfg {
+// Instance sets up and returns the singleton instance of config
+func Instance() *Cfg {
 	once.Do(func() {
 		instance = &Cfg{}
 		loadConfig()
@@ -142,7 +140,7 @@ func GetInstance() *Cfg {
 
 // GetConfigFolder returns the folder where configuration is stored
 func GetConfigFolder() string {
-	return Home() + configPath
+	return helper.Home() + configPath
 }
 
 // GetSavegameFolder returns the folder where savegames are stored
@@ -180,9 +178,9 @@ func EnableBasePath() error {
 
 	// Engine-Configs
 	if instance.WriteWadDirToEngineCfg {
-		go processEngineCfg(Home() + "/.config/gzdoom/gzdoom.ini")
-		go processEngineCfg(Home() + "/.config/zandronum/zandronum.ini")
-		go processEngineCfg(Home() + "/.config/lzdoom/lzdoom.ini")
+		go processEngineCfg(helper.Home() + "/.config/gzdoom/gzdoom.ini")
+		go processEngineCfg(helper.Home() + "/.config/zandronum/zandronum.ini")
+		go processEngineCfg(helper.Home() + "/.config/lzdoom/lzdoom.ini")
 	}
 
 	return nil
@@ -190,87 +188,11 @@ func EnableBasePath() error {
 
 // ImportArchive imports given archive into a subfolder of the base path
 func ImportArchive(zipPath, modName string) (err error) {
-	_, err = unzip(zipPath, filepath.Join(instance.WadDir, modName))
+	_, err = helper.Unzip(zipPath, filepath.Join(instance.WadDir, modName))
 	return
 }
 
-// IsFileNameValid tests if the given file name can be used
-func IsFileNameValid(fp string) bool {
-	// Check if file already exists
-	if _, err := os.Stat(fp); err == nil {
-		return true
-	}
-
-	// Attempt to create it
-	var d []byte
-	if err := ioutil.WriteFile(fp, d, 0644); err == nil {
-		os.Remove(fp) // And delete it
-		return true
-	}
-
-	return false
-}
-
 // Helper functions
-
-// unzip will decompress a zip archive, moving all files and folders
-// within the zip file (parameter 1) to an output directory (parameter 2).
-// shamelessly copied from https://golangcode.com/unzip-files-in-go/
-func unzip(src string, dest string) ([]string, error) {
-
-	var filenames []string
-
-	r, err := zip.OpenReader(src)
-	if err != nil {
-		return filenames, err
-	}
-	defer r.Close()
-
-	for _, f := range r.File {
-
-		// Store filename/path for returning and using later on
-		fpath := filepath.Join(dest, f.Name)
-
-		// Check for ZipSlip. More Info: http://bit.ly/2MsjAWE
-		if !strings.HasPrefix(fpath, filepath.Clean(dest)+string(os.PathSeparator)) {
-			return filenames, fmt.Errorf("%s: illegal file path", fpath)
-		}
-
-		filenames = append(filenames, fpath)
-
-		if f.FileInfo().IsDir() {
-			// Make Folder
-			os.MkdirAll(fpath, os.ModePerm)
-			continue
-		}
-
-		// Make File
-		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {
-			return filenames, err
-		}
-
-		outFile, err := os.OpenFile(fpath, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
-		if err != nil {
-			return filenames, err
-		}
-
-		rc, err := f.Open()
-		if err != nil {
-			return filenames, err
-		}
-
-		_, err = io.Copy(outFile, rc)
-
-		// Close the file without defer to close before next iteration of loop
-		outFile.Close()
-		rc.Close()
-
-		if err != nil {
-			return filenames, err
-		}
-	}
-	return filenames, nil
-}
 
 func processEngineCfg(path string) {
 	lines := configLines(path)
@@ -305,13 +227,13 @@ func processEngineCfg(path string) {
 
 func configLines(path string) []string {
 	lines := make([]string, 0, 1500)
-	gzdoomini, err := os.Open(path)
+	doomini, err := os.Open(path)
 	if err != nil {
 		return nil
 	}
-	defer gzdoomini.Close()
+	defer doomini.Close()
 
-	scanner := bufio.NewScanner(gzdoomini)
+	scanner := bufio.NewScanner(doomini)
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}
@@ -321,13 +243,4 @@ func configLines(path string) []string {
 
 func configFullPath() string {
 	return filepath.Join(GetConfigFolder(), configName)
-}
-
-// Home returns the users home directory
-func Home() string {
-	usr, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
-	return usr.HomeDir
 }

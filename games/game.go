@@ -32,7 +32,7 @@ type Game struct {
 
 // NewGame creates new instance of a game
 func NewGame(name, sourceport, iwad string) Game {
-	config := cfg.GetInstance()
+	config := cfg.Instance()
 	var game Game
 	game.Name = name
 

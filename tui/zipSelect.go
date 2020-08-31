@@ -9,6 +9,7 @@ import (
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/helper"
 )
 
 // TODO: check if doomwaddir in config is something sane to avoid critical damage
@@ -41,7 +42,7 @@ func newZipImportUI() *zipImportUI {
 }
 
 func (z *zipImportUI) initZipSelect() {
-	rootDir := cfg.Home() // TODO: Start from / but preselect /home/user
+	rootDir := helper.Home() // TODO: Start from / but preselect /home/user
 	if _, err := os.Stat(rootDir); err != nil {
 		if os.IsNotExist(err) {
 			// TODO
@@ -90,12 +91,12 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 
 	modNameDoneCheck := func() {
 		suggestedName := z.modNameInput.GetText()
-		if !cfg.IsFileNameValid(suggestedName) {
+		if !helper.IsFileNameValid(suggestedName) {
 			z.modNameInput.SetLabel(zipImportToLabel + optsWarnColor + zipImportToBadNameLabel)
 			// TODO: deactivate ok button
 			return
 		}
-		if _, err := os.Stat(path.Join(cfg.GetInstance().WadDir, suggestedName)); !os.IsNotExist(err) {
+		if _, err := os.Stat(path.Join(cfg.Instance().WadDir, suggestedName)); !os.IsNotExist(err) {
 			z.modNameInput.SetLabel(zipImportToLabel + optsWarnColor + zipImportToExistsLabel)
 			return
 		}
