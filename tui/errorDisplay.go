@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"time"
+
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )
@@ -49,7 +51,7 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 	}
 
 	// style
-	errForm.SetButtonBackgroundColor(tcell.ColorRed)
+	errForm.SetButtonBackgroundColor(warnColorO)
 	errForm.SetButtonTextColor(tcell.ColorWhite)
 
 	errorText := tview.NewTextView()
@@ -63,10 +65,10 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 	foo.
 		SetBorder(true).
 		SetTitle(errTitleStart + " - " + errTitle).
-		SetBorderColor(tcell.ColorRed).
-		SetTitleColor(tcell.ColorRed)
+		SetBorderColor(warnColorO).
+		SetTitleColor(warnColorO)
 
-	errForm.SetFocus(1)
+	errForm.SetFocus(0)
 	height := 10
 	errLayout := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, 0, 1, false).
@@ -74,4 +76,17 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 		AddItem(nil, 0, 1, false)
 
 	contentPages.AddPage(pageError, errLayout, true, true)
+	app.SetFocus(errForm)
+
+	// very dirty hack to retrieve focus...
+	// TODO: how to do better when produced by form item done funcs
+	getFocus := func() {
+		time.Sleep(1 * time.Second)
+		gf := func() {
+			app.SetFocus(errForm)
+		}
+		app.QueueUpdateDraw(gf)
+	}
+
+	go getFocus()
 }

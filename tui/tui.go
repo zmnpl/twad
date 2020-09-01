@@ -129,7 +129,7 @@ func initUIElements() {
 	// content
 	mainFlex.AddItem(contentPages, 0, 1, true)
 	// footer
-	helpPane, helpPaneHeight := makeHelpPane()
+	helpPane, helpPaneHeight := makeKeyMap()
 	footerPages.AddPage(pageHelp, helpPane, true, true)
 	mainFlex.AddItem(footerPages, helpPaneHeight, 0, false)
 

@@ -92,12 +92,16 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 	modNameDoneCheck := func() {
 		suggestedName := z.modNameInput.GetText()
 		if !helper.IsFileNameValid(suggestedName) {
-			z.modNameInput.SetLabel(zipImportToLabel + optsWarnColor + zipImportToBadNameLabel)
+			//z.modNameInput.SetLabel(zipImportToLabel + warnColor + zipImportToBadNameLabel)
+
+			showError("Cannot use that name", "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder", z.modNameInput, nil)
+
+			//app.SetFocus(zipInput.selectTree)
 			// TODO: deactivate ok button
 			return
 		}
 		if _, err := os.Stat(path.Join(cfg.Instance().WadDir, suggestedName)); !os.IsNotExist(err) {
-			z.modNameInput.SetLabel(zipImportToLabel + optsWarnColor + zipImportToExistsLabel)
+			z.modNameInput.SetLabel(zipImportToLabel + warnColor + zipImportToExistsLabel)
 			return
 		}
 		z.modNameInput.SetLabel(zipImportToLabel)
@@ -107,19 +111,27 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 		modNameDoneCheck()
 	})
 
+	// TODO: do this manually instead of with form
+	// otherwise the error display cannot well be focused
+
 	z.modNameForm = tview.NewForm().
 		AddFormItem(z.modNameInput).
 		AddButton(zipImportFormOk, func() {
 			if _, err := os.Stat(z.zipPath); os.IsNotExist(err) {
-				// TODO
+				showError("Mod archive not found", err.Error(), zipInput.selectTree, nil)
+				zipInput.reset()
 				return
 			}
 			z.modName = z.modNameInput.GetText()
+
+			// START ACTUAL IMPORT
 			cfg.ImportArchive(z.zipPath, z.modName)
+
 			z.reset()
 		}).
 		AddButton(zipImportCancel, func() {
 			z.reset()
+			showError("Cannot use that name", "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder", z.selectTree, nil)
 		})
 
 	z.modNameForm.

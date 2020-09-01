@@ -27,19 +27,21 @@ func populateCommandPreview(g *games.Game) {
 }
 
 func stylizeCommandList(params []string) string {
-	keywords := make(map[string]int)
-	keywords["-iwad"] = 1
-	keywords["-file"] = 1
-	keywords["-savedir"] = 1
-	keywords["-save"] = 1
-	keywords["zdoom"] = 1
-	keywords["gzdoom"] = 1
-	keywords["lzdoom"] = 1
-	keywords["chocolate-doom"] = 1
-	keywords["crispy-doom"] = 1
+	keywords := map[string]int{
+		"-iwad":          1,
+		"-file":          1,
+		"-savedir":       1,
+		"-save":          1,
+		"zdoom":          1,
+		"gzdoom":         1,
+		"lzdoom":         1,
+		"chocolate-doom": 1,
+		"crispy-doom":    1,
+	}
 
-	optionals := make(map[string]int)
-	optionals["-loadgame"] = 1
+	optionals := map[string]int{
+		"-loadgame": 1,
+	}
 
 	var command strings.Builder
 	for _, s := range params {

@@ -12,8 +12,6 @@ import (
 )
 
 const (
-	optsWarnColor          = "[red]"
-	optsGoodColor          = "[green]"
 	optsErrPathDoesntExist = " (doesn't exist)"
 	optsErrPathNoIWads     = " (doesn't contain IWADs)"
 	optsLooksGood          = " (looks good)"
@@ -57,20 +55,20 @@ func makeOptions() *tview.Flex {
 	pathDoneCheck := func() {
 		// does this path exist?
 		if _, err := os.Stat(path.GetText()); os.IsNotExist(err) {
-			path.SetLabel(optsPathLabel + optsWarnColor + optsErrPathDoesntExist)
+			path.SetLabel(optsPathLabel + warnColor + optsErrPathDoesntExist)
 			return
 		}
 
 		// check if selected path contains any iwads
 		if hasIwad, err := pathHasIwad(path.GetText()); !hasIwad {
 			if err != nil {
-				path.SetLabel(optsPathLabel + optsWarnColor + " (" + err.Error() + ")")
+				path.SetLabel(optsPathLabel + warnColor + " (" + err.Error() + ")")
 			}
-			path.SetLabel(optsPathLabel + optsWarnColor + optsErrPathNoIWads)
+			path.SetLabel(optsPathLabel + warnColor + optsErrPathNoIWads)
 			return
 		}
 
-		path.SetLabel(optsPathLabel + optsGoodColor + optsLooksGood)
+		path.SetLabel(optsPathLabel + goodColor + optsLooksGood)
 	}
 	// initial check of configured path
 	pathDoneCheck()

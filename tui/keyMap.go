@@ -47,7 +47,7 @@ func init() {
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "q", keyQuitText))
 }
 
-func makeHelpPane() (*tview.Grid, int) {
+func makeKeyMap() (*tview.Grid, int) {
 	// could be easier / more static, but like this the layout can maybe be made more dynamic in the future
 	rows := 4
 	rowDimens := make([]int, rows)
