@@ -81,6 +81,19 @@ func (z *zipImportUI) initZipSelect() {
 
 		}
 	})
+
+	z.selectTree.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		k := event.Key()
+		if k == tcell.KeyRune {
+			switch event.Rune() {
+			case 'q':
+				app.Stop()
+				return nil
+			}
+		}
+
+		return event
+	})
 }
 
 func (z *zipImportUI) initZipImportForm(archivePath string) {
@@ -92,12 +105,7 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 	modNameDoneCheck := func() {
 		suggestedName := z.modNameInput.GetText()
 		if !helper.IsFileNameValid(suggestedName) {
-			//z.modNameInput.SetLabel(zipImportToLabel + warnColor + zipImportToBadNameLabel)
-
-			showError("Cannot use that name", "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder", z.modNameInput, nil)
-
-			//app.SetFocus(zipInput.selectTree)
-			// TODO: deactivate ok button
+			z.modNameInput.SetLabel(zipImportToLabel + warnColor + zipImportToBadNameLabel)
 			return
 		}
 		if _, err := os.Stat(path.Join(cfg.Instance().WadDir, suggestedName)); !os.IsNotExist(err) {
@@ -111,27 +119,32 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 		modNameDoneCheck()
 	})
 
-	// TODO: do this manually instead of with form
-	// otherwise the error display cannot well be focused
-
 	z.modNameForm = tview.NewForm().
 		AddFormItem(z.modNameInput).
 		AddButton(zipImportFormOk, func() {
+			z.modName = z.modNameInput.GetText()
+
+			// test file name again
+			if !helper.IsFileNameValid(z.modName) {
+				showError("Cannot use that name", "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder", z.modNameInput, nil)
+				return
+			}
+
+			// test if provided zip exists
 			if _, err := os.Stat(z.zipPath); os.IsNotExist(err) {
 				showError("Mod archive not found", err.Error(), zipInput.selectTree, nil)
 				zipInput.reset()
 				return
 			}
-			z.modName = z.modNameInput.GetText()
 
 			// START ACTUAL IMPORT
-			cfg.ImportArchive(z.zipPath, z.modName)
-
+			if err := cfg.ImportArchive(z.zipPath, z.modName); err != nil {
+				showError("Could not import zip", err.Error(), zipInput.selectTree, nil)
+			}
 			z.reset()
 		}).
 		AddButton(zipImportCancel, func() {
 			z.reset()
-			showError("Cannot use that name", "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder", z.selectTree, nil)
 		})
 
 	z.modNameForm.

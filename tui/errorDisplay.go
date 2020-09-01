@@ -1,8 +1,6 @@
 package tui
 
 import (
-	"time"
-
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
 )
@@ -80,13 +78,12 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 
 	// very dirty hack to retrieve focus...
 	// TODO: how to do better when produced by form item done funcs
-	getFocus := func() {
-		time.Sleep(1 * time.Second)
-		gf := func() {
-			app.SetFocus(errForm)
-		}
-		app.QueueUpdateDraw(gf)
-	}
-
-	go getFocus()
+	//getFocus := func() {
+	//	time.Sleep(1 * time.Second)
+	//	gf := func() {
+	//		app.SetFocus(errForm)
+	//	}
+	//	app.QueueUpdateDraw(gf)
+	//}
+	//go getFocus()
 }
