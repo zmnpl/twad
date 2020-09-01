@@ -168,6 +168,17 @@ func Persist() error {
 	return nil
 }
 
+// WadDirIsSane checks if the configured DOOMWADDIR is something useful
+// The root directory "/" for example is a bad idea, especially considering zip import functionality
+func WadDirIsSane() bool {
+	if instance.WadDir == "/" {
+		return false
+	}
+	// TODO: other bad ideas?
+
+	return true
+}
+
 // EnableBasePath adds the mod base path to the config ini files and/or sets it as DOOMWADDIR
 // that enables the engine, to find mod files added with the -file parameter based on relative paths
 func EnableBasePath() error {

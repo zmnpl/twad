@@ -26,7 +26,7 @@ func newTree(rootDir string) (*tview.TreeView, *tview.TreeNode) {
 // A helper function which adds the files and directories of the given path
 // to the given target node.
 // Takes a filter function to filter files, which should not be in
-func makeFileTreeAddFunc(fileFilter func(files []os.FileInfo) []os.FileInfo) func(target *tview.TreeNode, path string) {
+func makeFileTreeAddFunc(fileFilter func(files []os.FileInfo) []os.FileInfo, hideUnixHidden bool) func(target *tview.TreeNode, path string) {
 	return func(target *tview.TreeNode, path string) {
 		files, err := ioutil.ReadDir(path)
 		if fileFilter != nil {
@@ -42,10 +42,16 @@ func makeFileTreeAddFunc(fileFilter func(files []os.FileInfo) []os.FileInfo) fun
 		}
 
 		for _, file := range files {
+			// hide hiden files
+			if hideUnixHidden && strings.HasPrefix(file.Name(), ".") {
+				continue
+			}
+
 			node := tview.NewTreeNode(file.Name()).
 				SetReference(filepath.Join(path, file.Name())).
 				SetSelectable(true)
 			node.SetColor(tview.Styles.SecondaryTextColor)
+
 			if file.IsDir() {
 				node.SetColor(tview.Styles.PrimaryTextColor)
 			}

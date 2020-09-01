@@ -12,17 +12,14 @@ import (
 	"github.com/zmnpl/twad/helper"
 )
 
-// TODO: check if doomwaddir in config is something sane to avoid critical damage
-// such as not = "/"
-
 const (
-	zipSelectTitle          = "Archive to import"
+	zipSelectTitle          = "Select archive"
 	zipImportToLabel        = "Folder name"
 	zipImportToExistsLabel  = " (exists already)"
 	zipImportToBadNameLabel = " (cannot use that name)"
-	zipImportFormTitle      = "Mod folder name"
+	zipImportFormTitle      = "Import to"
 	zipImportFormOk         = "Import"
-	zipImportCancel         = "Back to selection"
+	zipImportCancel         = "Back"
 )
 
 type zipImportUI struct {
@@ -42,7 +39,8 @@ func newZipImportUI() *zipImportUI {
 }
 
 func (z *zipImportUI) initZipSelect() {
-	rootDir := helper.Home() // TODO: Start from / but preselect /home/user
+	//rootDir := helper.Home() // TODO: Start from / but preselect /home/user
+	rootDir := "/"
 	if _, err := os.Stat(rootDir); err != nil {
 		if os.IsNotExist(err) {
 			// TODO
@@ -51,7 +49,7 @@ func (z *zipImportUI) initZipSelect() {
 
 	var rootNode *tview.TreeNode
 	z.selectTree, rootNode = newTree(rootDir)
-	add := makeFileTreeAddFunc(filterKnownArchives)
+	add := makeFileTreeAddFunc(filterKnownArchives, true)
 	add(rootNode, rootDir)
 
 	z.selectTree.SetSelectedFunc(func(node *tview.TreeNode) {
@@ -65,10 +63,18 @@ func (z *zipImportUI) initZipSelect() {
 			// Load and show files in this directory.
 			selPath := reference.(string)
 
+			// check if path can at leas be read
+			// otherwise return
+			f, err := os.OpenFile(selPath, os.O_RDONLY, 0666)
+			defer f.Close()
+			if err != nil && os.IsPermission(err) {
+				return
+			}
+
 			fi, err := os.Stat(selPath)
 			switch {
 			case err != nil:
-				// handle the error and return
+				return // TODO: any form of info to user?
 			case fi.IsDir():
 				add(node, selPath)
 			default:
@@ -78,7 +84,6 @@ func (z *zipImportUI) initZipSelect() {
 			}
 		} else {
 			node.SetExpanded(!node.IsExpanded())
-
 		}
 	})
 
@@ -91,7 +96,6 @@ func (z *zipImportUI) initZipSelect() {
 				return nil
 			}
 		}
-
 		return event
 	})
 }
