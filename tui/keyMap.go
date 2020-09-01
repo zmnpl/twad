@@ -17,6 +17,7 @@ const (
 	keyNewGameText    = "New Game"
 	keyAddModText     = "Add Mod To Game"
 	keyRemoveGameText = "Remove Game"
+	keyImportArchive  = "Import Archive"
 	keySortAlphText   = "Sort Games Alphabetically"
 	keyRateText       = "Rate Game"
 	keyCreditsText    = "Credits/License"
@@ -40,6 +41,7 @@ func init() {
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "n", keyNewGameText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "m", keyAddModText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "DEL", keyRemoveGameText))
+	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "i", keyImportArchive))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "s", keySortAlphText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "+/-", keyRateText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "c", keyCreditsText))

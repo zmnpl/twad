@@ -31,6 +31,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	if len(demos) == 0 {
 		return nil, fmt.Errorf("no demos in demo dir")
 	}
@@ -112,7 +113,15 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 			case 'q':
 				app.Stop()
 				return nil
+
+			// start zip import from here
+			case 'i':
+				contentPages.SwitchToPage(pageZipImport)
+				app.SetFocus(zipInput.selectTree)
+				return nil
+
 			}
+
 		}
 
 		return event

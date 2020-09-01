@@ -238,7 +238,10 @@ func populateGamesTable() {
 
 		// switch focus to mod list
 		if k == tcell.KeyTAB && r >= fixRows {
-			app.SetFocus(detailSidePagesSub1)
+			// only if game has mods
+			if len(allGames[r-fixRows].Mods) > 0 {
+				app.SetFocus(detailSidePagesSub1)
+			}
 		}
 
 		return event
