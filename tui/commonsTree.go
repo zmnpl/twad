@@ -14,7 +14,6 @@ import (
 func newTree(rootDir string) (*tview.TreeView, *tview.TreeNode) {
 	tree := tview.NewTreeView()
 	tree.SetBorder(true)
-	tree.SetTitle(zipSelectTitle)
 
 	root := tview.NewTreeNode(rootDir).SetColor(tview.Styles.TitleColor)
 	tree.SetRoot(root).

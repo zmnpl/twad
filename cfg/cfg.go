@@ -23,7 +23,7 @@ var (
 
 const (
 	configName = "twad.json"
-	configPath = "/.config/twad"
+	configPath = ".config/twad"
 )
 
 // Cfg holds basic configuration settings
@@ -124,6 +124,10 @@ func loadConfig() error {
 		instance.IWADs = dConf.IWADs
 	}
 
+	if instance.GameListAbsoluteWidth == 0 {
+		instance.GameListAbsoluteWidth = 40
+	}
+
 	return nil
 }
 
@@ -140,7 +144,7 @@ func Instance() *Cfg {
 
 // GetConfigFolder returns the folder where configuration is stored
 func GetConfigFolder() string {
-	return helper.Home() + configPath
+	return filepath.Join(helper.Home(), configPath)
 }
 
 // GetSavegameFolder returns the folder where savegames are stored
@@ -175,6 +179,7 @@ func WadDirIsSane() bool {
 		return false
 	}
 	// TODO: other bad ideas?
+	// contains no wad
 
 	return true
 }
@@ -189,9 +194,9 @@ func EnableBasePath() error {
 
 	// Engine-Configs
 	if instance.WriteWadDirToEngineCfg {
-		go processSourcePortCfg(helper.Home() + "/.config/gzdoom/gzdoom.ini")
-		go processSourcePortCfg(helper.Home() + "/.config/zandronum/zandronum.ini")
-		go processSourcePortCfg(helper.Home() + "/.config/lzdoom/lzdoom.ini")
+		go processSourcePortCfg(filepath.Join(helper.Home(), ".config/gzdoom/gzdoom.ini"))
+		go processSourcePortCfg(filepath.Join(helper.Home(), ".config/zandronum/zandronum.ini"))
+		go processSourcePortCfg(filepath.Join(helper.Home(), ".config/lzdoom/lzdoom.ini"))
 	}
 
 	return nil

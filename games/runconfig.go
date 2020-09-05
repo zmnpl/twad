@@ -11,10 +11,9 @@ type runconfig struct {
 	skill        int
 }
 
-// newRunConfig returns an insance of *runconfig
 func newRunConfig() *runconfig {
 	var rcfg runconfig
-	return &rcfg
+	return &runconfig{}
 }
 
 func (rcfg *runconfig) quickload() *runconfig {

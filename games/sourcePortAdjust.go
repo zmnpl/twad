@@ -30,17 +30,13 @@ func sourcePortFamily(sourcePort string) (t int) {
 
 // spSaveDirParam returns the right paramter key for specifying the savegame directory
 // accounts for zdoom-, chocolate-doom and boom ports at the moments
-func (g Game) spSaveDirParam() (parameter string) {
-	sp := sourcePortFamily(g.SourcePort)
-
-	// works for chocolate-doom family as well
-	parameter = "-savedir"
-
-	// boom derivates
-	if sp == boom {
-		parameter = "-save"
+func (g Game) spSaveDirParam() string {
+	switch sourcePortFamily(g.SourcePort) {
+	case boom:
+		return "-save"
+	default:
+		return "-savedir"
 	}
-	return
 }
 
 // adjust skill for source port

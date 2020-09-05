@@ -49,6 +49,7 @@ func (z *zipImportUI) initZipSelect() {
 
 	var rootNode *tview.TreeNode
 	z.selectTree, rootNode = newTree(rootDir)
+	z.selectTree.SetTitle(zipSelectTitle)
 	add := makeFileTreeAddFunc(filterKnownArchives, true)
 	add(rootNode, rootDir)
 
