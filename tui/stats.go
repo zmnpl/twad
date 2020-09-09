@@ -23,6 +23,13 @@ func makeStatsTable(g *games.Game) *tview.Table {
 	row := 0
 	pts := float64(g.Playtime) / 1000 / 60
 
+	//saveStats := g.GetStats()
+	stats.SetCell(row, 0, tview.NewTableCell("# Kills").SetTextColor(tview.Styles.SecondaryTextColor))
+	if len(g.LvlStats.Levels) > 0 {
+		stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.LvlStats.Levels[0].KillCount)).SetAlign(tview.AlignLeft))
+	}
+
+	row++
 	stats.SetCell(row, 0, tview.NewTableCell("# Savegames").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.SaveCount())).SetAlign(tview.AlignLeft))
 	row++

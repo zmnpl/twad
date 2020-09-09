@@ -69,7 +69,7 @@ func Unzip(src string, dest string) ([]string, error) {
 			continue
 		}
 
-		f.FileInfo().Size()
+		//f.FileInfo().Size()
 
 		// Make File
 		if err = os.MkdirAll(filepath.Dir(fpath), os.ModePerm); err != nil {

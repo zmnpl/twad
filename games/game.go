@@ -28,6 +28,7 @@ type Game struct {
 	LastPlayed       string         `json:"last_played"`
 	SaveGameCount    int            `json:"save_game_count"`
 	Rating           int            `json:"rating"`
+	LvlStats         SaveStats
 }
 
 // NewGame creates new instance of a game
@@ -63,6 +64,11 @@ func NewGame(name, sourceport, iwad string) Game {
 	}
 
 	return game
+}
+
+func (g Game) GetStats() SaveStats {
+	lastSavePath, _ := g.lastSave()
+	return getStatsFromSavegame(lastSavePath)
 }
 
 // Run executes given configuration and launches the mod

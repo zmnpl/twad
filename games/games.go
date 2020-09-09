@@ -2,6 +2,7 @@ package games
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"sort"
 	"sync"
@@ -123,6 +124,13 @@ func loadGames() error {
 	err = json.Unmarshal(content, &instance)
 	if err != nil {
 		return err
+	}
+
+	for i, v := range instance {
+		//if lastSavePath, err := v.lastSave(); err == nil {
+		instance[i].LvlStats = v.GetStats()
+		fmt.Println(instance[i].LvlStats)
+		//}
 	}
 
 	return nil

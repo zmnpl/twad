@@ -12,7 +12,6 @@ type runconfig struct {
 }
 
 func newRunConfig() *runconfig {
-	var rcfg runconfig
 	return &runconfig{}
 }
 
