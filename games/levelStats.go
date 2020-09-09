@@ -40,6 +40,11 @@ type LevelStats struct {
 }
 
 func getStatsFromSavegame(path string) SaveStats {
+	zeroLevel := LevelStats{}
+	emtpyStats := SaveStats{
+		Levels: []LevelStats{zeroLevel},
+	}
+
 	sls, err := zdoomStatsFromJSON(path)
 	if err == nil {
 		return sls
@@ -50,7 +55,7 @@ func getStatsFromSavegame(path string) SaveStats {
 		return sls
 	}
 
-	return SaveStats{}
+	return emtpyStats
 }
 
 // ZDOOM
@@ -67,8 +72,9 @@ func zdoomStatsFromJSON(path string) (SaveStats, error) {
 		},
 	}
 
-	save.Stats.Savegame = path
-	json.Unmarshal(jsonContent, &save)
+	if err := json.Unmarshal(jsonContent, &save); err != nil {
+		return SaveStats{}, err
+	}
 
 	return save.Stats, nil
 }

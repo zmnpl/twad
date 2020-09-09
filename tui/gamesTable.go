@@ -77,7 +77,8 @@ func populateGamesTable() {
 		//var cell *tview.TableCell
 		switch r {
 		case 0:
-			g = &games.Game{}
+			//g = &games.Game{}
+			return
 			//cell = tview.NewTableCell("")
 		default:
 			g = &allGames[r-fixRows]

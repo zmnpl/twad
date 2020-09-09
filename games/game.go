@@ -23,12 +23,13 @@ type Game struct {
 	Environment      []string       `json:"environment"`
 	Mods             []string       `json:"mods"`
 	CustomParameters []string       `json:"custom_parameters"`
-	Stats            map[string]int `json:"stats"`
+	ConsoleStats     map[string]int `json:"stats"`
 	Playtime         int64          `json:"playtime"`
 	LastPlayed       string         `json:"last_played"`
 	SaveGameCount    int            `json:"save_game_count"`
 	Rating           int            `json:"rating"`
-	LvlStats         SaveStats
+	Stats            SaveStats
+	StatsSum         LevelStats
 }
 
 // NewGame creates new instance of a game
@@ -42,7 +43,7 @@ func NewGame(name, sourceport, iwad string) Game {
 		Environment:      make([]string, 0),
 		CustomParameters: make([]string, 0),
 		Mods:             make([]string, 0),
-		Stats:            make(map[string]int),
+		ConsoleStats:     make(map[string]int),
 	}
 
 	// replace with given or first list entry
@@ -66,9 +67,19 @@ func NewGame(name, sourceport, iwad string) Game {
 	return game
 }
 
-func (g Game) GetStats() SaveStats {
+// ReadStats tries to read stats from the newest existing savegame
+func (g *Game) ReadStats() {
 	lastSavePath, _ := g.lastSave()
-	return getStatsFromSavegame(lastSavePath)
+	g.Stats = getStatsFromSavegame(lastSavePath)
+	g.StatsSum = LevelStats{}
+	for _, s := range g.Stats.Levels {
+		g.StatsSum.KillCount += s.KillCount
+		g.StatsSum.TotalKills += s.TotalKills
+		g.StatsSum.ItemCount += s.ItemCount
+		g.StatsSum.TotalItems += s.TotalItems
+		g.StatsSum.SecretCount += s.SecretCount
+		g.StatsSum.TotalSecrets += s.TotalSecrets
+	}
 }
 
 // Run executes given configuration and launches the mod
@@ -133,6 +144,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 
 	// could take a while ...
 	go processOutput(string(output), g)
+	go g.ReadStats()
 
 	return
 }
@@ -346,12 +358,12 @@ func (g Game) cleansedName() string {
 
 // processOutput processes the terminal output of the zdoom port
 func processOutput(output string, g *Game) {
-	if g.Stats == nil {
-		g.Stats = make(map[string]int)
+	if g.ConsoleStats == nil {
+		g.ConsoleStats = make(map[string]int)
 	}
 	for _, v := range strings.Split(output, "\n") {
 		if stat, increment := parseStatline(v, g); stat != "" {
-			g.Stats[stat] = g.Stats[stat] + increment
+			g.ConsoleStats[stat] = g.ConsoleStats[stat] + increment
 		}
 	}
 
