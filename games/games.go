@@ -126,7 +126,7 @@ func loadGames() error {
 	}
 
 	for i, _ := range instance {
-		go instance[i].ReadStats()
+		go instance[i].ReadLatestStats()
 	}
 
 	return nil

@@ -15,8 +15,8 @@ import (
 const (
 	zipSelectTitle          = "Select archive"
 	zipImportToLabel        = "Folder name"
-	zipImportToExistsLabel  = " (exists already)"
-	zipImportToBadNameLabel = " (cannot use that name)"
+	zipImportToExistsLabel  = "exists already"
+	zipImportToBadNameLabel = "cannot use that name"
 	zipImportFormTitle      = "Import to"
 	zipImportFormOk         = "Import"
 	zipImportCancel         = "Back"
@@ -110,11 +110,11 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 	modNameDoneCheck := func() {
 		suggestedName := z.modNameInput.GetText()
 		if !helper.IsFileNameValid(suggestedName) {
-			z.modNameInput.SetLabel(zipImportToLabel + warnColor + zipImportToBadNameLabel)
+			z.modNameInput.SetLabel(zipImportToLabel + warnColor + " " + zipImportToBadNameLabel)
 			return
 		}
 		if _, err := os.Stat(path.Join(cfg.Instance().WadDir, suggestedName)); !os.IsNotExist(err) {
-			z.modNameInput.SetLabel(zipImportToLabel + warnColor + zipImportToExistsLabel)
+			z.modNameInput.SetLabel(zipImportToLabel + warnColor + " " + zipImportToExistsLabel)
 			return
 		}
 		z.modNameInput.SetLabel(zipImportToLabel)

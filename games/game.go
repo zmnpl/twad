@@ -67,8 +67,8 @@ func NewGame(name, sourceport, iwad string) Game {
 	return game
 }
 
-// ReadStats tries to read stats from the newest existing savegame
-func (g *Game) ReadStats() {
+// ReadLatestStats tries to read stats from the newest existing savegame
+func (g *Game) ReadLatestStats() {
 	lastSavePath, _ := g.lastSave()
 	g.Stats = getStatsFromSavegame(lastSavePath)
 	g.StatsSum = LevelStats{}
@@ -144,7 +144,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 
 	// could take a while ...
 	go processOutput(string(output), g)
-	go g.ReadStats()
+	go g.ReadLatestStats()
 
 	return
 }

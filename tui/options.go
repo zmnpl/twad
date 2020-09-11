@@ -12,9 +12,9 @@ import (
 )
 
 const (
-	optsErrPathDoesntExist = " (doesn't exist)"
-	optsErrPathNoIWads     = " (doesn't contain IWADs)"
-	optsLooksGood          = " (looks good)"
+	optsErrPathDoesntExist = "doesn't exist"
+	optsErrPathNoIWads     = "doesn't contain IWADs"
+	optsLooksGood          = "looks good"
 
 	optsHeader                   = "Options"
 	optsOkButtonLabel            = "Save"
@@ -55,7 +55,7 @@ func makeOptions() *tview.Flex {
 	pathDoneCheck := func() {
 		// does this path exist?
 		if _, err := os.Stat(path.GetText()); os.IsNotExist(err) {
-			path.SetLabel(optsPathLabel + warnColor + optsErrPathDoesntExist)
+			path.SetLabel(optsPathLabel + warnColor + " " + optsErrPathDoesntExist)
 			return
 		}
 
@@ -64,11 +64,11 @@ func makeOptions() *tview.Flex {
 			if err != nil {
 				path.SetLabel(optsPathLabel + warnColor + " (" + err.Error() + ")")
 			}
-			path.SetLabel(optsPathLabel + warnColor + optsErrPathNoIWads)
+			path.SetLabel(optsPathLabel + warnColor + " " + optsErrPathNoIWads)
 			return
 		}
 
-		path.SetLabel(optsPathLabel + goodColor + optsLooksGood)
+		path.SetLabel(optsPathLabel + goodColor + " " + optsLooksGood)
 	}
 	// initial check of configured path
 	pathDoneCheck()
@@ -122,7 +122,6 @@ func makeOptions() *tview.Flex {
 		c.HideHeader = printHeader.IsChecked()
 		c.DeleteWithoutWarning = dontWarn.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
-		//c.ModsInTable = legacyModView.IsChecked()
 		c.Configured = !firstStart.IsChecked()
 
 		cfg.Persist()

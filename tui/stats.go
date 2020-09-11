@@ -23,6 +23,8 @@ func makeStatsTable(g *games.Game) *tview.Table {
 	row := 0
 
 	// generic stuff
+	stats.SetCell(row, 0, tview.NewTableCell("Overall").SetTextColor(tview.Styles.ContrastBackgroundColor))
+	row++
 	stats.SetCell(row, 0, tview.NewTableCell("# Savegames").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.SaveCount())).SetAlign(tview.AlignLeft))
 	row++
@@ -35,20 +37,24 @@ func makeStatsTable(g *games.Game) *tview.Table {
 	stats.SetCell(row, 0, tview.NewTableCell("Last Played").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.LastPlayed)).SetAlign(tview.AlignLeft))
 	row++
-	stats.SetCell(row, 0, tview.NewTableCell(""))
-	//	stats.SetCell(row, 1, tview.NewTableCell(""))
-	row++
 
 	// stats from savegames
-	stats.SetCell(row, 0, tview.NewTableCell("# Kills").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row+1, 0, tview.NewTableCell("# Secrets").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row+2, 0, tview.NewTableCell("# Items").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsSum.KillCount, g.StatsSum.TotalKills)).SetAlign(tview.AlignLeft))
-	stats.SetCell(row+1, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsSum.SecretCount, g.StatsSum.TotalSecrets)).SetAlign(tview.AlignLeft))
-	stats.SetCell(row+2, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsSum.ItemCount, g.StatsSum.TotalItems)).SetAlign(tview.AlignLeft))
+	stats.SetCell(row, 0, tview.NewTableCell("Latest Savegame").SetTextColor(tview.Styles.ContrastBackgroundColor))
+	row++
+	stats.SetCell(row, 0, tview.NewTableCell("# Maps").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row+1, 0, tview.NewTableCell("# Kills").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row+2, 0, tview.NewTableCell("# Secrets").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row+3, 0, tview.NewTableCell("# Items").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", len(g.Stats.Levels))).SetAlign(tview.AlignLeft))
+	stats.SetCell(row+1, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsSum.KillCount, g.StatsSum.TotalKills)).SetAlign(tview.AlignLeft))
+	stats.SetCell(row+2, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsSum.SecretCount, g.StatsSum.TotalSecrets)).SetAlign(tview.AlignLeft))
+	stats.SetCell(row+3, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsSum.ItemCount, g.StatsSum.TotalItems)).SetAlign(tview.AlignLeft))
 	row += 4
 
 	// what the game printed into console
+	// generic stuff
+	stats.SetCell(row, 0, tview.NewTableCell("Pickups").SetTextColor(tview.Styles.ContrastBackgroundColor))
+	row++
 	for k, v := range g.ConsoleStats {
 		stats.SetCell(row, 0, tview.NewTableCell(strings.Title("# "+k)).SetTextColor(tview.Styles.SecondaryTextColor))
 		stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", v)).SetAlign(tview.AlignLeft))

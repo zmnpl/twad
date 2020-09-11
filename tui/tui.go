@@ -35,10 +35,6 @@ const (
 	pageZipImport    = "zipselect"
 
 	tableBorders = false
-
-	colorTagPrimaryText  = "[white]"
-	colorTagContrast     = "[royalblue]"
-	colorTagMoreContrast = "[orange]"
 )
 
 var (
