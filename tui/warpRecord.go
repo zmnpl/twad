@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	warpText          = "Warp E L"
+	warpText          = "Warp E M"
 	skillText         = "Difficulty"
 	demoText          = "Demo Name"
 	demoTextOverwrite = "Overwriting"

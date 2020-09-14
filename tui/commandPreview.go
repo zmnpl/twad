@@ -37,6 +37,7 @@ func stylizeCommandList(params []string) string {
 		"zdoom":          true,
 		"gzdoom":         true,
 		"lzdoom":         true,
+		"zandronum":      true,
 		"chocolate-doom": true,
 		"crispy-doom":    true,
 		"prboom":         true,

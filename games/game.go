@@ -139,7 +139,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 	}
 
 	// rip and tear!
-	doom := g.composeProcess(rcfg)
+	doom := g.composeProcess(g.getLaunchParams(rcfg))
 	output, err := doom.CombinedOutput()
 	if err != nil {
 		ioutil.WriteFile("twad.log", []byte(fmt.Sprintf("%v\n\n%v\n\n%v\n\n%v", string(output), err.Error(), g.getLaunchParams(rcfg), doom)), 0755)
@@ -163,8 +163,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 	return
 }
 
-func (g Game) composeProcess(rcfg runconfig) (cmd *exec.Cmd) {
-	params := g.getLaunchParams(rcfg)
+func (g Game) composeProcess(params []string) (cmd *exec.Cmd) {
 	// create process object
 	cmd = exec.Command(g.SourcePort, params...)
 	// add environment variables; use os environment as basis
