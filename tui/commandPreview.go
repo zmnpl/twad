@@ -27,16 +27,20 @@ func populateCommandPreview(g *games.Game) {
 }
 
 func stylizeCommandList(params []string) string {
-	keywords := map[string]int{
-		"-iwad":          1,
-		"-file":          1,
-		"-savedir":       1,
-		"-save":          1,
-		"zdoom":          1,
-		"gzdoom":         1,
-		"lzdoom":         1,
-		"chocolate-doom": 1,
-		"crispy-doom":    1,
+	keywords := map[string]bool{
+		"-iwad":          true,
+		"-file":          true,
+		"-savedir":       true,
+		"-save":          true,
+		"-statdump":      true,
+		"-levelstat":     true,
+		"zdoom":          true,
+		"gzdoom":         true,
+		"lzdoom":         true,
+		"chocolate-doom": true,
+		"crispy-doom":    true,
+		"prboom":         true,
+		"prboom-plus":    true,
 	}
 
 	optionals := map[string]int{

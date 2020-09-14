@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -131,11 +132,24 @@ func (g *Game) RemoveMod(i int) {
 func (g *Game) run(rcfg runconfig) (err error) {
 	start := time.Now()
 
+	// change workind directory to redirect stat file output for boom
+	wd, wdChangeError := os.Getwd()
+	if sourcePortFamily(g.SourcePort) == boom {
+		os.Chdir(g.getSaveDir())
+	}
+
 	// rip and tear!
 	doom := g.composeProcess(rcfg)
 	output, err := doom.CombinedOutput()
 	if err != nil {
+		ioutil.WriteFile("twad.log", []byte(fmt.Sprintf("%v\n\n%v\n\n%v\n\n%v", string(output), err.Error(), g.getLaunchParams(rcfg), doom)), 0755)
 		return err
+	}
+
+	// change back working directory to where it was
+	wdNow, _ := os.Getwd()
+	if wd != wdNow && wdChangeError == nil {
+		os.Chdir(wd)
 	}
 
 	playtime := time.Since(start).Milliseconds()
@@ -160,7 +174,7 @@ func (g Game) composeProcess(rcfg runconfig) (cmd *exec.Cmd) {
 }
 
 func (g Game) getLaunchParams(rcfg runconfig) []string {
-	params := make([]string, 1, 10)
+	params := make([]string, 0, 10)
 
 	// IWAD
 	if g.Iwad != "" {
@@ -180,6 +194,17 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
 		params = append(params, g.spSaveDirParam())
 		params = append(params, g.getSaveDir())
+	}
+
+	// stats for chocolate doom and ports
+	if sourcePortFamily(g.SourcePort) == chocolate {
+		params = append(params, "-statdump")
+		params = append(params, path.Join(g.getSaveDir(), "levelstat.txt"))
+	}
+
+	// stats for chocolate doom and ports
+	if sourcePortFamily(g.SourcePort) == boom {
+		params = append(params, "-levelstat")
 	}
 
 	// quickload
