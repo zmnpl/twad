@@ -1,5 +1,6 @@
 package games
 
+// just to avoid a truckload of parameters to the composing method...
 type runconfig struct {
 	loadLastSave bool
 	beam         bool

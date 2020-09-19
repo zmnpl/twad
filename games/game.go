@@ -29,8 +29,8 @@ type Game struct {
 	LastPlayed       string         `json:"last_played"`
 	SaveGameCount    int            `json:"save_game_count"`
 	Rating           int            `json:"rating"`
-	Stats            SaveStats
-	StatsSum         LevelStats
+	Stats            SaveGame
+	StatsSum         MapStats
 }
 
 // NewGame creates new instance of a game
@@ -71,8 +71,16 @@ func NewGame(name, sourceport, iwad string) Game {
 // ReadLatestStats tries to read stats from the newest existing savegame
 func (g *Game) ReadLatestStats() {
 	lastSavePath, _ := g.lastSave()
-	g.Stats = getStatsFromSavegame(lastSavePath)
-	g.StatsSum = LevelStats{}
+
+	if sourcePortFamily(g.SourcePort) == chocolate {
+		g.Stats, _ = getChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
+	} else if sourcePortFamily(g.SourcePort) == boom {
+		g.Stats, _ = getBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
+	} else {
+		g.Stats = getZDoomStats(lastSavePath)
+	}
+
+	g.StatsSum = MapStats{}
 	for _, s := range g.Stats.Levels {
 		g.StatsSum.KillCount += s.KillCount
 		g.StatsSum.TotalKills += s.TotalKills
@@ -198,7 +206,7 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	// stats for chocolate doom and ports
 	if sourcePortFamily(g.SourcePort) == chocolate {
 		params = append(params, "-statdump")
-		params = append(params, path.Join(g.getSaveDir(), "levelstat.txt"))
+		params = append(params, path.Join(g.getSaveDir(), "statdump.txt"))
 	}
 
 	// stats for chocolate doom and ports
