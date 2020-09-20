@@ -8,6 +8,12 @@ const (
 	boom
 )
 
+const (
+	zdoomSaveExtension     = ".zds.json"
+	boomSaveExtension      = ".dsg"
+	chocolateSaveExtension = ".dsg"
+)
+
 // sourcePortFamily checks the games engine type by inspecting the string
 // known keyphrases will be interpreted as a certain source port family
 func sourcePortFamily(sourcePort string) (t int) {
@@ -26,6 +32,17 @@ func sourcePortFamily(sourcePort string) (t int) {
 	}
 
 	return
+}
+
+func (g Game) spSavegameExt() string {
+	switch sourcePortFamily(g.SourcePort) {
+	case zdoom:
+		return zdoomSaveExtension
+	case chocolate:
+		return chocolateSaveExtension
+	default:
+		return boomSaveExtension
+	}
 }
 
 // spSaveDirParam returns the right paramter key for specifying the savegame directory

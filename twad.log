@@ -1,0 +1,52 @@
+Failed to get I/O port permissions for 0x388: Operation not permitted
+	You may need to run the program as root in order
+	to acquire I/O port permissions for OPL MIDI playback.
+I_InitSound: SDL audio driver is pulseaudio
+                           Crispy Doom 5.9.1
+Z_Init: Init zone memory allocation daemon. 
+zone memory: 0x7f49a1e9e010, 32 MiB allocated for zone
+Using /home/simon/.local/share/crispy-doom/ for configuration and saves
+V_Init: allocate screens.
+M_LoadDefaults: Load system defaults.
+saving config in /home/simon/.local/share/crispy-doom/default.cfg
+W_Init: Init WADfiles.
+ adding /home/simon/DOOM/doom.wad
+  loaded 0 DEHACKED lumps from PWAD files.
+Save directory changed to /home/simon/.config/twad/savegames/DOOMCrispy/.
+===========================================================================
+                           The Ultimate DOOM
+===========================================================================
+ Crispy Doom is free software, covered by the GNU General Public
+ License.  There is NO warranty; not even for MERCHANTABILITY or FITNESS
+ FOR A PARTICULAR PURPOSE. You are welcome to change and distribute
+ copies under certain conditions. See the source for more information.
+===========================================================================
+I_Init: Setting up machine state.
+OPL_Init: Using driver 'SDL'.
+NET_Init: Init network subsystem.
+M_Init: Init miscellaneous info.
+R_Init: Init DOOM refresh daemon - ...........................
+P_Init: Init Playloop state.
+S_Init: Setting up sound.
+I_SDL_PrecacheSounds: Precaching all sound effects......................S_ChangeMusic: D_E1M1 (doom.wad)
+P_SetupLevel: E1M1 (doom.wad) Normal 0:00:00/0:00:00 Doom (BSP)
+Demo /home/simon/.config/twad/demos/DOOMCrispy/test.lmp recorded
+
+
+D_CheckNetGame: Checking network game status.
+NOTE: Turning resolution is reduced; this is probably because there is a client recording a Vanilla demo.
+startskill 2  deathmatch: 0  startmap: -48  startepisode: 1
+player 1 of 1 (1 nodes)
+Emulating the behavior of the 'Ultimate Doom' executable.
+HU_Init: Setting up heads up display.
+ST_Init: Init status bar.
+External statistics registered.
+Statistics captured for 0 level(s)
+Statistics captured for 0 level(s)
+
+
+exit status 255
+
+[-iwad doom.wad -savedir /home/simon/.config/twad/savegames/DOOMCrispy -statdump /home/simon/.config/twad/savegames/DOOMCrispy/statdump.txt -warp 1 -skill 3 -record /home/simon/.config/twad/demos/DOOMCrispy/test ]
+
+/usr/bin/crispy-doom -iwad doom.wad -savedir /home/simon/.config/twad/savegames/DOOMCrispy -statdump /home/simon/.config/twad/savegames/DOOMCrispy/statdump.txt -warp 1 -skill 3 -record /home/simon/.config/twad/demos/DOOMCrispy/test 

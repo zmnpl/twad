@@ -13,22 +13,20 @@ import (
 	"os"
 	"regexp"
 	"strconv"
-	"time"
 	"unsafe"
 )
 
 // nested structs match json structure of zdoom json format
-
 type sg struct {
 	Stats SaveGame `json:"statistics"`
 }
 
 // SaveGame contains stats for all levels of a savegame
 type SaveGame struct {
+	fi     os.FileInfo
 	Path   string
 	Name   string
 	Slot   int
-	Time   time.Time
 	Levels []MapStats `json:"levels"`
 }
 
@@ -48,11 +46,6 @@ type MapStats struct {
 }
 
 func getZDoomStats(path string) SaveGame {
-	zeroLevel := MapStats{}
-	emtpyStats := SaveGame{
-		Levels: []MapStats{zeroLevel},
-	}
-
 	sls, err := zdoomStatsFromJSON(path)
 	if err == nil {
 		return sls
@@ -63,7 +56,7 @@ func getZDoomStats(path string) SaveGame {
 		return sls
 	}
 
-	return emtpyStats
+	return SaveGame{}
 }
 
 // ZDOOM

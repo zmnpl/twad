@@ -98,3 +98,18 @@ func Unzip(src string, dest string) ([]string, error) {
 	}
 	return filenames, nil
 }
+
+// FilterExtensions filters a given slice of FileInfo based on the passed extensions
+// extensions can be a string containing multiple extensions; strings.Contains is used for comparison
+func FilterExtensions(files []os.FileInfo, extensions string) []os.FileInfo {
+	n := 0
+	for _, f := range files {
+		ext := strings.ToLower(filepath.Ext(f.Name()))
+		if strings.Contains(extensions, ext) && !f.IsDir() {
+			files[n] = f
+			n++
+		}
+	}
+	files = files[:n]
+	return files
+}

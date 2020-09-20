@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/helper"
 )
 
 // Game represents one game configuration
@@ -30,7 +31,7 @@ type Game struct {
 	SaveGameCount    int            `json:"save_game_count"`
 	Rating           int            `json:"rating"`
 	Stats            SaveGame
-	StatsSum         MapStats
+	StatsTotal       MapStats
 }
 
 // NewGame creates new instance of a game
@@ -80,14 +81,14 @@ func (g *Game) ReadLatestStats() {
 		g.Stats = getZDoomStats(lastSavePath)
 	}
 
-	g.StatsSum = MapStats{}
+	g.StatsTotal = MapStats{}
 	for _, s := range g.Stats.Levels {
-		g.StatsSum.KillCount += s.KillCount
-		g.StatsSum.TotalKills += s.TotalKills
-		g.StatsSum.ItemCount += s.ItemCount
-		g.StatsSum.TotalItems += s.TotalItems
-		g.StatsSum.SecretCount += s.SecretCount
-		g.StatsSum.TotalSecrets += s.TotalSecrets
+		g.StatsTotal.KillCount += s.KillCount
+		g.StatsTotal.TotalKills += s.TotalKills
+		g.StatsTotal.ItemCount += s.ItemCount
+		g.StatsTotal.TotalItems += s.TotalItems
+		g.StatsTotal.SecretCount += s.SecretCount
+		g.StatsTotal.TotalSecrets += s.TotalSecrets
 	}
 }
 
@@ -270,10 +271,20 @@ func (g Game) CommandList() (command []string) {
 
 // SaveCount returns the number of savegames existing for this game
 func (g Game) SaveCount() int {
-	if saves, err := ioutil.ReadDir(g.getSaveDir()); err == nil {
+	if saves, err := g.SaveGameFiles(); err == nil {
 		return len(saves)
 	}
 	return 0
+}
+
+// SaveGameFiles returns a slice of os.FileInfo with all savegmes for this game
+func (g Game) SaveGameFiles() ([]os.FileInfo, error) {
+	saves, err := ioutil.ReadDir(g.getSaveDir())
+	if err != nil {
+		return nil, err
+	}
+	saves = helper.FilterExtensions(saves, g.spSaveFileExtension())
+	return saves, nil
 }
 
 // DemoCount returns the number of demos existing for this game
@@ -338,11 +349,11 @@ func (g Game) lastSave() (save string, err error) {
 }
 
 func (g Game) getSaveDir() string {
-	return cfg.GetSavegameFolder() + "/" + g.cleansedName()
+	return filepath.Join(cfg.GetSavegameFolder(), g.cleansedName())
 }
 
 func (g Game) getDemoDir() string {
-	return cfg.GetDemoFolder() + "/" + g.cleansedName()
+	return filepath.Join(cfg.GetDemoFolder(), g.cleansedName())
 }
 
 // DemoExists checks if a file with the same name already exists in the default demo dir
@@ -362,7 +373,7 @@ func (g Game) DemoExists(name string) bool {
 // RemoveDemo removes the demo file with the given name
 // and returns the new set of demos
 func (g *Game) RemoveDemo(name string) ([]os.FileInfo, error) {
-	err := os.Remove(g.getDemoDir() + "/" + name)
+	err := os.Remove(filepath.Join(g.getDemoDir(), name))
 	if err != nil {
 		return nil, err
 	}
