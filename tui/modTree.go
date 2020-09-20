@@ -2,8 +2,9 @@ package tui
 
 import (
 	"os"
-	"path/filepath"
 	"strings"
+
+	"github.com/zmnpl/twad/helper"
 
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
@@ -24,7 +25,7 @@ func makeModTree(g *games.Game) *tview.TreeView {
 
 	modFolderTree, rootNode := newTree(rootDir)
 	modFolderTree.SetTitle(modTreeTitle)
-	add := makeFileTreeAddFunc(filterExtensions, false)
+	add := makeFileTreeAddFunc(helper.FilterExtensions, config.ModExtensions, false)
 	add(rootNode, rootDir)
 
 	modFolderTree.SetSelectedFunc(func(node *tview.TreeNode) {
@@ -54,17 +55,4 @@ func makeModTree(g *games.Game) *tview.TreeView {
 	})
 
 	return modFolderTree
-}
-
-func filterExtensions(files []os.FileInfo) []os.FileInfo {
-	n := 0
-	for _, f := range files {
-		ext := strings.ToLower(filepath.Ext(f.Name()))
-		if _, found := config.ModExtensions[ext]; found || f.IsDir() {
-			files[n] = f
-			n++
-		}
-	}
-	files = files[:n]
-	return files
 }

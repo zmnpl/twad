@@ -3,7 +3,6 @@ package tui
 import (
 	"os"
 	"path"
-	"path/filepath"
 	"strings"
 
 	"github.com/gdamore/tcell"
@@ -50,7 +49,7 @@ func (z *zipImportUI) initZipSelect() {
 	var rootNode *tview.TreeNode
 	z.selectTree, rootNode = newTree(rootDir)
 	z.selectTree.SetTitle(zipSelectTitle)
-	add := makeFileTreeAddFunc(filterKnownArchives, true)
+	add := makeFileTreeAddFunc(helper.FilterExtensions, ".zip", true)
 	add(rootNode, rootDir)
 
 	z.selectTree.SetSelectedFunc(func(node *tview.TreeNode) {
@@ -164,18 +163,4 @@ func (z *zipImportUI) reset() {
 	z.modName = ""
 	z.zipPath = ""
 	app.SetFocus(z.selectTree)
-}
-
-func filterKnownArchives(files []os.FileInfo) []os.FileInfo {
-	knownArchives := map[string]int{".zip": 1}
-	n := 0
-	for _, f := range files {
-		ext := strings.ToLower(filepath.Ext(f.Name()))
-		if _, found := knownArchives[ext]; found || f.IsDir() {
-			files[n] = f
-			n++
-		}
-	}
-	files = files[:n]
-	return files
 }

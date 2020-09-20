@@ -37,11 +37,11 @@ func newTree(rootDir string) (*tview.TreeView, *tview.TreeNode) {
 // A helper function which adds the files and directories of the given path
 // to the given target node.
 // Takes a filter function to filter files, which should not be in
-func makeFileTreeAddFunc(fileFilter func(files []os.FileInfo) []os.FileInfo, hideUnixHidden bool) func(target *tview.TreeNode, path string) {
+func makeFileTreeAddFunc(fileFilter func(files []os.FileInfo, extensions string) []os.FileInfo, extensions string, hideUnixHidden bool) func(target *tview.TreeNode, path string) {
 	return func(target *tview.TreeNode, path string) {
 		files, err := ioutil.ReadDir(path)
 		if fileFilter != nil {
-			files = fileFilter(files)
+			files = fileFilter(files, extensions)
 		}
 
 		sort.Slice(files, func(i, j int) bool {

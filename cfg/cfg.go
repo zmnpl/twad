@@ -29,17 +29,17 @@ const (
 // Cfg holds basic configuration settings
 // Should only be instantiated via GetInstance
 type Cfg struct {
-	WadDir                 string         `json:"wad_dir"`
-	WriteWadDirToEngineCfg bool           `json:"write_wad_dir_to_engine_cfg"`
-	DontSetDoomwaddir      bool           `json:"dont_set_doomwaddir"`
-	ModExtensions          map[string]int `json:"mod_extensions"`
-	SourcePorts            []string       `json:"source_ports"`
-	IWADs                  []string       `json:"iwa_ds"`
-	Configured             bool           `json:"configured"`
-	DeleteWithoutWarning   bool           `json:"delete_without_warning"`
-	HideHeader             bool           `json:"hide_header"`
-	GameListAbsoluteWidth  int            `json:"game_list_absolute_width"`
-	GameListRelativeWidth  int            `json:"game_list_relative_width"`
+	WadDir                 string   `json:"wad_dir"`
+	WriteWadDirToEngineCfg bool     `json:"write_wad_dir_to_engine_cfg"`
+	DontSetDoomwaddir      bool     `json:"dont_set_doomwaddir"`
+	ModExtensions          string   `json:"mod_extensions"`
+	SourcePorts            []string `json:"source_ports"`
+	IWADs                  []string `json:"iwa_ds"`
+	Configured             bool     `json:"configured"`
+	DeleteWithoutWarning   bool     `json:"delete_without_warning"`
+	HideHeader             bool     `json:"hide_header"`
+	GameListAbsoluteWidth  int      `json:"game_list_absolute_width"`
+	GameListRelativeWidth  int      `json:"game_list_relative_width"`
 }
 
 func init() {
@@ -52,7 +52,7 @@ func init() {
 func defaultConfig() Cfg {
 	config := Cfg{
 		WadDir:                filepath.Join(helper.Home(), "/DOOM"),
-		ModExtensions:         map[string]int{".wad": 1, ".pk3": 1, ".ipk3": 1},
+		ModExtensions:         ".wad.pk3.ipk3",
 		SourcePorts:           []string{"gzdoom", "zandronum", "lzdoom"},
 		IWADs:                 []string{"doom2.wad", "doom.wad"},
 		GameListRelativeWidth: 40,
@@ -112,7 +112,7 @@ func loadConfig() error {
 		instance.WadDir = dConf.WadDir
 	}
 
-	if len(instance.ModExtensions) == 0 {
+	if instance.ModExtensions == "" {
 		instance.ModExtensions = dConf.ModExtensions
 	}
 
