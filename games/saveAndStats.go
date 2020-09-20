@@ -21,7 +21,7 @@ type sg struct {
 	Stats Savegame `json:"statistics"`
 }
 
-// Savegame contains stats for all levels of a savegame
+// Savegame saves a dual purpose
 type Savegame struct {
 	FI        os.FileInfo
 	Directory string
@@ -45,6 +45,7 @@ type MapStats struct {
 	LevelName  string `json:"levelname"`
 }
 
+// NewSavegame initializes a new Savegame struct
 func NewSavegame(fi os.FileInfo, dir string) Savegame {
 	savegame := Savegame{
 		Directory: dir,
@@ -55,26 +56,26 @@ func NewSavegame(fi os.FileInfo, dir string) Savegame {
 	return savegame
 }
 
-func getZDoomStats(path string) Savegame {
-	sls, err := zdoomStatsFromJSON(path)
+func getZDoomStats(path string) []MapStats {
+	stats, err := zdoomStatsFromJSON(path)
 	if err == nil {
-		return sls
+		return stats
 	}
 
-	sls, err = zdoomStatsFromBinary(path)
+	stats, err = zdoomStatsFromBinary(path)
 	if err == nil {
-		return sls
+		return stats
 	}
 
-	return Savegame{}
+	return make([]MapStats, 0)
 }
 
 // ZDOOM
 
-func zdoomStatsFromJSON(path string) (Savegame, error) {
+func zdoomStatsFromJSON(path string) ([]MapStats, error) {
 	jsonContent, err := getFileContentFromZip(path, "globals.json")
 	if err != nil {
-		return Savegame{}, err
+		return nil, err
 	}
 
 	save := sg{
@@ -84,20 +85,16 @@ func zdoomStatsFromJSON(path string) (Savegame, error) {
 	}
 
 	if err := json.Unmarshal(jsonContent, &save); err != nil {
-		return Savegame{}, err
+		return nil, err
 	}
 
-	return save.Stats, nil
+	return save.Stats.Levels, nil
 }
 
-func zdoomStatsFromBinary(path string) (Savegame, error) {
+func zdoomStatsFromBinary(path string) ([]MapStats, error) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		return Savegame{}, err
-	}
-
-	levelStats := Savegame{
-		Directory: path,
+		return nil, err
 	}
 
 	// reader to read from
@@ -107,7 +104,7 @@ func zdoomStatsFromBinary(path string) (Savegame, error) {
 	magicSeries := []byte("sTat")
 	readFrom := BinaryStartPosition(content, magicSeries)
 	if readFrom == -1 {
-		return Savegame{}, fmt.Errorf("Could not find magic series: %v", magicSeries)
+		return nil, fmt.Errorf("Could not find magic series: %v", magicSeries)
 	}
 	contentReader.Seek(int64(readFrom), 0)
 
@@ -123,8 +120,9 @@ func zdoomStatsFromBinary(path string) (Savegame, error) {
 	skip := make([]byte, size-1)
 	contentReader.Read(skip)
 
+	maps := make([]MapStats, 0)
 	for i := 0; uint32(i) < levelCount; i++ {
-		levelStats := readLevelStats(contentReader)
+		currentMap := readLevelStats(contentReader)
 
 		// position + 1; skip NEW_NAME (27) (like DOOMLAUNCHER)
 		contentReader.ReadByte()
@@ -133,10 +131,12 @@ func zdoomStatsFromBinary(path string) (Savegame, error) {
 		size := ReadSize(contentReader)
 		levelNameBytes := make([]byte, size-1)
 		contentReader.Read(levelNameBytes)
-		levelStats.LevelName = string(levelNameBytes)
+		currentMap.LevelName = string(levelNameBytes)
+
+		maps = append(maps, currentMap)
 	}
 
-	return levelStats, nil
+	return maps, nil
 }
 
 // BinaryStartPosition returns the position after the search series has been found
@@ -244,10 +244,10 @@ func getFileContentFromZip(src string, fileName string) ([]byte, error) {
 
 // BOOM
 
-func getBoomStats(path string) (Savegame, error) {
-	stats := Savegame{
-		Directory: path,
-		Levels:    make([]MapStats, 0),
+func getBoomStats(path string) ([]MapStats, error) {
+	lines, err := fileLines(path)
+	if err != nil {
+		return nil, err
 	}
 
 	boomStatsRege := regexp.MustCompile(`(?P<mapName>.*?)\s+-\s+` +
@@ -257,41 +257,37 @@ func getBoomStats(path string) (Savegame, error) {
 		`I:\s+(?P<items>\d+)/(?P<itemsTotal>\d+)\s+` +
 		`S:\s+(?P<secrets>\d+)/(?P<secretsTotal>\d+)`)
 
-	lines, err := fileLines(path)
-	if err != nil {
-		return stats, err
-	}
-
+	maps := make([]MapStats, 0)
 	for _, l := range lines {
 		lvlMap := reSubMatchMap(boomStatsRege, l)
-		lvl := MapStats{}
+		currentMap := MapStats{}
 
 		if mapName, ok := lvlMap["mapName"]; ok {
-			lvl.LevelName = mapName
+			currentMap.LevelName = mapName
 		}
 		if killcount, err := strconv.Atoi(lvlMap["kills"]); err == nil {
-			lvl.KillCount = uint32(killcount)
+			currentMap.KillCount = uint32(killcount)
 		}
 		if totalkills, err := strconv.Atoi(lvlMap["killsTotal"]); err == nil {
-			lvl.TotalKills = uint32(totalkills)
+			currentMap.TotalKills = uint32(totalkills)
 		}
 		if itemCount, err := strconv.Atoi(lvlMap["items"]); err == nil {
-			lvl.ItemCount = uint32(itemCount)
+			currentMap.ItemCount = uint32(itemCount)
 		}
 		if totalItems, err := strconv.Atoi(lvlMap["itemsTotal"]); err == nil {
-			lvl.TotalItems = uint32(totalItems)
+			currentMap.TotalItems = uint32(totalItems)
 		}
 		if secretCount, err := strconv.Atoi(lvlMap["secrets"]); err == nil {
-			lvl.SecretCount = uint32(secretCount)
+			currentMap.SecretCount = uint32(secretCount)
 		}
 		if totalSecrets, err := strconv.Atoi(lvlMap["secretsTotal"]); err == nil {
-			lvl.TotalSecrets = uint32(totalSecrets)
+			currentMap.TotalSecrets = uint32(totalSecrets)
 		}
 
-		stats.Levels = append(stats.Levels, lvl)
+		maps = append(maps, currentMap)
 	}
 
-	return stats, nil
+	return maps, nil
 }
 
 func fileLines(path string) ([]string, error) {
@@ -312,15 +308,10 @@ func fileLines(path string) ([]string, error) {
 }
 
 // Crispy / Chocolate
-func getChocolateStats(path string) (Savegame, error) {
-	stats := Savegame{
-		Directory: path,
-		Levels:    make([]MapStats, 0),
-	}
-
+func getChocolateStats(path string) ([]MapStats, error) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		return stats, err
+		return nil, err
 	}
 
 	chocolateStatsRegex := regexp.MustCompile(`(?s)=+.*?(?P<mapName>\w+).*?=+\s*?` +
@@ -330,37 +321,38 @@ func getChocolateStats(path string) (Savegame, error) {
 		`Items: (?P<items>\d+) \/ (?P<itemsTotal>\d+).*?` +
 		`Secrets: (?P<secrets>\d+) \/ (?P<secretsTotal>\d+) .*?\)`)
 
-	maps := chocolateStatsRegex.FindAllString(string(content), -1)
-	for _, v := range maps {
+	maps := make([]MapStats, 0)
+	matchedMaps := chocolateStatsRegex.FindAllString(string(content), -1)
+	for _, v := range matchedMaps {
 		lvlMap := reSubMatchMap(chocolateStatsRegex, v)
-		lvl := MapStats{}
+		currentMap := MapStats{}
 
 		if mapName, ok := lvlMap["mapName"]; ok {
-			lvl.LevelName = mapName
+			currentMap.LevelName = mapName
 		}
 		if killcount, err := strconv.Atoi(lvlMap["kills"]); err == nil {
-			lvl.KillCount = uint32(killcount)
+			currentMap.KillCount = uint32(killcount)
 		}
 		if totalkills, err := strconv.Atoi(lvlMap["killsTotal"]); err == nil {
-			lvl.TotalKills = uint32(totalkills)
+			currentMap.TotalKills = uint32(totalkills)
 		}
 		if itemCount, err := strconv.Atoi(lvlMap["items"]); err == nil {
-			lvl.ItemCount = uint32(itemCount)
+			currentMap.ItemCount = uint32(itemCount)
 		}
 		if totalItems, err := strconv.Atoi(lvlMap["itemsTotal"]); err == nil {
-			lvl.TotalItems = uint32(totalItems)
+			currentMap.TotalItems = uint32(totalItems)
 		}
 		if secretCount, err := strconv.Atoi(lvlMap["secrets"]); err == nil {
-			lvl.SecretCount = uint32(secretCount)
+			currentMap.SecretCount = uint32(secretCount)
 		}
 		if totalSecrets, err := strconv.Atoi(lvlMap["secretsTotal"]); err == nil {
-			lvl.TotalSecrets = uint32(totalSecrets)
+			currentMap.TotalSecrets = uint32(totalSecrets)
 		}
 
-		stats.Levels = append(stats.Levels, lvl)
+		maps = append(maps, currentMap)
 	}
 
-	return stats, nil
+	return maps, nil
 }
 
 func reSubMatchMap(r *regexp.Regexp, str string) map[string]string {

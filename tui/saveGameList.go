@@ -18,7 +18,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	frameFlex := tview.NewFlex().SetDirection(tview.FlexRow)
 	frameFlex.SetBorderPadding(0, 0, 1, 1)
 	frameFlex.AddItem(tview.NewTextView().
-		SetText(demosHeader).
+		SetText(savesHeader).
 		SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
 
 	// list
@@ -37,7 +37,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	populate := func() {
 		savegameList.Clear()
 		for _, savegame := range savegames {
-			savegameList.AddItem(savegame.FI.Name(), fmt.Sprintf("%v (%.2f KiB)", savegame.FI.ModTime().Format("2006-01-02 15:04"), float32(savegame.FI.Size())/1024), '|', nil)
+			savegameList.AddItem("$given_name", fmt.Sprintf("%v (%v)", savegame.FI.Name(), savegame.FI.ModTime().Format("2006-01-02 15:04")), '|', nil)
 		}
 	}
 

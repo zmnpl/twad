@@ -30,7 +30,7 @@ type Game struct {
 	LastPlayed       string         `json:"last_played"`
 	SaveGameCount    int            `json:"save_game_count"`
 	Rating           int            `json:"rating"`
-	Stats            Savegame
+	Stats            []MapStats
 	StatsTotal       MapStats
 }
 
@@ -82,7 +82,7 @@ func (g *Game) ReadLatestStats() {
 	}
 
 	g.StatsTotal = MapStats{}
-	for _, s := range g.Stats.Levels {
+	for _, s := range g.Stats {
 		g.StatsTotal.KillCount += s.KillCount
 		g.StatsTotal.TotalKills += s.TotalKills
 		g.StatsTotal.ItemCount += s.ItemCount
@@ -283,7 +283,12 @@ func (g Game) savegameFiles() ([]os.FileInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	saves = helper.FilterExtensions(saves, g.spSaveFileExtension())
+	saves = helper.FilterExtensions(saves, g.spSaveFileExtension(), false)
+
+	sort.Slice(saves, func(i, j int) bool {
+		return saves[i].ModTime().After(saves[j].ModTime())
+	})
+
 	return saves, nil
 }
 

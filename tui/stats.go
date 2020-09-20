@@ -45,7 +45,7 @@ func makeStatsTable(g *games.Game) *tview.Table {
 	stats.SetCell(row+1, 0, tview.NewTableCell("# Kills").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row+2, 0, tview.NewTableCell("# Secrets").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row+3, 0, tview.NewTableCell("# Items").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", len(g.Stats.Levels))).SetAlign(tview.AlignLeft))
+	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", len(g.Stats))).SetAlign(tview.AlignLeft))
 	stats.SetCell(row+1, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsTotal.KillCount, g.StatsTotal.TotalKills)).SetAlign(tview.AlignLeft))
 	stats.SetCell(row+2, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsTotal.SecretCount, g.StatsTotal.TotalSecrets)).SetAlign(tview.AlignLeft))
 	stats.SetCell(row+3, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsTotal.ItemCount, g.StatsTotal.TotalItems)).SetAlign(tview.AlignLeft))

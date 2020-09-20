@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	demosHeader = "Demos (descending by date)"
+	demosHeader = "Demos"
 )
 
 func makeDemoList(g *games.Game) (*tview.Flex, error) {
