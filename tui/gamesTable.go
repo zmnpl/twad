@@ -174,6 +174,18 @@ func populateGamesTable() {
 					return nil
 				}
 
+			// savegames
+			case 'z':
+				if r > 0 {
+					g := allGames[r-fixRows]
+					savegameList, err := makeSavegameList(&g)
+					if err != nil {
+						return nil
+					}
+					detailSidePagesSub1.AddPage(pageSaves, savegameList, true, true)
+					app.SetFocus(savegameList)
+					return nil
+				}
 			// add mod to game
 			case 'm':
 				if r > 0 {

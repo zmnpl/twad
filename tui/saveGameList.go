@@ -27,10 +27,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	savegameList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
 
 	// get demos
-	savegames, err := g.Demos()
-	if err != nil {
-		return nil, err
-	}
+	savegames := g.Savegames()
 
 	if len(savegames) == 0 {
 		return nil, fmt.Errorf("no savegames available")
@@ -40,7 +37,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	populate := func() {
 		savegameList.Clear()
 		for _, savegame := range savegames {
-			savegameList.AddItem(savegame.Name(), fmt.Sprintf("%v (%.2f KiB)", savegame.ModTime().Format("2006-01-02 15:04"), float32(savegame.Size())/1024), '|', nil)
+			savegameList.AddItem(savegame.FI.Name(), fmt.Sprintf("%v (%.2f KiB)", savegame.FI.ModTime().Format("2006-01-02 15:04"), float32(savegame.FI.Size())/1024), '|', nil)
 		}
 	}
 
@@ -51,7 +48,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 
 	// hit enter plays demo
 	savegameList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
-		g.PlayDemo(savegames[index].Name())
+		// TODO: anything?
 	})
 
 	// removes demo at given index and focuses app properly
@@ -59,11 +56,11 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 		// TODO: bug in tview; remove when fixed
 		savegameList.SetChangedFunc(nil) // BUG WORKAROUND
 
-		savegames, err = g.RemoveDemo(savegames[i].Name())
-		if err != nil {
-			showError("could not remove demo", err.Error(), nil, nil)
-			return
-		}
+		//savegames, err = g.RemoveDemo(savegames[i].Name())
+		//if err != nil {
+		//	showError("could not remove demo", err.Error(), nil, nil)
+		//	return
+		//}
 
 		if savegames != nil && len(savegames) != 0 {
 			populate()
@@ -90,7 +87,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 					return nil
 				}
 
-				youSure := makeYouSureBox(savegames[ci].Name(),
+				youSure := makeYouSureBox(savegames[ci].FI.Name(), // TODO: replace name
 					func() {
 						removeDemo(ci)
 						detailSidePagesSub1.RemovePage(pageYouSure)

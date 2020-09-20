@@ -18,16 +18,16 @@ import (
 
 // nested structs match json structure of zdoom json format
 type sg struct {
-	Stats SaveGame `json:"statistics"`
+	Stats Savegame `json:"statistics"`
 }
 
-// SaveGame contains stats for all levels of a savegame
-type SaveGame struct {
-	fi     os.FileInfo
-	Path   string
-	Name   string
-	Slot   int
-	Levels []MapStats `json:"levels"`
+// Savegame contains stats for all levels of a savegame
+type Savegame struct {
+	FI        os.FileInfo
+	Directory string
+	Name      string
+	Slot      int
+	Levels    []MapStats `json:"levels"`
 }
 
 // MapStats contains the stats for one single level read from a savegame
@@ -45,7 +45,17 @@ type MapStats struct {
 	LevelName  string `json:"levelname"`
 }
 
-func getZDoomStats(path string) SaveGame {
+func NewSavegame(fi os.FileInfo, dir string) Savegame {
+	savegame := Savegame{
+		Directory: dir,
+	}
+	if fi != nil {
+		savegame.FI = fi
+	}
+	return savegame
+}
+
+func getZDoomStats(path string) Savegame {
 	sls, err := zdoomStatsFromJSON(path)
 	if err == nil {
 		return sls
@@ -56,38 +66,38 @@ func getZDoomStats(path string) SaveGame {
 		return sls
 	}
 
-	return SaveGame{}
+	return Savegame{}
 }
 
 // ZDOOM
 
-func zdoomStatsFromJSON(path string) (SaveGame, error) {
+func zdoomStatsFromJSON(path string) (Savegame, error) {
 	jsonContent, err := getFileContentFromZip(path, "globals.json")
 	if err != nil {
-		return SaveGame{}, err
+		return Savegame{}, err
 	}
 
 	save := sg{
-		Stats: SaveGame{
-			Path: path,
+		Stats: Savegame{
+			Directory: path,
 		},
 	}
 
 	if err := json.Unmarshal(jsonContent, &save); err != nil {
-		return SaveGame{}, err
+		return Savegame{}, err
 	}
 
 	return save.Stats, nil
 }
 
-func zdoomStatsFromBinary(path string) (SaveGame, error) {
+func zdoomStatsFromBinary(path string) (Savegame, error) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		return SaveGame{}, err
+		return Savegame{}, err
 	}
 
-	levelStats := SaveGame{
-		Path: path,
+	levelStats := Savegame{
+		Directory: path,
 	}
 
 	// reader to read from
@@ -97,7 +107,7 @@ func zdoomStatsFromBinary(path string) (SaveGame, error) {
 	magicSeries := []byte("sTat")
 	readFrom := BinaryStartPosition(content, magicSeries)
 	if readFrom == -1 {
-		return SaveGame{}, fmt.Errorf("Could not find magic series: %v", magicSeries)
+		return Savegame{}, fmt.Errorf("Could not find magic series: %v", magicSeries)
 	}
 	contentReader.Seek(int64(readFrom), 0)
 
@@ -234,10 +244,10 @@ func getFileContentFromZip(src string, fileName string) ([]byte, error) {
 
 // BOOM
 
-func getBoomStats(path string) (SaveGame, error) {
-	stats := SaveGame{
-		Path:   path,
-		Levels: make([]MapStats, 0),
+func getBoomStats(path string) (Savegame, error) {
+	stats := Savegame{
+		Directory: path,
+		Levels:    make([]MapStats, 0),
 	}
 
 	boomStatsRege := regexp.MustCompile(`(?P<mapName>.*?)\s+-\s+` +
@@ -302,10 +312,10 @@ func fileLines(path string) ([]string, error) {
 }
 
 // Crispy / Chocolate
-func getChocolateStats(path string) (SaveGame, error) {
-	stats := SaveGame{
-		Path:   path,
-		Levels: make([]MapStats, 0),
+func getChocolateStats(path string) (Savegame, error) {
+	stats := Savegame{
+		Directory: path,
+		Levels:    make([]MapStats, 0),
 	}
 
 	content, err := ioutil.ReadFile(path)

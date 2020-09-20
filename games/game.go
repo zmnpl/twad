@@ -30,7 +30,7 @@ type Game struct {
 	LastPlayed       string         `json:"last_played"`
 	SaveGameCount    int            `json:"save_game_count"`
 	Rating           int            `json:"rating"`
-	Stats            SaveGame
+	Stats            Savegame
 	StatsTotal       MapStats
 }
 
@@ -271,20 +271,30 @@ func (g Game) CommandList() (command []string) {
 
 // SaveCount returns the number of savegames existing for this game
 func (g Game) SaveCount() int {
-	if saves, err := g.SaveGameFiles(); err == nil {
+	if saves, err := g.savegameFiles(); err == nil {
 		return len(saves)
 	}
 	return 0
 }
 
-// SaveGameFiles returns a slice of os.FileInfo with all savegmes for this game
-func (g Game) SaveGameFiles() ([]os.FileInfo, error) {
+// savegameFiles returns a slice of os.FileInfo with all savegmes for this game
+func (g Game) savegameFiles() ([]os.FileInfo, error) {
 	saves, err := ioutil.ReadDir(g.getSaveDir())
 	if err != nil {
 		return nil, err
 	}
 	saves = helper.FilterExtensions(saves, g.spSaveFileExtension())
 	return saves, nil
+}
+
+func (g Game) Savegames() []Savegame {
+	saveDir := g.getSaveDir()
+	savegames := make([]Savegame, 0)
+	savegameFiles, _ := g.savegameFiles()
+	for _, s := range savegameFiles {
+		savegames = append(savegames, NewSavegame(s, saveDir))
+	}
+	return savegames
 }
 
 // DemoCount returns the number of demos existing for this game

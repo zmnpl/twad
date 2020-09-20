@@ -31,6 +31,7 @@ const (
 	pageDefaultRight = "right"
 	pageWarp         = "warp"
 	pageDemos        = "demos"
+	pageSaves        = "saves"
 	pageError        = "error"
 	pageZipImport    = "zipselect"
 
@@ -207,6 +208,7 @@ func appModeNormal() {
 	detailPages.RemovePage(pageAddEdit)
 	detailSidePagesSub1.RemovePage(pageYouSure)
 	detailSidePagesSub1.RemovePage(pageDemos)
+	detailSidePagesSub1.RemovePage(pageSaves)
 
 	// reset import
 	zipInput.reset()
