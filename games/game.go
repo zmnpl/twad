@@ -32,6 +32,7 @@ type Game struct {
 	Rating           int            `json:"rating"`
 	Stats            []MapStats
 	StatsTotal       MapStats
+	Savegames        []Savegame
 }
 
 // NewGame creates new instance of a game
@@ -69,17 +70,26 @@ func NewGame(name, sourceport, iwad string) Game {
 	return game
 }
 
+// GetStats reads stats from the given savegame path for zdoom ports
+// If the port is boom or chocolate, their respective dump-files are used
+func (g Game) GetStats(savePath string) []MapStats {
+	var stats []MapStats
+	if sourcePortFamily(g.SourcePort) == chocolate {
+		stats, _ = getChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
+	} else if sourcePortFamily(g.SourcePort) == boom {
+		stats, _ = getBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
+	} else {
+		stats = getZDoomStats(savePath)
+	}
+
+	return stats
+}
+
 // ReadLatestStats tries to read stats from the newest existing savegame
 func (g *Game) ReadLatestStats() {
 	lastSavePath, _ := g.lastSave()
 
-	if sourcePortFamily(g.SourcePort) == chocolate {
-		g.Stats, _ = getChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
-	} else if sourcePortFamily(g.SourcePort) == boom {
-		g.Stats, _ = getBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
-	} else {
-		g.Stats = getZDoomStats(lastSavePath)
-	}
+	g.Stats = g.GetStats(lastSavePath)
 
 	g.StatsTotal = MapStats{}
 	for _, s := range g.Stats {
@@ -292,13 +302,26 @@ func (g Game) savegameFiles() ([]os.FileInfo, error) {
 	return saves, nil
 }
 
-func (g Game) Savegames() []Savegame {
+func (g *Game) loadSaveStats() {
+	for i, _ := range g.Savegames {
+		g.Savegames[i].Levels = g.GetStats(path.Join(g.Savegames[i].Directory, g.Savegames[i].FI.Name()))
+	}
+}
+
+// Savegames returns a slice of Savegames for the game
+func (g *Game) LoadSavegames() []Savegame {
 	saveDir := g.getSaveDir()
 	savegames := make([]Savegame, 0)
 	savegameFiles, _ := g.savegameFiles()
+
 	for _, s := range savegameFiles {
-		savegames = append(savegames, NewSavegame(s, saveDir))
+		savegame := NewSavegame(s, saveDir)
+		savegames = append(savegames, savegame)
 	}
+
+	g.Savegames = savegames
+	go g.loadSaveStats()
+
 	return savegames
 }
 

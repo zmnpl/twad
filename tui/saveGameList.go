@@ -26,8 +26,9 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	frameFlex.AddItem(savegameList, 0, 1, true)
 	savegameList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
 
-	// get demos
-	savegames := g.Savegames()
+	// get savegames
+	savegames := g.LoadSavegames()
+	fmt.Println(savegames)
 
 	if len(savegames) == 0 {
 		return nil, fmt.Errorf("no savegames available")

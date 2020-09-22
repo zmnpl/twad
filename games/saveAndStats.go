@@ -22,6 +22,8 @@ type sg struct {
 }
 
 // Savegame saves a dual purpose
+// Is a nested struct piece to easily parse zdoom savegame stats
+// Represents a games savegame and some of it's properties
 type Savegame struct {
 	FI        os.FileInfo
 	Directory string
