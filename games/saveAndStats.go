@@ -29,7 +29,21 @@ type Savegame struct {
 	Directory string
 	Name      string
 	Slot      int
+	Meta      SaveMeta
 	Levels    []MapStats `json:"levels"`
+}
+
+// SaveMeta is metainformatino such as given name for a savegame
+type SaveMeta struct {
+	Software    string `json:"Software"`
+	Engine      string `json:"Engine"`
+	SaveVersion int    `json:"Save Version"`
+	Title       string `json:"Title"`
+	CurrentMap  string `json:"Current Map"`
+	GameWAD     string `json:"Game WAD"`
+	MapWAD      string `json:"Map WAD"`
+	Comment     string `json:"Comment"`
+	//Creation Time": "2020-09-02 21:59:18",
 }
 
 // MapStats contains the stats for one single level read from a savegame
@@ -56,6 +70,37 @@ func NewSavegame(fi os.FileInfo, dir string) Savegame {
 		savegame.FI = fi
 	}
 	return savegame
+}
+
+func getZDoomSaveMeta(path string) SaveMeta {
+	meta, err := zdoomMetaFromJSON(path)
+	if err == nil {
+		return meta
+	}
+
+	// TODO
+	//meta, err = zdoomStatsFromBinary(path)
+	//if err == nil {
+	//	return meta
+	//}
+	return SaveMeta{
+		Title: "FROM INCOMPATIBLE SOURCE PORT",
+	}
+}
+
+func zdoomMetaFromJSON(path string) (SaveMeta, error) {
+	meta := SaveMeta{}
+
+	jsonContent, err := getFileContentFromZip(path, "info.json")
+	if err != nil {
+		return meta, err
+	}
+
+	if err := json.Unmarshal(jsonContent, &meta); err != nil {
+		return meta, err
+	}
+
+	return meta, nil
 }
 
 func getZDoomStats(path string) []MapStats {
@@ -366,4 +411,18 @@ func reSubMatchMap(r *regexp.Regexp, str string) map[string]string {
 		}
 	}
 	return subMatchMap
+}
+
+// more
+
+func summarizeStats(stats []MapStats) (total MapStats) {
+	for _, s := range stats {
+		total.KillCount += s.KillCount
+		total.TotalKills += s.TotalKills
+		total.ItemCount += s.ItemCount
+		total.TotalItems += s.TotalItems
+		total.SecretCount += s.SecretCount
+		total.TotalSecrets += s.TotalSecrets
+	}
+	return
 }

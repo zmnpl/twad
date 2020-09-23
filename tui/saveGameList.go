@@ -28,7 +28,8 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 
 	// get savegames
 	savegames := g.LoadSavegames()
-	fmt.Println(savegames)
+	//time.Sleep(2 * time.Second)
+	//fmt.Println(savegames)
 
 	if len(savegames) == 0 {
 		return nil, fmt.Errorf("no savegames available")
@@ -38,7 +39,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	populate := func() {
 		savegameList.Clear()
 		for _, savegame := range savegames {
-			savegameList.AddItem("$given_name", fmt.Sprintf("%v (%v)", savegame.FI.Name(), savegame.FI.ModTime().Format("2006-01-02 15:04")), '|', nil)
+			savegameList.AddItem(savegame.Meta.Title, fmt.Sprintf("%v (%v)", savegame.FI.Name(), savegame.FI.ModTime().Format("2006-01-02 15:04:05")), '|', nil)
 		}
 	}
 
@@ -50,6 +51,11 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	// hit enter plays demo
 	savegameList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
 		// TODO: anything?
+	})
+
+	savegameList.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
+		statsTable := makeLevelStatsTable(*savegames[index])
+		detailSidePagesSub2.AddPage(pageStats, statsTable, true, true)
 	})
 
 	// removes demo at given index and focuses app properly

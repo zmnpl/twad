@@ -32,7 +32,7 @@ type Game struct {
 	Rating           int            `json:"rating"`
 	Stats            []MapStats
 	StatsTotal       MapStats
-	Savegames        []Savegame
+	Savegames        []*Savegame
 }
 
 // NewGame creates new instance of a game
@@ -70,38 +70,6 @@ func NewGame(name, sourceport, iwad string) Game {
 	return game
 }
 
-// GetStats reads stats from the given savegame path for zdoom ports
-// If the port is boom or chocolate, their respective dump-files are used
-func (g Game) GetStats(savePath string) []MapStats {
-	var stats []MapStats
-	if sourcePortFamily(g.SourcePort) == chocolate {
-		stats, _ = getChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
-	} else if sourcePortFamily(g.SourcePort) == boom {
-		stats, _ = getBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
-	} else {
-		stats = getZDoomStats(savePath)
-	}
-
-	return stats
-}
-
-// ReadLatestStats tries to read stats from the newest existing savegame
-func (g *Game) ReadLatestStats() {
-	lastSavePath, _ := g.lastSave()
-
-	g.Stats = g.GetStats(lastSavePath)
-
-	g.StatsTotal = MapStats{}
-	for _, s := range g.Stats {
-		g.StatsTotal.KillCount += s.KillCount
-		g.StatsTotal.TotalKills += s.TotalKills
-		g.StatsTotal.ItemCount += s.ItemCount
-		g.StatsTotal.TotalItems += s.TotalItems
-		g.StatsTotal.SecretCount += s.SecretCount
-		g.StatsTotal.TotalSecrets += s.TotalSecrets
-	}
-}
-
 // Run executes given configuration and launches the mod
 // Just a wrapper for game.run
 func (g *Game) Run() (err error) {
@@ -132,7 +100,7 @@ func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error
 
 // PlayDemo replays the given demo file
 // Wrapper for game.run
-func (g Game) PlayDemo(name string) {
+func (g *Game) PlayDemo(name string) {
 	g.run(*newRunConfig().playDemo(name))
 }
 
@@ -176,13 +144,13 @@ func (g *Game) run(rcfg runconfig) (err error) {
 	g.LastPlayed = time.Now().Format("2006-01-02 15:04:05MST")
 
 	// could take a while ...
-	go processOutput(string(output), g)
+	go g.processOutput(string(output))
 	go g.ReadLatestStats()
 
 	return
 }
 
-func (g Game) composeProcess(params []string) (cmd *exec.Cmd) {
+func (g *Game) composeProcess(params []string) (cmd *exec.Cmd) {
 	// create process object
 	cmd = exec.Command(g.SourcePort, params...)
 	// add environment variables; use os environment as basis
@@ -191,7 +159,7 @@ func (g Game) composeProcess(params []string) (cmd *exec.Cmd) {
 	return
 }
 
-func (g Game) getLaunchParams(rcfg runconfig) []string {
+func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	params := make([]string, 0, 10)
 
 	// IWAD
@@ -262,7 +230,7 @@ func (g Game) getLaunchParams(rcfg runconfig) []string {
 	return append(params, g.CustomParameters...)
 }
 
-func (g Game) getLastSaveLaunchParams() (params []string) {
+func (g *Game) getLastSaveLaunchParams() (params []string) {
 	params = []string{}
 
 	if lastSave, err := g.lastSave(); err == nil {
@@ -272,7 +240,7 @@ func (g Game) getLastSaveLaunchParams() (params []string) {
 }
 
 // CommandList returns the full slice of strings in order to launch the game
-func (g Game) CommandList() (command []string) {
+func (g *Game) CommandList() (command []string) {
 	command = g.Environment
 	command = append(command, g.SourcePort)
 	command = append(command, g.getLaunchParams(*newRunConfig().quickload())...)
@@ -280,7 +248,7 @@ func (g Game) CommandList() (command []string) {
 }
 
 // SaveCount returns the number of savegames existing for this game
-func (g Game) SaveCount() int {
+func (g *Game) SaveCount() int {
 	if saves, err := g.savegameFiles(); err == nil {
 		return len(saves)
 	}
@@ -288,7 +256,7 @@ func (g Game) SaveCount() int {
 }
 
 // savegameFiles returns a slice of os.FileInfo with all savegmes for this game
-func (g Game) savegameFiles() ([]os.FileInfo, error) {
+func (g *Game) savegameFiles() ([]os.FileInfo, error) {
 	saves, err := ioutil.ReadDir(g.getSaveDir())
 	if err != nil {
 		return nil, err
@@ -302,31 +270,72 @@ func (g Game) savegameFiles() ([]os.FileInfo, error) {
 	return saves, nil
 }
 
-func (g *Game) loadSaveStats() {
-	for i, _ := range g.Savegames {
-		g.Savegames[i].Levels = g.GetStats(path.Join(g.Savegames[i].Directory, g.Savegames[i].FI.Name()))
-	}
-}
-
-// Savegames returns a slice of Savegames for the game
-func (g *Game) LoadSavegames() []Savegame {
+// LoadSavegames returns a slice of Savegames for the game
+func (g *Game) LoadSavegames() []*Savegame {
 	saveDir := g.getSaveDir()
-	savegames := make([]Savegame, 0)
+	savegames := make([]*Savegame, 0)
 	savegameFiles, _ := g.savegameFiles()
 
-	for _, s := range savegameFiles {
+	for i, s := range savegameFiles {
 		savegame := NewSavegame(s, saveDir)
-		savegames = append(savegames, savegame)
+		g.loadSaveMeta(&savegame)
+
+		// load stats
+		// after 3 load parallel
+		if i <= 2 {
+			g.loadSaveStats(&savegame)
+		} else {
+			go g.loadSaveStats(&savegame)
+		}
+		savegames = append(savegames, &savegame)
 	}
-
 	g.Savegames = savegames
-	go g.loadSaveStats()
-
 	return savegames
 }
 
+func (g *Game) loadSaveMeta(s *Savegame) {
+	s.Meta = g.GetSaveMeta(path.Join(s.Directory, s.FI.Name()))
+}
+
+func (g *Game) loadSaveStats(s *Savegame) {
+	s.Levels = g.GetStats(path.Join(s.Directory, s.FI.Name()))
+}
+
+// GetSaveMeta reads meta information for the given savegame
+func (g *Game) GetSaveMeta(savePath string) SaveMeta {
+	if sourcePortFamily(g.SourcePort) == chocolate {
+		//stats, _ = getChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
+	} else if sourcePortFamily(g.SourcePort) == boom {
+		//stats, _ = getBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
+	}
+
+	return getZDoomSaveMeta(savePath)
+}
+
+// GetStats reads stats from the given savegame path for zdoom ports
+// If the port is boom or chocolate, their respective dump-files are used
+func (g *Game) GetStats(savePath string) []MapStats {
+	var stats []MapStats
+	if sourcePortFamily(g.SourcePort) == chocolate {
+		stats, _ = getChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
+	} else if sourcePortFamily(g.SourcePort) == boom {
+		stats, _ = getBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
+	} else {
+		stats = getZDoomStats(savePath)
+	}
+
+	return stats
+}
+
+// ReadLatestStats tries to read stats from the newest existing savegame
+func (g *Game) ReadLatestStats() {
+	lastSavePath, _ := g.lastSave()
+	g.Stats = g.GetStats(lastSavePath)
+	g.StatsTotal = summarizeStats(g.Stats)
+}
+
 // DemoCount returns the number of demos existing for this game
-func (g Game) DemoCount() int {
+func (g *Game) DemoCount() int {
 	if demos, err := ioutil.ReadDir(g.getDemoDir()); err == nil {
 		return len(demos)
 	}
@@ -356,7 +365,7 @@ func (g *Game) SwitchMods(a, b int) {
 }
 
 // lastSave returns the the file name or slotnumber (depending on source port) for the game
-func (g Game) lastSave() (save string, err error) {
+func (g *Game) lastSave() (save string, err error) {
 	saveDir := g.getSaveDir()
 	saves, err := ioutil.ReadDir(saveDir)
 	if err != nil {
@@ -386,17 +395,17 @@ func (g Game) lastSave() (save string, err error) {
 	return
 }
 
-func (g Game) getSaveDir() string {
+func (g *Game) getSaveDir() string {
 	return filepath.Join(cfg.GetSavegameFolder(), g.cleansedName())
 }
 
-func (g Game) getDemoDir() string {
+func (g *Game) getDemoDir() string {
 	return filepath.Join(cfg.GetDemoFolder(), g.cleansedName())
 }
 
 // DemoExists checks if a file with the same name already exists in the default demo dir
 // Doesn't use standard library to ignore file ending; design decision
-func (g Game) DemoExists(name string) bool {
+func (g *Game) DemoExists(name string) bool {
 	if files, err := ioutil.ReadDir(g.getDemoDir()); err == nil {
 		for _, f := range files {
 			nameWithouthExt := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
@@ -419,7 +428,7 @@ func (g *Game) RemoveDemo(name string) ([]os.FileInfo, error) {
 }
 
 // Demos returns the demo files existing for the game
-func (g Game) Demos() ([]os.FileInfo, error) {
+func (g *Game) Demos() ([]os.FileInfo, error) {
 	demos, err := ioutil.ReadDir(g.getDemoDir())
 	if err != nil {
 		return nil, err
@@ -432,13 +441,13 @@ func (g Game) Demos() ([]os.FileInfo, error) {
 
 // cleansedName removes all but alphanumeric characters from name
 // used for directory names
-func (g Game) cleansedName() string {
+func (g *Game) cleansedName() string {
 	cleanser, _ := regexp.Compile("[^a-zA-Z0-9]+")
 	return cleanser.ReplaceAllString(g.Name, "")
 }
 
 // processOutput processes the terminal output of the zdoom port
-func processOutput(output string, g *Game) {
+func (g *Game) processOutput(output string) {
 	if g.ConsoleStats == nil {
 		g.ConsoleStats = make(map[string]int)
 	}
@@ -473,21 +482,21 @@ func parseStatline(line string, g *Game) (string, int) {
 
 // Printing Methods
 // String returns the string which is run when running
-func (g Game) String() string {
+func (g *Game) String() string {
 	return fmt.Sprintf("%s", strings.TrimSpace(strings.Join(g.CommandList(), " ")))
 }
 
 // RatingString returns the string resulting from the games rating
-func (g Game) RatingString() string {
+func (g *Game) RatingString() string {
 	return strings.Repeat("*", g.Rating) + strings.Repeat("-", 5-g.Rating)
 }
 
 // EnvironmentString returns a join of all prefix parameters
-func (g Game) EnvironmentString() string {
+func (g *Game) EnvironmentString() string {
 	return strings.TrimSpace(strings.Join(g.Environment, " "))
 }
 
 // ParamsString returns a join of all prefix parameters
-func (g Game) ParamsString() string {
+func (g *Game) ParamsString() string {
 	return strings.TrimSpace(strings.Join(g.CustomParameters, " "))
 }
