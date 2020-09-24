@@ -304,9 +304,11 @@ func (g *Game) loadSaveStats(s *Savegame) {
 // GetSaveMeta reads meta information for the given savegame
 func (g *Game) GetSaveMeta(savePath string) SaveMeta {
 	if sourcePortFamily(g.SourcePort) == chocolate {
-		//stats, _ = getChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
+		meta, _ := chocolateMetaFromBinary(savePath)
+		return meta
 	} else if sourcePortFamily(g.SourcePort) == boom {
-		//stats, _ = getBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
+		meta, _ := chocolateMetaFromBinary(savePath)
+		return meta
 	}
 
 	return getZDoomSaveMeta(savePath)

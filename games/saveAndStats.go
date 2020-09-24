@@ -13,6 +13,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"unsafe"
 )
 
@@ -78,11 +79,11 @@ func getZDoomSaveMeta(path string) SaveMeta {
 		return meta
 	}
 
-	// TODO
-	//meta, err = zdoomStatsFromBinary(path)
-	//if err == nil {
-	//	return meta
-	//}
+	meta, err = zdoomMetaFromBinary(path)
+	if err == nil {
+		return meta
+	}
+
 	return SaveMeta{
 		Title: "FROM INCOMPATIBLE SOURCE PORT",
 	}
@@ -101,6 +102,46 @@ func zdoomMetaFromJSON(path string) (SaveMeta, error) {
 	}
 
 	return meta, nil
+}
+
+func zdoomMetaFromBinary(path string) (SaveMeta, error) {
+	meta := SaveMeta{}
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		return meta, err
+	}
+	contentReader := bytes.NewReader(content)
+
+	magicSeries := []byte("tEXtTitle")
+	readStart := BinaryStartPosition(content, magicSeries, 0)
+
+	if -1 != readStart {
+		magicSeriesEnd := []byte{0, 0, 0}
+		readEnd := BinaryStartPosition(content, magicSeriesEnd, readStart)
+		if -1 != readEnd {
+			stringLength := readEnd - readStart - 7
+			if stringLength > 0 {
+				if stringLength > 24 {
+					stringLength = 24
+				}
+				contentReader.Seek(int64(readStart), io.SeekStart)
+				result := make([]byte, stringLength)
+				contentReader.Read(result)
+
+				// cast to runes (utf8)
+				buf := make([]rune, len(result))
+				for i, b := range result {
+					buf[i] = rune(b)
+				}
+
+				meta.Title = string(buf)
+
+				return meta, nil
+			}
+		}
+		return meta, fmt.Errorf("Could not find name end position in binay")
+	}
+	return meta, fmt.Errorf("Could not find name start position in binary")
 }
 
 func getZDoomStats(path string) []MapStats {
@@ -149,7 +190,7 @@ func zdoomStatsFromBinary(path string) ([]MapStats, error) {
 
 	// statistics start from here
 	magicSeries := []byte("sTat")
-	readFrom := BinaryStartPosition(content, magicSeries)
+	readFrom := BinaryStartPosition(content, magicSeries, 0)
 	if readFrom == -1 {
 		return nil, fmt.Errorf("Could not find magic series: %v", magicSeries)
 	}
@@ -187,13 +228,15 @@ func zdoomStatsFromBinary(path string) ([]MapStats, error) {
 }
 
 // BinaryStartPosition returns the position after the search series has been found
-func BinaryStartPosition(binaryData []byte, startAfterSeries []byte) int {
+func BinaryStartPosition(binaryData []byte, startAfterSeries []byte, startAt int) int {
 	seriesLength := len(startAfterSeries)
 	readFrom := -1
 	for index, _ := range binaryData {
-		if bytes.Equal(startAfterSeries, binaryData[index:index+seriesLength]) {
-			readFrom = index + seriesLength
-			break
+		if index >= startAt {
+			if bytes.Equal(startAfterSeries, binaryData[index:index+seriesLength]) {
+				readFrom = index + seriesLength
+				break
+			}
 		}
 	}
 	return readFrom
@@ -411,6 +454,38 @@ func reSubMatchMap(r *regexp.Regexp, str string) map[string]string {
 		}
 	}
 	return subMatchMap
+}
+
+func chocolateMetaFromBinary(path string) (SaveMeta, error) {
+	fallbackName := "NA"
+	if len(path) > 5 && strings.HasSuffix(strings.ToLower(path), ".dsg") {
+		runes := []rune(path)
+		fallbackName = fmt.Sprintf("Slot %v", string(runes[len(runes)-5:len(runes)-4]))
+	}
+
+	meta := SaveMeta{}
+	meta.Title = fallbackName
+
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		return meta, err
+	}
+	contentReader := bytes.NewReader(content)
+	result := make([]byte, 24)
+
+	read, err := contentReader.Read(result)
+	if err != nil || read <= 0 {
+		return meta, fmt.Errorf("Could not read name from save file")
+	}
+
+	// cast to runes (utf8)
+	buf := make([]rune, len(result))
+	for i, b := range result {
+		buf[i] = rune(b)
+	}
+	meta.Title = string(buf)
+
+	return meta, nil
 }
 
 // more

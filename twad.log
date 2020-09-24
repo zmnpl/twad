@@ -1,52 +1,72 @@
-Failed to get I/O port permissions for 0x388: Operation not permitted
-	You may need to run the program as root in order
-	to acquire I/O port permissions for OPL MIDI playback.
-I_InitSound: SDL audio driver is pulseaudio
-                           Crispy Doom 5.9.1
-Z_Init: Init zone memory allocation daemon. 
-zone memory: 0x7f49a1e9e010, 32 MiB allocated for zone
-Using /home/simon/.local/share/crispy-doom/ for configuration and saves
-V_Init: allocate screens.
+Zandronum 3.0.1 - 191013-1938 - SDL version
+Compiled on Oct 13 2019
+Using video driver x11
+
 M_LoadDefaults: Load system defaults.
-saving config in /home/simon/.local/share/crispy-doom/default.cfg
+Gameinfo scan took 0 ms
 W_Init: Init WADfiles.
- adding /home/simon/DOOM/doom.wad
-  loaded 0 DEHACKED lumps from PWAD files.
-Save directory changed to /home/simon/.config/twad/savegames/DOOMCrispy/.
-===========================================================================
-                           The Ultimate DOOM
-===========================================================================
- Crispy Doom is free software, covered by the GNU General Public
- License.  There is NO warranty; not even for MERCHANTABILITY or FITNESS
- FOR A PARTICULAR PURPOSE. You are welcome to change and distribute
- copies under certain conditions. See the source for more information.
-===========================================================================
+ adding /usr/share/zandronum/zandronum.pk3, 689 lumps
+ adding /home/simon/DOOM/doom.wad, 2306 lumps
 I_Init: Setting up machine state.
-OPL_Init: Using driver 'SDL'.
-NET_Init: Init network subsystem.
-M_Init: Init miscellaneous info.
-R_Init: Init DOOM refresh daemon - ...........................
-P_Init: Init Playloop state.
+CPU Vendor ID: AuthenticAMD
+  Name: AMD Ryzen 7 3700X 8-Core Processor 
+  Family 23 (23), Model 113, Stepping 0
+  Features: MMX MMX+ SSE SSE2 SSE3 SSSE3 SSE4.1 SSE4.2
+I_InitSound: Initializing FMOD
+FMOD Sound System, copyright © Firelight Technologies Pty, Ltd., 1994-2009.
+Loaded FMOD version 4.24.16
+V_Init: allocate screen.
+Using in-memory database. The database will not be saved on exit.
 S_Init: Setting up sound.
-I_SDL_PrecacheSounds: Precaching all sound effects......................S_ChangeMusic: D_E1M1 (doom.wad)
-P_SetupLevel: E1M1 (doom.wad) Normal 0:00:00/0:00:00 Doom (BSP)
-Demo /home/simon/.config/twad/demos/DOOMCrispy/test.lmp recorded
-
-
+ST_Init: Init startup screen.
+Checking cmd-line parameters...
+S_InitData: Load sound definitions.
+G_ParseMapInfo: Load map definitions.
+Texman.Init: Init texture manager.
+ParseTeamInfo: Load team definitions.
+LoadActors: Load actor definitions.
+R_Init: Init Doom refresh subsystem.
+DecalLibrary: Load decals.
+PWO_Init: Initializing preferred weapon order.
+M_Init: Init menus.
+P_Init: Init Playloop state.
+ParseSBarInfo: Loading default status bar definition.
+ParseSBarInfo: Loading custom status bar definition.
 D_CheckNetGame: Checking network game status.
-NOTE: Turning resolution is reduced; this is probably because there is a client recording a Vanilla demo.
-startskill 2  deathmatch: 0  startmap: -48  startepisode: 1
 player 1 of 1 (1 nodes)
-Emulating the behavior of the 'Ultimate Doom' executable.
-HU_Init: Setting up heads up display.
-ST_Init: Init status bar.
-External statistics registered.
-Statistics captured for 0 level(s)
-Statistics captured for 0 level(s)
+Initializing network subsystem.
+IP address 192.168.178.242:10667
+UDP Initialized.
+Support for non power 2 textures enabled.
+Occlusion query enabled.
+Resolution: 2560 x 1440
+Starting MIDI playback failed
 
 
-exit status 255
+E1M1 - Hangar
 
-[-iwad doom.wad -savedir /home/simon/.config/twad/savegames/DOOMCrispy -statdump /home/simon/.config/twad/savegames/DOOMCrispy/statdump.txt -warp 1 -skill 3 -record /home/simon/.config/twad/demos/DOOMCrispy/test ]
+Starting MIDI playback failed
+Picked up a health bonus.
+Picked up a clip.
+Picked up a clip.
+Picked up 4 shotgun shells.
+Picked up an armor bonus.
+Starting MIDI playback failed
+Starting MIDI playback failed
 
-/usr/bin/crispy-doom -iwad doom.wad -savedir /home/simon/.config/twad/savegames/DOOMCrispy -statdump /home/simon/.config/twad/savegames/DOOMCrispy/statdump.txt -warp 1 -skill 3 -record /home/simon/.config/twad/demos/DOOMCrispy/test 
+
+E1M2 - Nuclear Plant
+
+Starting MIDI playback failed
+game saved. (/home/simon/.config/twad/savegames/DoomZandronum/auto0.zds)
+game saved. (/home/simon/.config/twad/savegames/DoomZandronum/save0.zds)
+
+
+*** Fatal Error ***
+
+
+signal: segmentation fault (core dumped)
+
+[-iwad doom.wad -savedir /home/simon/.config/twad/savegames/DoomZandronum ]
+
+/usr/bin/zandronum -iwad doom.wad -savedir /home/simon/.config/twad/savegames/DoomZandronum 
