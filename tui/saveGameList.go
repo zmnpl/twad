@@ -28,8 +28,6 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 
 	// get savegames
 	savegames := g.LoadSavegames()
-	//time.Sleep(2 * time.Second)
-	//fmt.Println(savegames)
 
 	if len(savegames) == 0 {
 		return nil, fmt.Errorf("no savegames available")

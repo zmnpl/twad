@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/zmnpl/twad/cfg"
+	st "github.com/zmnpl/twad/games/savesStats"
 	"github.com/zmnpl/twad/helper"
 )
 
@@ -30,9 +31,9 @@ type Game struct {
 	LastPlayed       string         `json:"last_played"`
 	SaveGameCount    int            `json:"save_game_count"`
 	Rating           int            `json:"rating"`
-	Stats            []MapStats
-	StatsTotal       MapStats
-	Savegames        []*Savegame
+	Stats            []st.MapStats
+	StatsTotal       st.MapStats
+	Savegames        []*st.Savegame
 }
 
 // NewGame creates new instance of a game
@@ -271,13 +272,13 @@ func (g *Game) savegameFiles() ([]os.FileInfo, error) {
 }
 
 // LoadSavegames returns a slice of Savegames for the game
-func (g *Game) LoadSavegames() []*Savegame {
+func (g *Game) LoadSavegames() []*st.Savegame {
 	saveDir := g.getSaveDir()
-	savegames := make([]*Savegame, 0)
+	savegames := make([]*st.Savegame, 0)
 	savegameFiles, _ := g.savegameFiles()
 
 	for i, s := range savegameFiles {
-		savegame := NewSavegame(s, saveDir)
+		savegame := st.NewSavegame(s, saveDir)
 		g.loadSaveMeta(&savegame)
 
 		// load stats
@@ -293,37 +294,37 @@ func (g *Game) LoadSavegames() []*Savegame {
 	return savegames
 }
 
-func (g *Game) loadSaveMeta(s *Savegame) {
+func (g *Game) loadSaveMeta(s *st.Savegame) {
 	s.Meta = g.GetSaveMeta(path.Join(s.Directory, s.FI.Name()))
 }
 
-func (g *Game) loadSaveStats(s *Savegame) {
+func (g *Game) loadSaveStats(s *st.Savegame) {
 	s.Levels = g.GetStats(path.Join(s.Directory, s.FI.Name()))
 }
 
 // GetSaveMeta reads meta information for the given savegame
-func (g *Game) GetSaveMeta(savePath string) SaveMeta {
+func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
 	if sourcePortFamily(g.SourcePort) == chocolate {
-		meta, _ := chocolateMetaFromBinary(savePath)
+		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
 	} else if sourcePortFamily(g.SourcePort) == boom {
-		meta, _ := chocolateMetaFromBinary(savePath)
+		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
 	}
 
-	return getZDoomSaveMeta(savePath)
+	return st.GetZDoomSaveMeta(savePath)
 }
 
 // GetStats reads stats from the given savegame path for zdoom ports
 // If the port is boom or chocolate, their respective dump-files are used
-func (g *Game) GetStats(savePath string) []MapStats {
-	var stats []MapStats
+func (g *Game) GetStats(savePath string) []st.MapStats {
+	var stats []st.MapStats
 	if sourcePortFamily(g.SourcePort) == chocolate {
-		stats, _ = getChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
+		stats, _ = st.GetChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
 	} else if sourcePortFamily(g.SourcePort) == boom {
-		stats, _ = getBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
+		stats, _ = st.GetBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
 	} else {
-		stats = getZDoomStats(savePath)
+		stats = st.GetZDoomStats(savePath)
 	}
 
 	return stats
@@ -333,7 +334,7 @@ func (g *Game) GetStats(savePath string) []MapStats {
 func (g *Game) ReadLatestStats() {
 	lastSavePath, _ := g.lastSave()
 	g.Stats = g.GetStats(lastSavePath)
-	g.StatsTotal = summarizeStats(g.Stats)
+	g.StatsTotal = st.SummarizeStats(g.Stats)
 }
 
 // DemoCount returns the number of demos existing for this game
@@ -364,6 +365,10 @@ func (g *Game) SwitchMods(a, b int) {
 		g.Mods[a] = modB
 		g.Mods[b] = modA
 	}
+}
+
+func (g *Game) getSaveDir() string {
+	return filepath.Join(cfg.GetSavegameFolder(), g.cleansedName())
 }
 
 // lastSave returns the the file name or slotnumber (depending on source port) for the game
@@ -397,12 +402,16 @@ func (g *Game) lastSave() (save string, err error) {
 	return
 }
 
-func (g *Game) getSaveDir() string {
-	return filepath.Join(cfg.GetSavegameFolder(), g.cleansedName())
-}
-
-func (g *Game) getDemoDir() string {
-	return filepath.Join(cfg.GetDemoFolder(), g.cleansedName())
+// Demos returns the demo files existing for the game
+func (g *Game) Demos() ([]os.FileInfo, error) {
+	demos, err := ioutil.ReadDir(g.getDemoDir())
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(demos, func(i, j int) bool {
+		return demos[i].ModTime().After(demos[j].ModTime())
+	})
+	return demos, err
 }
 
 // DemoExists checks if a file with the same name already exists in the default demo dir
@@ -429,16 +438,8 @@ func (g *Game) RemoveDemo(name string) ([]os.FileInfo, error) {
 	return g.Demos()
 }
 
-// Demos returns the demo files existing for the game
-func (g *Game) Demos() ([]os.FileInfo, error) {
-	demos, err := ioutil.ReadDir(g.getDemoDir())
-	if err != nil {
-		return nil, err
-	}
-	sort.Slice(demos, func(i, j int) bool {
-		return demos[i].ModTime().After(demos[j].ModTime())
-	})
-	return demos, err
+func (g *Game) getDemoDir() string {
+	return filepath.Join(cfg.GetDemoFolder(), g.cleansedName())
 }
 
 // cleansedName removes all but alphanumeric characters from name
@@ -484,9 +485,6 @@ func parseStatline(line string, g *Game) (string, int) {
 
 // Printing Methods
 // String returns the string which is run when running
-func (g *Game) String() string {
-	return fmt.Sprintf("%s", strings.TrimSpace(strings.Join(g.CommandList(), " ")))
-}
 
 // RatingString returns the string resulting from the games rating
 func (g *Game) RatingString() string {

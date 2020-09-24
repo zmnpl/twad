@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/games"
+	st "github.com/zmnpl/twad/games/savesStats"
 )
 
 //  stats
-func makeLevelStatsTable(s games.Savegame) *tview.Table {
+func makeLevelStatsTable(s st.Savegame) *tview.Table {
 	stats := tview.NewTable().
 		SetFixed(1, 1).
 		SetSelectable(false, false).
@@ -17,6 +17,10 @@ func makeLevelStatsTable(s games.Savegame) *tview.Table {
 	stats.SetBorderPadding(0, 0, 1, 1)
 
 	row := 0
+
+	stats.SetCell(row, 0, tview.NewTableCell("                    ").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row, 1, tview.NewTableCell("                    ").SetAlign(tview.AlignLeft))
+	row++
 
 	for _, level := range s.Levels {
 		stats.SetCell(row, 0, tview.NewTableCell(strings.ToUpper(level.LevelName)).SetTextColor(tview.Styles.ContrastBackgroundColor))
@@ -29,9 +33,6 @@ func makeLevelStatsTable(s games.Savegame) *tview.Table {
 		stats.SetCell(row+2, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", level.ItemCount, level.TotalItems)).SetAlign(tview.AlignLeft))
 		row += 3
 	}
-
-	stats.SetCell(row, 0, tview.NewTableCell("                    ").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell("                    ").SetAlign(tview.AlignLeft))
 
 	return stats
 }
