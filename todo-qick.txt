@@ -17,7 +17,7 @@
 
 - DONE revamp addedit game to regular form
 
-- use DOOMWADDIR
+- DONE use DOOMWADDIR
 -- check if exists on start
 -- if not, set to selected base-dir
 -- explain basedir = doomwaddir to user
@@ -26,4 +26,4 @@
 -- of a game / mod configuration (all files existing?)
 -- config (i.e. doomwaddir ok?)
 
-- Remove option to select default save dir; this makes no sense for the programm. This is opionionated
+- DONE Remove option to select default save dir; this makes no sense for the programm. This is opionionated
