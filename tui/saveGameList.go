@@ -5,7 +5,6 @@ import (
 
 	"github.com/gdamore/tcell"
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/cfg"
 	"github.com/zmnpl/twad/games"
 )
 
@@ -28,86 +27,44 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 
 	// get savegames
 	savegames := g.LoadSavegames() //time.Sleep(2 * time.Second)
-	//fmt.Println(savegames)
 
-	if len(savegames) == 0 {
+	if len(savegames) == 0 || savegames == nil {
 		return nil, fmt.Errorf("no savegames available")
 	}
+
+	var statsTable *tview.Table
 
 	// how to populate the list
 	populate := func() {
 		savegameList.Clear()
-		for _, savegame := range savegames {
+		for i, savegame := range savegames {
 			savegameList.AddItem(savegame.Meta.Title, fmt.Sprintf("%v (%v)", savegame.FI.Name(), savegame.FI.ModTime().Format("2006-01-02 15:04:05")), '|', nil)
+
+			if i == 0 {
+				statsTable = makeLevelStatsTable(*savegames[i], savegameList)
+				detailSidePagesSub2.AddPage(pageStats, statsTable, true, true)
+			}
 		}
 	}
 
-	// do it
-	if savegames != nil {
-		populate()
-	}
+	populate()
 
-	// hit enter plays demo
+	// load savegame on enter
 	savegameList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
-		// TODO: anything?
+		// TODO: Load savegame on enter
 	})
 
 	savegameList.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
-		statsTable := makeLevelStatsTable(*savegames[index])
+		statsTable = makeLevelStatsTable(*savegames[index], savegameList)
 		detailSidePagesSub2.AddPage(pageStats, statsTable, true, true)
 	})
-
-	// removes demo at given index and focuses app properly
-	removeDemo := func(i int) {
-		// TODO: bug in tview; remove when fixed
-		savegameList.SetChangedFunc(nil) // BUG WORKAROUND
-
-		//savegames, err = g.RemoveDemo(savegames[i].Name())
-		//if err != nil {
-		//	showError("could not remove demo", err.Error(), nil, nil)
-		//	return
-		//}
-
-		if savegames != nil && len(savegames) != 0 {
-			populate()
-			app.SetFocus(savegameList)
-		} else {
-			appModeNormal()
-		}
-		games.Persist()
-
-		//demoList.SetChangedFunc(changeFunc) // BUG WORKAROUND
-	}
 
 	// tab navigates back to games table; tab navigation on list is redundant
 	savegameList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 
-		// delete mod
-		if k == tcell.KeyDelete {
-			if savegameList.GetItemCount() > 0 {
-				// when in edit mode, this is only confusing
-				ci := savegameList.GetCurrentItem()
-				if cfg.Instance().DeleteWithoutWarning {
-					removeDemo(ci)
-					return nil
-				}
-
-				youSure := makeYouSureBox(savegames[ci].FI.Name(), // TODO: replace name
-					func() {
-						removeDemo(ci)
-						detailSidePagesSub1.RemovePage(pageYouSure)
-					},
-					func() {
-						detailSidePagesSub1.RemovePage(pageYouSure)
-						app.SetFocus(savegameList)
-					},
-					2, 2, savegameList.Box)
-				detailSidePagesSub1.AddPage(pageYouSure,
-					youSure, true, true) // TODO: calculate offsets
-				app.SetFocus(youSure)
-			}
-			return nil
+		if k == tcell.KeyTAB && statsTable != nil {
+			app.SetFocus(detailSidePagesSub2)
 		}
 
 		if k == tcell.KeyRune {
@@ -116,15 +73,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 			case 'q':
 				app.Stop()
 				return nil
-
-			// start zip import from here
-			case 'i':
-				contentPages.SwitchToPage(pageZipImport)
-				app.SetFocus(zipInput.selectTree)
-				return nil
-
 			}
-
 		}
 
 		return event

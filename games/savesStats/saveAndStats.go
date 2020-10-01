@@ -6,7 +6,8 @@ import (
 
 // Nested structs match json structure of zdoom json format
 type sg struct {
-	Stats Savegame `json:"statistics"`
+	Stats   Savegame `json:"statistics"`
+	Ticrate float64  `json:"ticrate"`
 }
 
 // Savegame saves a dual purpose
@@ -62,6 +63,7 @@ func NewSavegame(fi os.FileInfo, dir string) Savegame {
 
 // SummarizeStats sums up a slice of stats to a total one
 func SummarizeStats(stats []MapStats) (total MapStats) {
+	total.LevelName = "TOTALS"
 	for _, s := range stats {
 		total.KillCount += s.KillCount
 		total.TotalKills += s.TotalKills
@@ -69,6 +71,7 @@ func SummarizeStats(stats []MapStats) (total MapStats) {
 		total.TotalItems += s.TotalItems
 		total.SecretCount += s.SecretCount
 		total.TotalSecrets += s.TotalSecrets
+		total.LevelTime += s.LevelTime
 	}
 	return
 }

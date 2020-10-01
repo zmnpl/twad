@@ -117,6 +117,14 @@ func zdoomStatsFromJSON(path string) ([]MapStats, error) {
 		return nil, err
 	}
 
+	ticrate := 35.0
+	if save.Ticrate > 0 {
+		ticrate = save.Ticrate
+	}
+	for i, _ := range save.Stats.Levels {
+		save.Stats.Levels[i].LevelTime = uint32(float64(save.Stats.Levels[i].LevelTime) / ticrate)
+	}
+
 	return save.Stats.Levels, nil
 }
 
