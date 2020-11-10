@@ -19,12 +19,14 @@ const (
 	zipImportFormTitle      = "Import to"
 	zipImportFormOk         = "Import"
 	zipImportCancel         = "Back"
+	zipImportSecurityWarn   = "SECURITY WARNING: Only import archives from trusted sources!"
 )
 
 type zipImportUI struct {
-	selectTree   *tview.TreeView
-	modNameInput *tview.InputField
-	modNameForm  *tview.Form
+	selectTree            *tview.TreeView
+	modNameInput          *tview.InputField
+	modNameForm           *tview.Form
+	importSecurityWarning *tview.TextView
 
 	zipPath string
 	modName string
@@ -34,6 +36,7 @@ func newZipImportUI() *zipImportUI {
 	var zui zipImportUI
 	zui.initZipSelect()
 	zui.initZipImportForm("")
+	zui.importSecurityWarning = tview.NewTextView().SetText(zipImportSecurityWarn).SetTextColor(tcell.ColorRed)
 	return &zui
 }
 
@@ -49,7 +52,7 @@ func (z *zipImportUI) initZipSelect() {
 	var rootNode *tview.TreeNode
 	z.selectTree, rootNode = newTree(rootDir)
 	z.selectTree.SetTitle(zipSelectTitle)
-	add := makeFileTreeAddFunc(helper.FilterExtensions, ".zip", true, true)
+	add := makeFileTreeAddFunc(helper.FilterExtensions, ".zip.tar.gz.rar", true, true)
 	add(rootNode, rootDir)
 
 	z.selectTree.SetSelectedFunc(func(node *tview.TreeNode) {

@@ -7,21 +7,22 @@ import (
 )
 
 const (
-	keyResetUIText    = "Reset UI"
-	keyRunGameText    = "Run Game"
-	keyQuickload      = "Run Last Savegame"
-	keyWarp           = "Warp (+Record)"
-	keyDemos          = "Demos"
-	keyQuitText       = "Quit"
-	keyEditGameText   = "Edit Game"
-	keyNewGameText    = "New Game"
-	keyAddModText     = "Add Mod To Game"
-	keyRemoveGameText = "Remove Game"
-	keyImportArchive  = "Import Archive"
-	keySortAlphText   = "Sort Games Alphabetically"
-	keyRateText       = "Rate Game"
-	keyCreditsText    = "Credits/License"
-	keyOptionsText    = "Options"
+	keyResetUIText         = "Reset UI"
+	keyRunGameText         = "Run Game"
+	keyQuickload           = "Run Last Savegame"
+	keyWarp                = "Warp (+Record)"
+	keyDemos               = "Demos"
+	keyQuitText            = "Quit"
+	keyEditGameText        = "Edit Game"
+	keyNewGameText         = "New Game"
+	keyAddModText          = "Add Mod To Game"
+	keyRemoveGameText      = "Remove Game"
+	keyImportArchive       = "Import Archive"
+	keySortAlphText        = "Sort Games Alphabetically"
+	keyRateText            = "Rate Game"
+	keyCreditsText         = "Credits/License"
+	keyOptionsText         = "Options"
+	keySavegameDetailsText = "Savegame Details"
 )
 
 var (
@@ -41,6 +42,7 @@ func init() {
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "n", keyNewGameText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "m", keyAddModText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "DEL", keyRemoveGameText))
+	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "z", keySavegameDetailsText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "i", keyImportArchive))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "s", keySortAlphText))
 	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "+/-", keyRateText))

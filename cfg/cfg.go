@@ -11,6 +11,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/mholt/archiver/v3"
 	"github.com/zmnpl/twad/helper"
 )
 
@@ -204,7 +205,7 @@ func EnableBasePath() error {
 
 // ImportArchive imports given archive into a subfolder of the base path
 func ImportArchive(zipPath, modName string) (err error) {
-	_, err = helper.Unzip(zipPath, filepath.Join(instance.WadDir, modName))
+	err = archiver.Unarchive(zipPath, filepath.Join(instance.WadDir, modName))
 	return
 }
 

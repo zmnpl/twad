@@ -161,6 +161,7 @@ func initUIElements() {
 	zipInput = newZipImportUI()
 	fmt.Println(zipInput)
 	contentPages.AddPage(pageZipImport, tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(zipInput.importSecurityWarning, 1, 0, true).
 		AddItem(zipInput.selectTree, 0, 1, true).
 		AddItem(zipInput.modNameForm, 7, 0, false), true, true)
 
