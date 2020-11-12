@@ -23,6 +23,7 @@ type Game struct {
 	Name             string         `json:"name"`
 	SourcePort       string         `json:"source_port"`
 	Iwad             string         `json:"iwad"`
+	Config           string         `json:"config"`
 	Environment      []string       `json:"environment"`
 	Mods             []string       `json:"mods"`
 	CustomParameters []string       `json:"custom_parameters"`
@@ -37,13 +38,14 @@ type Game struct {
 }
 
 // NewGame creates new instance of a game
-func NewGame(name, sourceport, iwad string) Game {
+func NewGame(name, sourceport, iwad, cnfg string) Game {
 	config := cfg.Instance()
 
 	game := Game{
 		Name:             name,
 		SourcePort:       "gzdoom",
 		Iwad:             "doom2.wad",
+		Config:           "Default",
 		Environment:      make([]string, 0),
 		CustomParameters: make([]string, 0),
 		Mods:             make([]string, 0),
@@ -67,6 +69,13 @@ func NewGame(name, sourceport, iwad string) Game {
 			game.Iwad = config.IWADs[0]
 		}
 	}
+	
+	// replace with given or source port default
+	if cnfg != "" {
+		game.Config = cnfg
+    } else {
+        game.Config = "Default"
+    }
 
 	return game
 }
@@ -168,6 +177,13 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 		params = append(params, "-iwad", g.Iwad) // -iwad seems to be universal across zdoom, boom and chocolate doom
 	}
 
+	// config
+	// TODO: Make this get the value from cfg.go, configPortConfigsDefaultLabel
+	if g.Config != "Default" && g.Config != "" {
+		params = append(params, "-config", g.Config) // -config seems to be universal across zdoom, boom and chocolate doom
+	}
+	
+	
 	// mods
 	if len(g.Mods) > 0 {
 		params = append(params, "-file") // -file seems to be universal across zdoom, boom and chocolate doom

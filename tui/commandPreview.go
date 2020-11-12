@@ -29,6 +29,7 @@ func populateCommandPreview(g *games.Game) {
 func stylizeCommandList(params []string) string {
 	keywords := map[string]bool{
 		"-iwad":          true,
+        "-config":        true,
 		"-file":          true,
 		"-savedir":       true,
 		"-save":          true,

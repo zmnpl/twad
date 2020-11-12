@@ -11,7 +11,8 @@ const (
 	gameTableHeaderName       = "Name"
 	gameTableHeaderSourcePort = "SourcePort"
 	gameTableHeaderIwad       = "Iwad"
-
+	gameTableHeaderConfig       = "Config"
+	
 	deleteGameQuestion = "Delete '%v'?"
 	deleteModQuestion  = "Remove '%v' from '%v'?"
 )
@@ -30,7 +31,7 @@ func populateGamesTable() {
 	gamesTable.Clear()
 	allGames := games.GetInstance()
 
-	fixRows, fixCols := 1, 4
+	fixRows, fixCols := 1, 5
 	rows, cols := len(allGames), 0
 
 	for r := 0; r < rows+fixRows; r++ {
@@ -51,6 +52,8 @@ func populateGamesTable() {
 					cell = tview.NewTableCell(gameTableHeaderSourcePort).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 3:
 					cell = tview.NewTableCell(gameTableHeaderIwad).SetTextColor(tview.Styles.SecondaryTextColor)
+				case 4:
+					cell = tview.NewTableCell(gameTableHeaderConfig).SetTextColor(tview.Styles.SecondaryTextColor)
 				default:
 					cell = tview.NewTableCell("").SetTextColor(tview.Styles.SecondaryTextColor)
 				}
@@ -64,6 +67,8 @@ func populateGamesTable() {
 					cell = tview.NewTableCell(game.SourcePort).SetTextColor(tview.Styles.PrimaryTextColor)
 				case 3:
 					cell = tview.NewTableCell(game.Iwad).SetTextColor(tview.Styles.PrimaryTextColor)
+				case 4:
+					cell = tview.NewTableCell(game.Config).SetTextColor(tview.Styles.PrimaryTextColor)
 				default:
 					cell = tview.NewTableCell("").SetTextColor(tview.Styles.PrimaryTextColor)
 				}

@@ -24,6 +24,7 @@ const (
 	optsDontWarn                 = "Do NOT warn before deletion"
 	optsSourcePortLabel          = "Source Ports"
 	optsIwadsLabel               = "IWADs"
+	optsConfigsLabel             = "Configs"
 	optsNextTimeFirstStart       = "Show path selection dialog on next start"
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
@@ -86,6 +87,9 @@ func makeOptions() *tview.Flex {
 	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().IWADs, ","))
 	o.AddFormItem(iwads)
 
+	configs := tview.NewInputField().SetLabel(optsConfigsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().Configs, ","))
+	o.AddFormItem(configs)
+
 	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
@@ -118,6 +122,12 @@ func makeOptions() *tview.Flex {
 			iwds[i] = strings.TrimSpace(iwds[i])
 		}
 		c.IWADs = iwds
+		
+		cnfgs := strings.Split(configs.GetText(), ",")
+		for i := range cnfgs {
+			cnfgs[i] = strings.TrimSpace(cnfgs[i])
+		}
+		c.Configs = cnfgs
 
 		c.HideHeader = printHeader.IsChecked()
 		c.DeleteWithoutWarning = dontWarn.IsChecked()

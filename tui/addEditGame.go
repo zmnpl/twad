@@ -15,6 +15,7 @@ const (
 	aeName       = "Name"
 	aeSourcePort = "Source Port"
 	aeIWAD       = "IWAD"
+	aeConfig     = "Config"
 
 	aeEnvironment       = "Environment Variables *"
 	aeEnvironmentDetail = `* Provide environment variables here; To turn VSync off entirely for example:
@@ -46,7 +47,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	gWasNil := false
 	title := editGame
 	if g == nil {
-		foo := games.NewGame("", "", "")
+		foo := games.NewGame("", "", "", "")
 		g = &foo
 		title = addGame
 		gWasNil = true
@@ -79,6 +80,23 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		}
 	}
 
+	inputConfig := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeConfig).SetLabelColor(tview.Styles.SecondaryTextColor)
+	ae.AddFormItem(inputConfig)
+	if cfg.Instance().Configs != nil && len(cfg.Instance().Configs) > 0 {
+		options := cfg.Instance().Configs
+		options = append([]string{"Default"}, cfg.Instance().Configs...)
+		inputConfig.SetOptions(options, nil)
+		if i, isIn := indexOfItemIn(g.Config, options); isIn {
+			inputConfig.SetCurrentOption(i)
+		} else {
+			inputConfig.SetCurrentOption(0)
+		}
+	} else {
+		// TODO: Make this get the value from cfg.go, configPortConfigsDefaultLabel 
+		inputConfig.SetOptions([]string{"Default"}, nil)
+		inputConfig.SetCurrentOption(0)
+	}
+
 	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(aeEnvironment).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputEnvVars)
 
@@ -89,6 +107,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		g.Name = strings.TrimSpace(inputName.GetText())
 		_, g.SourcePort = inputSourcePort.GetCurrentOption()
 		_, g.Iwad = inputIwad.GetCurrentOption()
+		_, g.Config = inputConfig.GetCurrentOption()
 		g.Environment = splitParams(inputEnvVars.GetText())
 		g.CustomParameters = splitParams(inputCustomParams.GetText())
 
