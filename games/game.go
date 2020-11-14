@@ -45,7 +45,7 @@ func NewGame(name, sourceport, iwad, cnfg string) Game {
 		Name:             name,
 		SourcePort:       "gzdoom",
 		Iwad:             "doom2.wad",
-		Config:           "Default",
+		Config:           cfg.Instance().DefaultConfigLabel,
 		Environment:      make([]string, 0),
 		CustomParameters: make([]string, 0),
 		Mods:             make([]string, 0),
@@ -74,7 +74,7 @@ func NewGame(name, sourceport, iwad, cnfg string) Game {
 	if cnfg != "" {
 		game.Config = cnfg
     } else {
-        game.Config = "Default"
+		game.Config = cfg.Instance().DefaultConfigLabel
     }
 
 	return game
@@ -129,7 +129,7 @@ func (g *Game) RemoveMod(i int) {
 func (g *Game) run(rcfg runconfig) (err error) {
 	start := time.Now()
 
-	// change workind directory to redirect stat file output for boom
+	// change working directory to redirect stat file output for boom
 	wd, wdChangeError := os.Getwd()
 	if sourcePortFamily(g.SourcePort) == boom {
 		os.Chdir(g.getSaveDir())
@@ -178,9 +178,16 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	}
 
 	// config
-	// TODO: Make this get the value from cfg.go, configPortConfigsDefaultLabel
-	if g.Config != "Default" && g.Config != "" {
-		params = append(params, "-config", g.Config) // -config seems to be universal across zdoom, boom and chocolate doom
+	if g.Config != cfg.Instance().DefaultConfigLabel && g.Config != "" {
+		// Gets full path, as shell working directory seems to be where gzdoom searches, but not for mods?
+		// I tried to dig into the source for gzdoom, but had no luck finding a difference.
+		
+		// Nevermind, figured it out. Source ports are searching all of the Paths for the relative folder/wad files.
+		// But -config only searches in the current working dir. I would change the dir of the program, but run() just above does
+		// that for boom stuff. So, this is my solution.
+		// configPath := "$DOOMWADDIR/config/"+g.Config; did not work
+		configPath := cfg.Instance().WadDir+"/config/"+g.Config
+		params = append(params, "-config", configPath) // -config seems to be universal across zdoom, boom and chocolate doom
 	}
 	
 	

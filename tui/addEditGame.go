@@ -84,7 +84,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	ae.AddFormItem(inputConfig)
 	if cfg.Instance().Configs != nil && len(cfg.Instance().Configs) > 0 {
 		options := cfg.Instance().Configs
-		options = append([]string{"Default"}, cfg.Instance().Configs...)
+		options = append([]string{cfg.Instance().DefaultConfigLabel}, cfg.Instance().Configs...)
 		inputConfig.SetOptions(options, nil)
 		if i, isIn := indexOfItemIn(g.Config, options); isIn {
 			inputConfig.SetCurrentOption(i)
@@ -92,8 +92,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 			inputConfig.SetCurrentOption(0)
 		}
 	} else {
-		// TODO: Make this get the value from cfg.go, configPortConfigsDefaultLabel 
-		inputConfig.SetOptions([]string{"Default"}, nil)
+		inputConfig.SetOptions([]string{cfg.Instance().DefaultConfigLabel}, nil)
 		inputConfig.SetCurrentOption(0)
 	}
 

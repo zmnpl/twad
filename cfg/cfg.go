@@ -25,7 +25,6 @@ var (
 const (
 	configName                     = "twad.json"
 	configPath                     = ".config/twad"
-    configPortConfigsDefaultLabel  = "Default"
 )
 
 // Cfg holds basic configuration settings
@@ -38,6 +37,7 @@ type Cfg struct {
 	SourcePorts            []string `json:"source_ports"`
 	IWADs                  []string `json:"iwa_ds"`
 	Configs                []string `json:"configs"`
+	DefaultConfigLabel     string   `json:"default_config_label"`
 	Configured             bool     `json:"configured"`
 	DeleteWithoutWarning   bool     `json:"delete_without_warning"`
 	HideHeader             bool     `json:"hide_header"`
@@ -58,7 +58,8 @@ func defaultConfig() Cfg {
 		ModExtensions:         ".wad.pk3.ipk3",
 		SourcePorts:           []string{"gzdoom", "zandronum", "lzdoom"},
 		IWADs:                 []string{"doom2.wad", "doom.wad"},
-        Configs:               []string{"example.ini", "brutaldoom.ini"},
+		Configs:               []string{"example.ini", "brutaldoom.ini"},
+		//DefaultConfigLabel:    "Default",
 		GameListRelativeWidth: 40,
 		GameListAbsoluteWidth: 0,
 	}
