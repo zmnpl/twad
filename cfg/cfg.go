@@ -74,13 +74,19 @@ func defaultConfig() Cfg {
 
 func firstStart() {
 	// create directory for games and configs
-	configFolder := GetSavegameFolder()
+	savegamesFolder := GetSavegameFolder()
+    portconfigFolder := GetPortConfigFolder()
 	configPath := configFullPath()
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		err := os.MkdirAll(configFolder, 0755)
+        err := os.MkdirAll(portconfigFolder, 0755)
 		if err != nil {
 			log.Fatal(err)
 		}
+		
+		err = os.MkdirAll(savegamesFolder, 0755)
+        if err != nil {
+            log.Fatal(err)
+        }
 
 		f, err := os.Create(configPath)
 		if err != nil {
@@ -154,6 +160,11 @@ func Instance() *Cfg {
 // GetConfigFolder returns the folder where configuration is stored
 func GetConfigFolder() string {
 	return filepath.Join(helper.Home(), configPath)
+}
+
+// GetPortConfigFolder returns the folder where source port configurations are stored
+func GetPortConfigFolder() string {
+    return filepath.Join(GetConfigFolder(), "configs")
 }
 
 // GetSavegameFolder returns the folder where savegames are stored

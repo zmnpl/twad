@@ -73,9 +73,9 @@ func NewGame(name, sourceport, iwad, cnfg string) Game {
 	// replace with given or source port default
 	if cnfg != "" {
 		game.Config = cnfg
-    } else {
+	} else {
 		game.Config = cfg.Instance().DefaultConfigLabel
-    }
+	}
 
 	return game
 }
@@ -179,15 +179,19 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 
 	// config
 	if g.Config != cfg.Instance().DefaultConfigLabel && g.Config != "" {
-		// Gets full path, as shell working directory seems to be where gzdoom searches, but not for mods?
-		// I tried to dig into the source for gzdoom, but had no luck finding a difference.
-		
-		// Nevermind, figured it out. Source ports are searching all of the Paths for the relative folder/wad files.
-		// But -config only searches in the current working dir. I would change the dir of the program, but run() just above does
-		// that for boom stuff. So, this is my solution.
-		// configPath := "$DOOMWADDIR/config/"+g.Config; did not work
-		configPath := cfg.Instance().WadDir+"/config/"+g.Config
-		params = append(params, "-config", configPath) // -config seems to be universal across zdoom, boom and chocolate doom
+		if err := os.MkdirAll(g.getPortConfigDir(), 0755); err == nil {
+			// Gets full path, as shell working directory seems to be where gzdoom searches, but not for mods?
+			// I tried to dig into the source for gzdoom, but had no luck finding a difference.
+			
+			// Nevermind, figured it out. Source ports are searching all of the Paths for the relative folder/wad files.
+			// But -config only searches in the current working dir. I would change the dir of the program, but run() just above does
+			// that for boom stuff. So, these are my solutions.
+			
+			// configPath := "$DOOMWADDIR/config/"+g.Config - did not work
+			// configPath := cfg.Instance().WadDir+"/config/"+g.Config - worked, but was in the $DOOMWADDIR. Unsure if original dev wants it there or in ~/.config. Currently assuming the latter.
+			configPath := cfg.GetPortConfigFolder()+"/"+g.Config
+			params = append(params, "-config", configPath) // -config seems to be universal across zdoom, boom and chocolate doom
+		}
 	}
 	
 	
@@ -392,6 +396,10 @@ func (g *Game) SwitchMods(a, b int) {
 
 func (g *Game) getSaveDir() string {
 	return filepath.Join(cfg.GetSavegameFolder(), g.cleansedName())
+}
+
+func (g *Game) getPortConfigDir() string {
+	return cfg.GetPortConfigFolder()
 }
 
 // lastSave returns the the file name or slotnumber (depending on source port) for the game
