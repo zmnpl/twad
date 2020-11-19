@@ -25,6 +25,7 @@ const (
 	optsSourcePortLabel          = "Source Ports"
 	optsIwadsLabel               = "IWADs"
 	optsConfigsLabel             = "Configs"
+	optsConfigsInWadDir          = "Save Source Port configs in Wad Dir?"
 	optsNextTimeFirstStart       = "Show path selection dialog on next start"
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
@@ -90,6 +91,9 @@ func makeOptions() *tview.Flex {
 	configs := tview.NewInputField().SetLabel(optsConfigsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().Configs, ","))
 	o.AddFormItem(configs)
 
+	configinwaddir := tview.NewCheckbox().SetLabel(optsConfigsInWadDir).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().SaveConfigInWadDir)
+	o.AddFormItem(configinwaddir)
+	
 	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
@@ -128,6 +132,7 @@ func makeOptions() *tview.Flex {
 			cnfgs[i] = strings.TrimSpace(cnfgs[i])
 		}
 		c.Configs = cnfgs
+		c.SaveConfigInWadDir = configinwaddir.IsChecked()
 
 		c.HideHeader = printHeader.IsChecked()
 		c.DeleteWithoutWarning = dontWarn.IsChecked()

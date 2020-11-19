@@ -187,9 +187,14 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 			// But -config only searches in the current working dir. I would change the dir of the program, but run() just above does
 			// that for boom stuff. So, these are my solutions.
 			
-			// configPath := "$DOOMWADDIR/config/"+g.Config - did not work
-			// configPath := cfg.Instance().WadDir+"/config/"+g.Config - worked, but was in the $DOOMWADDIR. Unsure if original dev wants it there or in ~/.config. Currently assuming the latter.
-			configPath := cfg.GetPortConfigFolder()+"/"+g.Config
+			var configPath string
+			// configPath = "$DOOMWADDIR/config/"+g.Config - did not work
+			if cfg.Instance().SaveConfigInWadDir {
+				configPath = cfg.Instance().WadDir+"/config/"+g.Config // in the $DOOMWADDIR/twad wad dir (in config/)
+			} else {
+				configPath = cfg.GetPortConfigFolder()+"/"+g.Config // where savegames/twad config is stored
+			}
+			
 			params = append(params, "-config", configPath) // -config seems to be universal across zdoom, boom and chocolate doom
 		}
 	}

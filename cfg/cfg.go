@@ -38,6 +38,7 @@ type Cfg struct {
 	IWADs                  []string `json:"iwa_ds"`
 	Configs                []string `json:"configs"`
 	DefaultConfigLabel     string   `json:"default_config_label"`
+	SaveConfigInWadDir     bool     `json:"save_config_in_wad_dir"`
 	Configured             bool     `json:"configured"`
 	DeleteWithoutWarning   bool     `json:"delete_without_warning"`
 	HideHeader             bool     `json:"hide_header"`
