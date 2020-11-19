@@ -190,9 +190,9 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 			var configPath string
 			// configPath = "$DOOMWADDIR/config/"+g.Config - did not work
 			if cfg.Instance().SaveConfigInWadDir {
-				configPath = cfg.Instance().WadDir+"/config/"+g.Config // in the $DOOMWADDIR/twad wad dir (in config/)
+                configPath = filepath.Join(cfg.Instance().WadDir, "configs", g.Config) // in the $DOOMWADDIR/twad wad dir (in config/)
 			} else {
-				configPath = cfg.GetPortConfigFolder()+"/"+g.Config // where savegames/twad config is stored
+                configPath = filepath.Join(cfg.GetPortConfigFolder(), g.Config) // where savegames/twad config is stored
 			}
 			
 			params = append(params, "-config", configPath) // -config seems to be universal across zdoom, boom and chocolate doom

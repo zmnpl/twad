@@ -144,6 +144,15 @@ func loadConfig() error {
 		instance.GameListAbsoluteWidth = 40
 	}
 
+	if instance.SaveConfigInWadDir {
+		portconfigFolder := filepath.Join(instance.WadDir, "configs")
+		err := os.MkdirAll(portconfigFolder, 0755)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	
+
 	return nil
 }
 
