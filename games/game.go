@@ -120,7 +120,7 @@ func (g *Game) RemoveMod(i int) {
 func (g *Game) run(rcfg runconfig) (err error) {
 	start := time.Now()
 
-	// change workind directory to redirect stat file output for boom
+	// change working directory to redirect stat file output for boom
 	wd, wdChangeError := os.Getwd()
 	if sourcePortFamily(g.SourcePort) == boom {
 		os.Chdir(g.getSaveDir())
