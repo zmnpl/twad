@@ -21,7 +21,7 @@ const (
 Navigate with arrow keys or Vim bindings. [red]Enter[white] or [red]Space[white] expand the directory. Highlight the righ one and hit [red]Ctrl+O[white]`
 
 	setupPathExample = `[red]->[white]/home/slayer/doomwaddir            [red]# put doom.wad and doom2.wad in here
-  [white]/home/slayer/doomwaddir[orange]/BrutalDoom [grey]# sub dir for Sigil
+  [white]/home/slayer/doomwaddir[orange]/Sigil [grey]# sub dir for Sigil
   [white]/home/slayer/doomwaddir[orange]/QCDE       [grey]# sub dir for QCDE`
 )
 
