@@ -3,7 +3,7 @@ package tui
 import (
 	"path"
 
-	"github.com/gdamore/tcell"
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/cfg"
 	"github.com/zmnpl/twad/games"
