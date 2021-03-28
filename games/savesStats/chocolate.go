@@ -3,7 +3,7 @@ package savesStats
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -11,7 +11,7 @@ import (
 
 // Crispy / Chocolate
 func GetChocolateStats(path string) ([]MapStats, error) {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
@@ -67,7 +67,7 @@ func ChocolateMetaFromBinary(path string) (SaveMeta, error) {
 	meta := SaveMeta{}
 	meta.Title = fallbackName
 
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return meta, err
 	}

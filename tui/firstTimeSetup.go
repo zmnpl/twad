@@ -2,7 +2,6 @@ package tui
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -65,7 +64,7 @@ func makePathSelectionTree(preview *tview.TextView) *tview.TreeView {
 	// A helper function which adds the files and directories of the given path
 	// to the given target node.
 	add := func(target *tview.TreeNode, path string) {
-		files, err := ioutil.ReadDir(path)
+		files, err := os.ReadDir(path)
 		sort.Slice(files, func(i, j int) bool {
 			return strings.ToLower(files[i].Name()) < strings.ToLower(files[j].Name())
 		})

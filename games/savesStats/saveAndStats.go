@@ -51,12 +51,12 @@ type MapStats struct {
 }
 
 // NewSavegame initializes a new Savegame struct
-func NewSavegame(fi os.FileInfo, dir string) Savegame {
+func NewSavegame(fi os.DirEntry, dir string) Savegame {
 	savegame := Savegame{
 		Directory: dir,
 	}
 	if fi != nil {
-		savegame.FI = fi
+		savegame.FI, _ = fi.Info()
 	}
 	return savegame
 }

@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"os"
 	"unsafe"
 )
 
@@ -63,7 +63,7 @@ func zdoomMetaFromJSON(path string) (SaveMeta, error) {
 
 func zdoomMetaFromBinary(path string) (SaveMeta, error) {
 	meta := SaveMeta{}
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return meta, err
 	}
@@ -129,7 +129,7 @@ func zdoomStatsFromJSON(path string) ([]MapStats, error) {
 }
 
 func zdoomStatsFromBinary(path string) ([]MapStats, error) {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

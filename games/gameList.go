@@ -2,7 +2,7 @@ package games
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"sort"
 	"sync"
 
@@ -107,7 +107,7 @@ func Persist() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(cfg.GetConfigFolder()+"/"+gamesJSONName, gamesJSON, 0755)
+	err = os.WriteFile(cfg.GetConfigFolder()+"/"+gamesJSONName, gamesJSON, 0755)
 	if err != nil {
 		return err
 	}
@@ -115,7 +115,7 @@ func Persist() error {
 }
 
 func loadGames() error {
-	content, err := ioutil.ReadFile(cfg.GetConfigFolder() + "/" + gamesJSONName) // TODO: Resolve simlinks
+	content, err := os.ReadFile(cfg.GetConfigFolder() + "/" + gamesJSONName) // TODO: Resolve simlinks
 	if err != nil {
 		return err
 	}

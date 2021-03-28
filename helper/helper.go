@@ -1,7 +1,6 @@
 package helper
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 	"os/user"
@@ -27,7 +26,7 @@ func IsFileNameValid(fp string) bool {
 
 	// Attempt to create it
 	var d []byte
-	if err := ioutil.WriteFile(fp, d, 0644); err == nil {
+	if err := os.WriteFile(fp, d, 0644); err == nil {
 		os.Remove(fp) // And delete it
 		return true
 	}
@@ -37,7 +36,7 @@ func IsFileNameValid(fp string) bool {
 
 // FilterExtensions filters a given slice of FileInfo based on the passed extensions
 // extensions can be a string containing multiple extensions; strings.Contains is used for comparison
-func FilterExtensions(files []os.FileInfo, extensions string, includeDirs bool) []os.FileInfo {
+func FilterExtensions(files []os.DirEntry, extensions string, includeDirs bool) []os.DirEntry {
 	n := 0
 	for _, f := range files {
 		ext := strings.ToLower(filepath.Ext(f.Name()))

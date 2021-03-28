@@ -2,7 +2,6 @@ package games
 
 import (
 	"fmt"
-	"io/ioutil"
 	"os"
 	"os/exec"
 	"path"
@@ -130,7 +129,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 	doom := g.composeProcess(g.getLaunchParams(rcfg))
 	output, err := doom.CombinedOutput()
 	if err != nil {
-		ioutil.WriteFile("twad.log", []byte(fmt.Sprintf("%v\n\n%v\n\n%v\n\n%v", string(output), err.Error(), g.getLaunchParams(rcfg), doom)), 0755)
+		os.WriteFile("twad.log", []byte(fmt.Sprintf("%v\n\n%v\n\n%v\n\n%v", string(output), err.Error(), g.getLaunchParams(rcfg), doom)), 0755)
 		return err
 	}
 
@@ -257,15 +256,17 @@ func (g *Game) SaveCount() int {
 }
 
 // savegameFiles returns a slice of os.FileInfo with all savegmes for this game
-func (g *Game) savegameFiles() ([]os.FileInfo, error) {
-	saves, err := ioutil.ReadDir(g.getSaveDir())
+func (g *Game) savegameFiles() ([]os.DirEntry, error) {
+	saves, err := os.ReadDir(g.getSaveDir())
 	if err != nil {
 		return nil, err
 	}
 	saves = helper.FilterExtensions(saves, g.spSaveFileExtension(), false)
 
 	sort.Slice(saves, func(i, j int) bool {
-		return saves[i].ModTime().After(saves[j].ModTime())
+		foo, _ := saves[i].Info()
+		bar, _ := saves[j].Info()
+		return foo.ModTime().After(bar.ModTime())
 	})
 
 	return saves, nil
@@ -339,7 +340,7 @@ func (g *Game) ReadLatestStats() {
 
 // DemoCount returns the number of demos existing for this game
 func (g *Game) DemoCount() int {
-	if demos, err := ioutil.ReadDir(g.getDemoDir()); err == nil {
+	if demos, err := os.ReadDir(g.getDemoDir()); err == nil {
 		return len(demos)
 	}
 	return 0
@@ -374,7 +375,7 @@ func (g *Game) getSaveDir() string {
 // lastSave returns the the file name or slotnumber (depending on source port) for the game
 func (g *Game) lastSave() (save string, err error) {
 	saveDir := g.getSaveDir()
-	saves, err := ioutil.ReadDir(saveDir)
+	saves, err := os.ReadDir(saveDir)
 	if err != nil {
 		return
 	}
@@ -386,9 +387,13 @@ func (g *Game) lastSave() (save string, err error) {
 	newestTime, _ := time.Parse(time.RFC3339, "1900-01-01T00:00:00+00:00")
 	for _, file := range saves {
 		extension := strings.ToLower(filepath.Ext(file.Name()))
-		if file.Mode().IsRegular() && file.ModTime().After(newestTime) && extension == portSaveFileExtension {
+		fi, err := file.Info()
+		if err != nil {
+			continue
+		}
+		if fi.Mode().IsRegular() && fi.ModTime().After(newestTime) && extension == portSaveFileExtension {
 			save = filepath.Join(saveDir, file.Name())
-			newestTime = file.ModTime()
+			newestTime = fi.ModTime()
 		}
 	}
 
@@ -403,13 +408,18 @@ func (g *Game) lastSave() (save string, err error) {
 }
 
 // Demos returns the demo files existing for the game
-func (g *Game) Demos() ([]os.FileInfo, error) {
-	demos, err := ioutil.ReadDir(g.getDemoDir())
+func (g *Game) Demos() ([]os.DirEntry, error) {
+	demos, err := os.ReadDir(g.getDemoDir())
 	if err != nil {
 		return nil, err
 	}
 	sort.Slice(demos, func(i, j int) bool {
-		return demos[i].ModTime().After(demos[j].ModTime())
+		foo, err := demos[i].Info()
+		bar, err := demos[j].Info()
+		if err != nil {
+			return true
+		}
+		return foo.ModTime().After(bar.ModTime())
 	})
 	return demos, err
 }
@@ -417,7 +427,7 @@ func (g *Game) Demos() ([]os.FileInfo, error) {
 // DemoExists checks if a file with the same name already exists in the default demo dir
 // Doesn't use standard library to ignore file ending; design decision
 func (g *Game) DemoExists(name string) bool {
-	if files, err := ioutil.ReadDir(g.getDemoDir()); err == nil {
+	if files, err := os.ReadDir(g.getDemoDir()); err == nil {
 		for _, f := range files {
 			nameWithouthExt := strings.TrimSuffix(f.Name(), filepath.Ext(f.Name()))
 			if nameWithouthExt == name {
@@ -430,7 +440,7 @@ func (g *Game) DemoExists(name string) bool {
 
 // RemoveDemo removes the demo file with the given name
 // and returns the new set of demos
-func (g *Game) RemoveDemo(name string) ([]os.FileInfo, error) {
+func (g *Game) RemoveDemo(name string) ([]os.DirEntry, error) {
 	err := os.Remove(filepath.Join(g.getDemoDir(), name))
 	if err != nil {
 		return nil, err

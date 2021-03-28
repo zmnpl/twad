@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"sort"
@@ -37,9 +36,9 @@ func newTree(rootDir string) (*tview.TreeView, *tview.TreeNode) {
 // A helper function which adds the files and directories of the given path
 // to the given target node.
 // Takes a filter function to filter files, which should not be in
-func makeFileTreeAddFunc(fileFilter func(files []os.FileInfo, extensions string, includeDirs bool) []os.FileInfo, extensions string, includeDirs bool, hideUnixHidden bool) func(target *tview.TreeNode, path string) {
+func makeFileTreeAddFunc(fileFilter func(files []os.DirEntry, extensions string, includeDirs bool) []os.DirEntry, extensions string, includeDirs bool, hideUnixHidden bool) func(target *tview.TreeNode, path string) {
 	return func(target *tview.TreeNode, path string) {
-		files, err := ioutil.ReadDir(path)
+		files, err := os.ReadDir(path)
 		if fileFilter != nil {
 			files = fileFilter(files, extensions, includeDirs)
 		}

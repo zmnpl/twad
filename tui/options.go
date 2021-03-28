@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"io/ioutil"
 	"os"
 	"strconv"
 	"strings"
@@ -31,7 +30,7 @@ const (
 )
 
 func pathHasIwad(path string) (bool, error) {
-	files, err := ioutil.ReadDir(path)
+	files, err := os.ReadDir(path)
 
 	if err != nil {
 		return false, err
@@ -110,7 +109,7 @@ func makeOptions() *tview.Flex {
 				if strings.HasPrefix(file.Name(), ".") {
 					continue
 				}
-				entries = append(entries, dir+string(os.PathListSeparator)+file.Name())
+				entries = append(entries, dir+string(os.PathSeparator)+file.Name())
 			}
 
 			mutex.Lock()

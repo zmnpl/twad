@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -40,7 +41,14 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 	populate := func() {
 		demoList.Clear()
 		for _, demo := range demos {
-			demoList.AddItem(demo.Name(), fmt.Sprintf("%v (%.2f KiB)", demo.ModTime().Format("2006-01-02 15:04"), float32(demo.Size())/1024), '|', nil)
+			di, err := demo.Info()
+			var t time.Time
+			if err != nil {
+				t = time.Now()
+			} else {
+				t = di.ModTime()
+			}
+			demoList.AddItem(demo.Name(), fmt.Sprintf("%v (%.2f KiB)", t.Format("2006-01-02 15:04"), float32(di.Size())/1024), '|', nil)
 		}
 	}
 

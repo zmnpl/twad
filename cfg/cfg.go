@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -94,7 +93,7 @@ func firstStart() {
 func loadConfig() error {
 	dConf := defaultConfig()
 
-	content, err := ioutil.ReadFile(configFullPath()) // TODO: Resolve simlinks
+	content, err := os.ReadFile(configFullPath()) // TODO: Resolve simlinks
 	if err != nil {
 		instance = &dConf
 		return err
@@ -165,7 +164,7 @@ func Persist() error {
 		return err
 	}
 
-	err = ioutil.WriteFile(filepath.Join(GetConfigFolder(), configName), JSON, 0755)
+	err = os.WriteFile(filepath.Join(GetConfigFolder(), configName), JSON, 0755)
 	if err != nil {
 		return err
 	}
@@ -236,7 +235,7 @@ func processSourcePortCfg(path string) {
 		}
 	}
 
-	err := ioutil.WriteFile(path, configData.Bytes(), 0755)
+	err := os.WriteFile(path, configData.Bytes(), 0755)
 	if err != nil {
 		// TODO - do we want to see that error?
 	}
