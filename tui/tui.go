@@ -82,7 +82,7 @@ func Draw() {
 
 	// settings - only when first start of app
 	if !config.Configured {
-		contentPages.AddPage(pageFirstSetup, makeFirstTimeSetup(), true, true)
+		// TODO - short popup -> open options
 	}
 
 	// populate
