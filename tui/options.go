@@ -24,7 +24,6 @@ const (
 	optsDontWarn                 = "Do NOT warn before deletion"
 	optsSourcePortLabel          = "Source Ports"
 	optsIwadsLabel               = "IWADs"
-	optsNextTimeFirstStart       = "Show path selection dialog on next start"
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
 )
@@ -80,6 +79,7 @@ func makeOptions() *tview.Flex {
 	// autocompletion for path
 	var mutex sync.Mutex
 	prefixMap := make(map[string][]string)
+	firstStart := true
 	path.SetAutocompleteFunc(func(currentText string) (entries []string) {
 		// Ignore empty text.
 		prefix := strings.TrimSpace(strings.ToLower(currentText))
@@ -90,6 +90,11 @@ func makeOptions() *tview.Flex {
 		// Do we have entries for this text already?
 		mutex.Lock()
 		defer mutex.Unlock()
+		// Prevent autocomplete to be shown when the options panel is drawn initially
+		if firstStart {
+			firstStart = false
+			return nil
+		}
 		entries, ok := prefixMap[prefix]
 		if ok {
 			return entries
@@ -125,9 +130,6 @@ func makeOptions() *tview.Flex {
 
 		return nil
 	})
-
-	firstStart := tview.NewCheckbox().SetLabel(optsNextTimeFirstStart).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(!cfg.Instance().Configured)
-	o.AddFormItem(firstStart)
 
 	sourcePorts := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().SourcePorts, ","))
 	o.AddFormItem(sourcePorts)
@@ -171,7 +173,6 @@ func makeOptions() *tview.Flex {
 		c.HideHeader = printHeader.IsChecked()
 		c.DeleteWithoutWarning = dontWarn.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
-		c.Configured = !firstStart.IsChecked()
 
 		cfg.Persist()
 		cfg.EnableBasePath()
