@@ -5,6 +5,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -75,6 +76,55 @@ func makeOptions() *tview.Flex {
 	// check after entry
 	path.SetDoneFunc(func(key tcell.Key) {
 		pathDoneCheck()
+	})
+
+	// autocompletion for path
+	var mutex sync.Mutex
+	prefixMap := make(map[string][]string)
+	path.SetAutocompleteFunc(func(currentText string) (entries []string) {
+		// Ignore empty text.
+		prefix := strings.TrimSpace(strings.ToLower(currentText))
+		if prefix == "" {
+			return nil
+		}
+
+		// Do we have entries for this text already?
+		mutex.Lock()
+		defer mutex.Unlock()
+		entries, ok := prefixMap[prefix]
+		if ok {
+			return entries
+		}
+
+		// No entries yet get entries in goroutine
+		go func() {
+			dir := currentText[:strings.LastIndex(currentText, "/")]
+			files, err := os.ReadDir(dir)
+			if err != nil {
+				return
+			}
+
+			entries := make([]string, 0, len(files))
+			for _, file := range files {
+				// dont't show hidden folders
+				if strings.HasPrefix(file.Name(), ".") {
+					continue
+				}
+				entries = append(entries, dir+string(os.PathListSeparator)+file.Name())
+			}
+
+			mutex.Lock()
+			prefixMap[prefix] = entries
+			mutex.Unlock()
+
+			// Trigger an update to the input field.
+			path.Autocomplete()
+
+			// Also redraw the screen.
+			app.Draw()
+		}()
+
+		return nil
 	})
 
 	firstStart := tview.NewCheckbox().SetLabel(optsNextTimeFirstStart).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(!cfg.Instance().Configured)
