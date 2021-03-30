@@ -3,10 +3,13 @@ package tui
 import (
 	"fmt"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
 const (
+	helloText = "Hi, it looks like you are starting [orange]twad[white] for the first time. Hit [red]o[white] to bring up the options menu and set your DOOM directory ($DOOMWADDIR)"
+
 	subtitle  = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] launcher[orange]"
 	subtitle2 = "twad - terminal wad manager and launcher"
 
@@ -57,6 +60,37 @@ func makeHeader() *tview.TextView {
 	header.SetBorderPadding(0, 0, 1, 1)
 
 	return header
+}
+
+// first start hello
+func makeFirstStartHello() *tview.TextView {
+	hello := tview.NewTextView().SetDynamicColors(true)
+	hello.SetBorder(true)
+	fmt.Fprintf(hello, helloText)
+
+	hello.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		k := event.Key()
+
+		if k == tcell.KeyRune {
+			switch event.Rune() {
+
+			// get out
+			case 'q':
+				app.Stop()
+				return nil
+
+			// options
+			case 'o':
+				optionsDiag := makeOptions()
+				contentPages.AddPage(pageOptions, optionsDiag, true, false)
+				contentPages.SwitchToPage(pageOptions)
+				app.SetFocus(optionsDiag)
+			}
+		}
+		return event
+	})
+
+	return hello
 }
 
 //  license

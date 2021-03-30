@@ -2,6 +2,7 @@ package tui
 
 import (
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"sync"
@@ -114,7 +115,7 @@ func makeOptions() *tview.Flex {
 				if strings.HasPrefix(file.Name(), ".") {
 					continue
 				}
-				entries = append(entries, dir+string(os.PathSeparator)+file.Name())
+				entries = append(entries, filepath.Join(dir, file.Name()))
 			}
 
 			mutex.Lock()

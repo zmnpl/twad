@@ -73,7 +73,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 			return
 		}
 
-		if demos != nil && len(demos) != 0 {
+		if len(demos) != 0 {
 			populate()
 			app.SetFocus(demoList)
 		} else {

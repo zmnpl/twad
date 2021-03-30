@@ -59,7 +59,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeSourcePort).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputSourcePort)
-	if cfg.Instance().SourcePorts != nil && len(cfg.Instance().SourcePorts) > 0 {
+	if len(cfg.Instance().SourcePorts) > 0 {
 		inputSourcePort.SetOptions(cfg.Instance().SourcePorts, nil)
 		if i, isIn := indexOfItemIn(g.SourcePort, cfg.Instance().SourcePorts); isIn {
 			inputSourcePort.SetCurrentOption(i)
@@ -70,7 +70,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeIWAD).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputIwad)
-	if cfg.Instance().IWADs != nil && len(cfg.Instance().IWADs) > 0 {
+	if len(cfg.Instance().IWADs) > 0 {
 		inputIwad.SetOptions(cfg.Instance().IWADs, nil)
 		if i, isIn := indexOfItemIn(g.Iwad, cfg.Instance().IWADs); isIn {
 			inputIwad.SetCurrentOption(i)

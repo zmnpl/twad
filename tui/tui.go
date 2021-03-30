@@ -34,6 +34,7 @@ const (
 	pageSaves        = "saves"
 	pageError        = "error"
 	pageZipImport    = "zipselect"
+	pageHello        = "hello"
 
 	tableBorders = false
 )
@@ -82,7 +83,11 @@ func Draw() {
 
 	// settings - only when first start of app
 	if !config.Configured {
-		// TODO - short popup -> open options
+		hello := makeFirstStartHello()
+		contentPages.AddPage(pageHello, hello, true, false)
+		contentPages.SwitchToPage(pageHello)
+		app.SetFocus(hello)
+		config.Configured = true
 	}
 
 	// populate
