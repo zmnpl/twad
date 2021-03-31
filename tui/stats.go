@@ -31,6 +31,9 @@ func makeStatsTable(g *games.Game) *tview.Table {
 	stats.SetCell(row, 0, tview.NewTableCell("# Demos").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.DemoCount())).SetAlign(tview.AlignLeft))
 	row++
+	stats.SetCell(row, 0, tview.NewTableCell("Added").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.Added)).SetAlign(tview.AlignLeft))
+	row++
 	stats.SetCell(row, 0, tview.NewTableCell("Playtime").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%.2f min", float64(g.Playtime)/1000/60)).SetAlign(tview.AlignLeft))
 	row++

@@ -30,6 +30,7 @@ type Game struct {
 	LastPlayed       string         `json:"last_played"`
 	SaveGameCount    int            `json:"save_game_count"`
 	Rating           int            `json:"rating"`
+	Added            time.Time      `json:"added"`
 	Stats            []st.MapStats
 	StatsTotal       st.MapStats
 	Savegames        []*st.Savegame
@@ -47,6 +48,7 @@ func NewGame(name, sourceport, iwad string) Game {
 		CustomParameters: make([]string, 0),
 		Mods:             make([]string, 0),
 		ConsoleStats:     make(map[string]int),
+		Added:            time.Now(),
 	}
 
 	// replace with given or first list entry
