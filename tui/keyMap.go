@@ -7,48 +7,49 @@ import (
 )
 
 const (
-	keyResetUIText         = "Reset UI"
-	keyRunGameText         = "Run Game"
-	keyQuickload           = "Run Last Savegame"
-	keyWarp                = "Warp (+Record)"
-	keyDemos               = "Demos"
-	keyQuitText            = "Quit"
-	keyEditGameText        = "Edit Game"
-	keyNewGameText         = "New Game"
-	keyAddModText          = "Add Mod To Game"
-	keyRemoveGameText      = "Remove Game"
-	keyImportArchive       = "Import Archive"
-	keySortAlphText        = "Sort Games Alphabetically"
-	keyRateText            = "Rate Game"
-	keyCreditsText         = "Credits/License"
-	keyOptionsText         = "Options"
-	keySavegameDetailsText = "Savegame Details"
+	template = colorTagMoreContrast + "%-6v" + colorTagPrimaryText + "%v"
 )
 
 var (
+	keyResetUI         = fmt.Sprintf(template, "ESC", "Reset UI")
+	keyRunGame         = fmt.Sprintf(template, "ENTER", "Run Game")
+	keyQuickload       = fmt.Sprintf(template, "F9", "Run Last Savegame")
+	keyWarp            = fmt.Sprintf(template, "w", "Warp (+Record)")
+	keyDemos           = fmt.Sprintf(template, "d", "Demos")
+	keyQuit            = fmt.Sprintf(template, "q", "Quit")
+	keyEditGame        = fmt.Sprintf(template, "e", "Edit Game")
+	keyNewGame         = fmt.Sprintf(template, "n", "New Game")
+	keyAddMod          = fmt.Sprintf(template, "m", "Add Mod To Game")
+	keyRemoveGame      = fmt.Sprintf(template, "DEL", "Remove Game")
+	keyImportArchive   = fmt.Sprintf(template, "i", "Import Archive")
+	keySortAlph        = fmt.Sprintf(template, "s", "Sort Games Alphabetically")
+	keyRateText        = fmt.Sprintf(template, "+/-", "Rate Game")
+	keyCredits         = fmt.Sprintf(template, "c", "Credits/License")
+	keyOptions         = fmt.Sprintf(template, "o", "Options")
+	keySavegameDetails = fmt.Sprintf(template, "z", "Savegame Details")
+
 	keyInfosMain []string
 )
 
 func init() {
-	template := colorTagMoreContrast + "%-6v" + colorTagPrimaryText + "%v"
-
 	keyInfosMain = make([]string, 0, 10)
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "ESC", keyResetUIText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "ENTER", keyRunGameText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "F9", keyQuickload))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "w", keyWarp))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "d", keyDemos))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "e", keyEditGameText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "n", keyNewGameText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "m", keyAddModText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "DEL", keyRemoveGameText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "z", keySavegameDetailsText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "i", keyImportArchive))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "s", keySortAlphText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "+/-", keyRateText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "c", keyCreditsText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "o", keyOptionsText))
-	keyInfosMain = append(keyInfosMain, fmt.Sprintf(template, "q", keyQuitText))
+	keyInfosMain = append(keyInfosMain, keyResetUI)
+	keyInfosMain = append(keyInfosMain, keyOptions)
+	keyInfosMain = append(keyInfosMain, keyCredits)
+	keyInfosMain = append(keyInfosMain, keyQuit)
+	keyInfosMain = append(keyInfosMain, keyRunGame)
+	keyInfosMain = append(keyInfosMain, keyQuickload)
+	keyInfosMain = append(keyInfosMain, keyWarp)
+	keyInfosMain = append(keyInfosMain, keyDemos)
+	keyInfosMain = append(keyInfosMain, keyEditGame)
+	keyInfosMain = append(keyInfosMain, keyNewGame)
+	keyInfosMain = append(keyInfosMain, keyAddMod)
+	keyInfosMain = append(keyInfosMain, keyRemoveGame)
+	keyInfosMain = append(keyInfosMain, keySavegameDetails)
+	keyInfosMain = append(keyInfosMain, keyImportArchive)
+	keyInfosMain = append(keyInfosMain, keySortAlph)
+	keyInfosMain = append(keyInfosMain, keyRateText)
+
 }
 
 func makeKeyMap() (*tview.Grid, int) {

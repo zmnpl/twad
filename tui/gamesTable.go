@@ -4,6 +4,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
+	"github.com/zmnpl/twad/helper"
 )
 
 const (
@@ -193,6 +194,14 @@ func populateGamesTable() {
 					detailSidePagesSub2.AddPage(pageModSelector, modTree, true, false)
 					detailSidePagesSub2.SwitchToPage(pageModSelector)
 					app.SetFocus(modTree)
+					return nil
+				}
+
+			// open game url in browser
+			case 'u':
+				if r > 0 {
+					g := allGames[r-fixRows]
+					helper.Openbrowser(g.Link)
 					return nil
 				}
 

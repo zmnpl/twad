@@ -1,11 +1,16 @@
 package helper
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"os"
+	"os/exec"
 	"os/user"
 	"path/filepath"
+	"runtime"
 	"strings"
+	"time"
 )
 
 // Home returns the users home directory
@@ -50,4 +55,37 @@ func FilterExtensions(files []os.DirEntry, extensions string, includeDirs bool) 
 	}
 	files = files[:n]
 	return files
+}
+
+func Openbrowser(url string) {
+	// test url
+	timeout := time.Duration(1 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+	resp, err := client.Get(url)
+	// do nothing in case of error
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+	// dummy
+	if resp.StatusCode == 404 {
+	}
+
+	// only when url is reachable
+	switch runtime.GOOS {
+	case "linux":
+		err = exec.Command("xdg-open", url).Start()
+	case "windows":
+		err = exec.Command("rundll32", "url.dll,FileProtocolHandler", url).Start()
+	case "darwin":
+		err = exec.Command("open", url).Start()
+	default:
+		err = fmt.Errorf("unsupported platform")
+	}
+	if err != nil {
+		// TODO
+		//log.Fatal(err)
+	}
 }

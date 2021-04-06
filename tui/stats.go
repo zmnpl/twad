@@ -25,14 +25,17 @@ func makeStatsTable(g *games.Game) *tview.Table {
 	// generic stuff
 	stats.SetCell(row, 0, tview.NewTableCell("Overall").SetTextColor(tview.Styles.ContrastBackgroundColor))
 	row++
+	stats.SetCell(row, 0, tview.NewTableCell("Added/Edited").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.AddEdit)).SetAlign(tview.AlignLeft))
+	row++
+	stats.SetCell(row, 0, tview.NewTableCell("URL").SetTextColor(tview.Styles.SecondaryTextColor))
+	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.Link)).SetAlign(tview.AlignLeft))
+	row++
 	stats.SetCell(row, 0, tview.NewTableCell("# Savegames").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.SaveCount())).SetAlign(tview.AlignLeft))
 	row++
 	stats.SetCell(row, 0, tview.NewTableCell("# Demos").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.DemoCount())).SetAlign(tview.AlignLeft))
-	row++
-	stats.SetCell(row, 0, tview.NewTableCell("Added").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.Added)).SetAlign(tview.AlignLeft))
 	row++
 	stats.SetCell(row, 0, tview.NewTableCell("Playtime").SetTextColor(tview.Styles.SecondaryTextColor))
 	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%.2f min", float64(g.Playtime)/1000/60)).SetAlign(tview.AlignLeft))

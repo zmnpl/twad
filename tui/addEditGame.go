@@ -15,6 +15,7 @@ const (
 	aeName       = "Name"
 	aeSourcePort = "Source Port"
 	aeIWAD       = "IWAD"
+	aeLink       = "Mod URL"
 
 	aeEnvironment       = "Environment Variables *"
 	aeEnvironmentDetail = `* Provide environment variables here; To turn VSync off entirely for example:
@@ -79,6 +80,9 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		}
 	}
 
+	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(aeLink).SetLabelColor(tview.Styles.SecondaryTextColor)
+	ae.AddFormItem(inputURL)
+
 	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(aeEnvironment).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputEnvVars)
 
@@ -91,6 +95,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		_, g.Iwad = inputIwad.GetCurrentOption()
 		g.Environment = splitParams(inputEnvVars.GetText())
 		g.CustomParameters = splitParams(inputCustomParams.GetText())
+		g.Link = inputURL.GetText()
 
 		if gWasNil {
 			games.AddGame(*g)
