@@ -84,3 +84,12 @@ ADDITEMS:
 
 	return helpPane, rows + 2
 }
+
+// func makeHelp() *tview.TextView {
+// 	explanation := tview.NewTextView().SetRegions(true).SetWrap(true).SetWordWrap(true).SetDynamicColors(true)
+// 	fmt.Fprintf(explanation, "%s\n\nPoint me to the highlighted directory:\n", setupPathExplain)
+// 	fmt.Fprintf(explanation, "%s", setupPathExample)
+// 	fmt.Fprintf(explanation, "\n\n%s", setupOkHint)
+
+// 	return explanation
+// }

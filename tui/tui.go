@@ -175,7 +175,7 @@ func initUIElements() {
 
 // small or big header
 func getHeader() (tview.Primitive, int) {
-	headerHeight := 20
+	headerHeight := 19
 	var header tview.Primitive
 	header = makeHeader()
 	if cfg.Instance().HideHeader {
