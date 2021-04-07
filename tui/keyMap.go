@@ -12,7 +12,7 @@ const (
 
 var (
 	// general ui
-	keyNavigate     = fmt.Sprintf(template, "Arrow Keys (or hjkl)", "Navigate")
+	keyNavigate     = fmt.Sprintf(template, "Arrows (or hjkl)", "Navigate")
 	keyFormNav      = fmt.Sprintf(template, "TAB", "Traverse form items")
 	keyConfirm      = fmt.Sprintf(template, "ENTER", "Confirm")
 	keyInfoNavigate = []string{keyNavigate, keyFormNav, keyConfirm}
@@ -33,7 +33,8 @@ var (
 	// open detail views
 	keyDemos           = fmt.Sprintf(template, "d", "Demos")
 	keySavegameDetails = fmt.Sprintf(template, "z", "Savegame Details")
-	keyInfoGameDetails = []string{keyDemos, keySavegameDetails}
+	keyVisitUrl        = fmt.Sprintf(template, "u", "Visit Url")
+	keyInfoGameDetails = []string{keyDemos, keySavegameDetails, keyVisitUrl}
 
 	// game crud ops
 	keyEditGame      = fmt.Sprintf(template, "e", "Edit Game")
@@ -95,27 +96,48 @@ func makeHelp() *tview.TextView {
 
 	header := "%s%s\n"
 
-	fmt.Fprintf(explanation, header, colorTagContrast, "Navigate")
+	fmt.Fprintf(explanation, header, colorTagContrast, "Basic Navigation")
 	for _, keyText := range keyInfoNavigate {
 		fmt.Fprintf(explanation, "%s\n", keyText)
 	}
+	fmt.Fprint(explanation, "\n")
 
 	fmt.Fprintf(explanation, header, colorTagContrast, "UI")
 	for _, keyText := range keyInfoMain {
 		fmt.Fprintf(explanation, "%s\n", keyText)
 	}
+	fmt.Fprint(explanation, "\n")
 
-	fmt.Fprintf(explanation, header, colorTagContrast, "With Game Selected")
+	fmt.Fprintf(explanation, header, colorTagContrast, "Launch Selected Game")
 	for _, keyText := range keyInfoGameLaunch {
 		fmt.Fprintf(explanation, "%s\n", keyText)
 	}
+	fmt.Fprint(explanation, "\n")
+
+	fmt.Fprintf(explanation, header, colorTagContrast, "Selected Game Details")
+	for _, keyText := range keyInfoGameDetails {
+		fmt.Fprintf(explanation, "%s\n", keyText)
+	}
+	fmt.Fprint(explanation, "\n")
+
+	fmt.Fprintf(explanation, header, colorTagContrast, "Add/Edit Game")
+	for _, keyText := range keyInfoGameTable {
+		fmt.Fprintf(explanation, "%s\n", keyText)
+	}
+	fmt.Fprint(explanation, "\n")
+
+	fmt.Fprintf(explanation, header, colorTagContrast, "Others")
+	for _, keyText := range keyInfoOthers {
+		fmt.Fprintf(explanation, "%s\n", keyText)
+	}
+	fmt.Fprint(explanation, "\n")
 
 	return explanation
 }
 
 func showHelp() {
-	appModeNormal()
 	help := makeHelp()
+	appModeNormal()
 	detailSidePagesSub2.AddPage(pageHelpKeymap, help, true, true)
 	detailSidePagesSub2.SwitchToPage(pageHelpKeymap)
 	app.SetFocus(help)

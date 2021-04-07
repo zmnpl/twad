@@ -232,6 +232,7 @@ func populateGamesTable() {
 
 		if k == tcell.KeyF1 {
 			showHelp()
+			return nil
 		}
 
 		// "quickload" tries to load the latest savegame
