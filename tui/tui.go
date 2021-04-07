@@ -14,6 +14,15 @@ const (
 	previewBackgroundColor = tcell.ColorRoyalBlue
 	accentColor            = tcell.ColorOrange
 
+	colorTagPrimaryText  = "[white]"
+	colorTagContrast     = "[royalblue]"
+	colorTagMoreContrast = "[orange]"
+
+	warnColor  = "[red]"
+	warnColorO = tcell.ColorRed
+	goodColor  = "[green]"
+	goodColorO = tcell.ColorGreen
+
 	pageOptions      = "options"
 	pageStats        = "stats"
 	pageAddEdit      = "addEdit"
@@ -35,6 +44,7 @@ const (
 	pageError        = "error"
 	pageZipImport    = "zipselect"
 	pageHello        = "hello"
+	pageHelpKeymap   = "helpkeymap"
 
 	tableBorders = false
 )

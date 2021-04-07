@@ -230,6 +230,10 @@ func populateGamesTable() {
 
 		}
 
+		if k == tcell.KeyF1 {
+			showHelp()
+		}
+
 		// "quickload" tries to load the latest savegame
 		if k == tcell.KeyF9 && r > 0 {
 			allGames[r-fixRows].Quickload()

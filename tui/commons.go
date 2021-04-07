@@ -6,19 +6,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-)
-
-const (
-	colorTagPrimaryText  = "[white]"
-	colorTagContrast     = "[royalblue]"
-	colorTagMoreContrast = "[orange]"
-
-	warnColor  = "[red]"
-	warnColorO = tcell.ColorRed
-	goodColor  = "[green]"
-	goodColorO = tcell.ColorGreen
 )
 
 // a tree with default properties
