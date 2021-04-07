@@ -43,7 +43,7 @@ func makeLevelStatsTable(s st.Savegame, lastFocus *tview.List) *tview.Table {
 	row += 1
 
 	// add all levels
-	for _, lvl := range s.Levels {
+	for _, lvl := range s.ReversedLevels() {
 		populate(lvl)
 	}
 

@@ -75,3 +75,15 @@ func SummarizeStats(stats []MapStats) (total MapStats) {
 	}
 	return
 }
+
+func (save Savegame) ReversedLevels() (r []MapStats) {
+	r = make([]MapStats, len(save.Levels))
+	copy(r, save.Levels)
+
+	for i := 0; i < len(r)/2; i++ {
+		j := len(r) - i - 1
+		r[i], r[j] = r[j], r[i]
+	}
+
+	return
+}
