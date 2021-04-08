@@ -159,12 +159,18 @@ func initUIElements() {
 	contentPages = tview.NewPages()
 	footerPages = tview.NewPages()
 
+	mainGrid := tview.NewGrid()
+	mainGrid.SetRows(-1)
+	mainGrid.SetColumns(-1, -1)
+
 	mainFlex = tview.NewFlex().SetDirection(tview.FlexRow)
 	canvas.AddPage(pageMain, mainFlex, true, true)
 	// header
 	// TODO: wrap header in grid and make it responsive -> not so high screens hide it
+
 	header, headerHeight := getHeader()
 	headerPages.AddPage(pageHeader, header, true, true)
+
 	mainFlex.AddItem(headerPages, headerHeight, 0, false)
 	// content
 	mainFlex.AddItem(contentPages, 0, 1, true)
@@ -206,9 +212,9 @@ func initUIElements() {
 			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
 
 	// initial focus
-	fiMain.setFocus(true)
-	fiSub1.setFocus(false)
-	fiSub2.setFocus(false)
+	//fiMain.setFocus(true)
+	//fiSub1.setFocus(false)
+	//fiSub2.setFocus(false)
 
 	// zip import page
 	zipInput = newZipImportUI()
