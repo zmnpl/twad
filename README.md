@@ -6,7 +6,7 @@ There are already great alternatives to manage and launch your WADs out there fo
 
 Needless to say, that this mostly was designed for *nix systems. However, with WSL this might as well be usable in Windows somewhen in the future. Though quite some testing needs to go into this.
 
-**Watch Out**: This tool is still in very early state and might contain bugs.
+**Watch Out**: This tool is still in early state and might contain bugs.
 
 ![demo](demo.gif)
 
@@ -20,8 +20,10 @@ Needless to say, that this mostly was designed for *nix systems. However, with W
 * Watch demos
 * Delete demos
 * Collect some stats from the cames console output as well as playtime and so on (not sending it anywhere)
+* Collect stats from savegames
 * Run games from rofi or dmenu
 * Separate savegame / demo folders for games (in **~/.config/twad/...***)
+* Responsive layout
 
 # Installation Options
 
@@ -31,7 +33,7 @@ https://aur.archlinux.org/packages/twad-git
 
 ## b) Binary Download
 
-I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it** (on *nix systems).
+I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it** (in a terminal).
 
 ## c) Compile yourself
 
@@ -113,11 +115,12 @@ twad --dmenu
 - ~~Quickload~~
 - ~~Warp to map~~
 - ~~Demo recording / viewing~~
+- ~~More statistics; Parse from savegames~~
+- ~~Zip-Import~~
 - WSL support
-- More statistics; Parse from savegames
+- idgames download + autoinstall
 - All the TODO flags
 - Error Handling
-- Zip-Import(?)
 - Metadata scraping(?)
 - Tagging / Searching / Filtering
 

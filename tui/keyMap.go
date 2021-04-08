@@ -14,8 +14,9 @@ const (
 var (
 	// general ui
 	keyNavigate     = fmt.Sprintf(template, "Arrows (or hjkl)", "Navigate")
-	keyFormNav      = fmt.Sprintf(template, "TAB", "Traverse form items")
+	keyFormNav      = fmt.Sprintf(template, "TAB", "Switch Focus")
 	keyConfirm      = fmt.Sprintf(template, "ENTER", "Confirm")
+	keyHelp         = fmt.Sprintf(template, "F1", "Help/Keymap")
 	keyInfoNavigate = []string{keyNavigate, keyFormNav, keyConfirm}
 
 	// general
@@ -35,7 +36,7 @@ var (
 
 	// open detail views
 	keyDemos           = fmt.Sprintf(template, "d", "Demos")
-	keySavegameDetails = fmt.Sprintf(template, "z", "Savegame Details")
+	keySavegameDetails = fmt.Sprintf(template, "z", "Savegames")
 	keyVisitUrl        = fmt.Sprintf(template, "u", "Visit Url")
 	keyInfoGameDetails = []string{keyDemos, keySavegameDetails, keyVisitUrl}
 
@@ -46,16 +47,20 @@ var (
 	keyRemoveGame    = fmt.Sprintf(template, "DEL", "Remove Game")
 	keyRate          = fmt.Sprintf(template, "+/-", "Rate Game")
 	keyInfoGameTable = []string{keyEditGame, keyAddMod, keyNewGame, keyRemoveGame, keyRate}
+
+	// pick "most important ones" for always visible footer keymap
+	keyInfoQuickMapSelectino = []string{
+		keyResetUI, keyQuit, keyOptions,
+		keyRunGame, keyQuickload, keyWarp,
+		keyDemos, keySavegameDetails,
+		keyNewGame, keyAddMod, keyRemoveGame,
+		keyHelp,
+	}
 )
 
 func makeKeyMap() (helpPane *tview.Grid, height int) {
-	keyInfoAll := keyInfoMain
-	keyInfoAll = append(keyInfoAll, keyInfoGameLaunch...)
-	keyInfoAll = append(keyInfoAll, keyInfoGameDetails...)
-	keyInfoAll = append(keyInfoAll, keyInfoGameTable...)
-
 	// could be easier / more static, but like this the layout can maybe be made more dynamic in the future
-	rows := 4
+	rows := 3
 	rowDimens := make([]int, rows)
 	for i := range rowDimens {
 		rowDimens[i] = 1
@@ -75,10 +80,10 @@ func makeKeyMap() (helpPane *tview.Grid, height int) {
 ADDITEMS:
 	for c := range colDimens {
 		for r := range rowDimens {
-			if keyItem >= len(keyInfoAll) {
+			if keyItem >= len(keyInfoQuickMapSelectino) {
 				break ADDITEMS
 			}
-			helpPane.AddItem(tview.NewTextView().SetDynamicColors(true).SetText(keyInfoAll[keyItem]), r, c, 1, 1, 0, 0, false)
+			helpPane.AddItem(tview.NewTextView().SetDynamicColors(true).SetText(keyInfoQuickMapSelectino[keyItem]), r, c, 1, 1, 0, 0, false)
 			keyItem++
 		}
 	}
