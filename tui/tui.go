@@ -68,7 +68,6 @@ var (
 	app    *tview.Application
 
 	canvas       *tview.Pages
-	mainFlex     *tview.Flex
 	headerPages  *tview.Pages
 	contentPages *tview.Pages
 	footerPages  *tview.Pages
@@ -102,9 +101,9 @@ func init() {
 	tview.Styles.InverseTextColor = tcell.ColorLemonChiffon
 	tview.Styles.ContrastSecondaryTextColor = tcell.ColorPeachPuff
 
-	fiMain = Bar{tview.NewTextView()}
-	fiSub1 = Bar{tview.NewTextView()}
-	fiSub2 = Bar{tview.NewTextView()}
+	//fiMain = Bar{tview.NewTextView()}
+	//fiSub1 = Bar{tview.NewTextView()}
+	//fiSub2 = Bar{tview.NewTextView()}
 }
 
 func makeFocusIndicator(focused bool) (fi *tview.TextView) {
@@ -159,25 +158,27 @@ func initUIElements() {
 	contentPages = tview.NewPages()
 	footerPages = tview.NewPages()
 
-	mainGrid := tview.NewGrid()
-	mainGrid.SetRows(-1)
-	mainGrid.SetColumns(-1, -1)
-
-	mainFlex = tview.NewFlex().SetDirection(tview.FlexRow)
-	canvas.AddPage(pageMain, mainFlex, true, true)
-	// header
-	// TODO: wrap header in grid and make it responsive -> not so high screens hide it
-
+	// create header
 	header, headerHeight := getHeader()
 	headerPages.AddPage(pageHeader, header, true, true)
-
-	mainFlex.AddItem(headerPages, headerHeight, 0, false)
-	// content
-	mainFlex.AddItem(contentPages, 0, 1, true)
-	// footer
+	// create footer
 	helpPane, helpPaneHeight := makeKeyMap()
 	footerPages.AddPage(pageHelp, helpPane, true, true)
-	mainFlex.AddItem(footerPages, helpPaneHeight, 0, false)
+
+	// set up main grid layout
+	mainGrid := tview.NewGrid()
+	mainGrid.SetRows(headerHeight, -1, helpPaneHeight)
+	mainGrid.SetColumns(-1)
+	canvas.AddPage(pageMain, mainGrid, true, true)
+
+	// add to main grid
+	// header
+	mainGrid.AddItem(headerPages, 0, 0, 1, 1, headerHeight+20, 0, false)
+	// content
+	mainGrid.AddItem(contentPages, 0, 0, 2, 1, 0, 0, true)
+	mainGrid.AddItem(contentPages, 1, 0, 1, 1, headerHeight+20, 0, true)
+	// footer
+	mainGrid.AddItem(footerPages, 2, 0, 1, 1, 0, 0, false)
 
 	// command preview
 	commandPreview = makeCommandPreview()
@@ -192,11 +193,17 @@ func initUIElements() {
 	// not so wide screens
 	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 1, 2, 0, 0, false)
 	detailGrid.AddItem(detailSidePagesSub2, 1, 0, 1, 2, 0, 0, false)
-	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub1, 0, 1, true).AddItem(fiSub1, 1, 0, false), 0, 0, 1, 2, 0, 0, false)
-	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub2, 0, 1, true).AddItem(fiSub2, 1, 0, false), 1, 0, 1, 2, 0, 0, false)
 	// wide screens
 	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 2, 1, 0, 75, false)
 	detailGrid.AddItem(detailSidePagesSub2, 0, 1, 2, 1, 0, 75, false)
+
+	// idea of focus indicator coloured bars
+	// initial focus
+	//fiMain.setFocus(true)
+	//fiSub1.setFocus(false)
+	//fiSub2.setFocus(false)
+	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub1, 0, 1, true).AddItem(fiSub1, 1, 0, false), 0, 0, 1, 2, 0, 0, false)
+	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub2, 0, 1, true).AddItem(fiSub2, 1, 0, false), 1, 0, 1, 2, 0, 0, false)
 	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub1, 0, 1, true).AddItem(fiSub1, 1, 0, false), 0, 0, 2, 1, 0, 75, false)
 	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub2, 0, 1, true).AddItem(fiSub2, 1, 0, false), 0, 1, 2, 1, 0, 75, false)
 
@@ -207,14 +214,8 @@ func initUIElements() {
 	contentFlex.
 		AddItem(commandPreview, 4, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			//AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(fiMain, 1, 0, false).AddItem(gamesTable, 0, 1, true), 0, config.GameListRelativeWidth, true).
 			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
 			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
-
-	// initial focus
-	//fiMain.setFocus(true)
-	//fiSub1.setFocus(false)
-	//fiSub2.setFocus(false)
 
 	// zip import page
 	zipInput = newZipImportUI()
@@ -243,10 +244,7 @@ func getHeader() (tview.Primitive, int) {
 func selectedGameChanged(g *games.Game) {
 	populateCommandPreview(g)
 	detailSidePagesSub1.AddPage(pageMods, makeModList(g), true, true)
-	//frontPage, _ := detailSidePagesSub2.GetFrontPage()
-	//if frontPage != pageModSelector {
 	detailSidePagesSub2.AddPage(pageStats, makeStatsTable(g), true, true)
-	//}
 }
 
 // redraw whole table
@@ -280,7 +278,7 @@ func appModeNormal() {
 	contentPages.SwitchToPage(pageContent)
 
 	// focus indicators
-	fiMain.setFocus(true)
+	//fiMain.setFocus(true)
 
 	app.SetFocus(gamesTable)
 }
