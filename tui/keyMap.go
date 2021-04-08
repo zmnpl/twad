@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
@@ -17,12 +18,14 @@ var (
 	keyConfirm      = fmt.Sprintf(template, "ENTER", "Confirm")
 	keyInfoNavigate = []string{keyNavigate, keyFormNav, keyConfirm}
 
-	// ui behaviour
-	keyResetUI  = fmt.Sprintf(template, "ESC", "Reset UI")
-	keyQuit     = fmt.Sprintf(template, "q", "Quit")
-	keyCredits  = fmt.Sprintf(template, "c", "Credits/License")
-	keyOptions  = fmt.Sprintf(template, "o", "Options")
-	keyInfoMain = []string{keyResetUI, keyQuit, keyCredits, keyOptions}
+	// general
+	keyResetUI       = fmt.Sprintf(template, "ESC", "Reset UI")
+	keyQuit          = fmt.Sprintf(template, "q", "Quit")
+	keyCredits       = fmt.Sprintf(template, "c", "Credits/License")
+	keyOptions       = fmt.Sprintf(template, "o", "Options")
+	keyImportArchive = fmt.Sprintf(template, "i", "Import Archive")
+	keySortAlph      = fmt.Sprintf(template, "s", "Sort Games Alphabetically")
+	keyInfoMain      = []string{keyResetUI, keyQuit, keyCredits, keyOptions, keyImportArchive, keySortAlph}
 
 	// game launching
 	keyRunGame        = fmt.Sprintf(template, "ENTER", "Run Game")
@@ -41,13 +44,8 @@ var (
 	keyAddMod        = fmt.Sprintf(template, "m", "Add Mod To Game")
 	keyNewGame       = fmt.Sprintf(template, "n", "New Game")
 	keyRemoveGame    = fmt.Sprintf(template, "DEL", "Remove Game")
-	keyInfoGameTable = []string{keyEditGame, keyAddMod, keyNewGame, keyRemoveGame}
-
-	// others
-	keyImportArchive = fmt.Sprintf(template, "i", "Import Archive")
-	keySortAlph      = fmt.Sprintf(template, "s", "Sort Games Alphabetically")
 	keyRate          = fmt.Sprintf(template, "+/-", "Rate Game")
-	keyInfoOthers    = []string{keyImportArchive, keySortAlph, keyRate}
+	keyInfoGameTable = []string{keyEditGame, keyAddMod, keyNewGame, keyRemoveGame, keyRate}
 )
 
 func makeKeyMap() (helpPane *tview.Grid, height int) {
@@ -55,7 +53,6 @@ func makeKeyMap() (helpPane *tview.Grid, height int) {
 	keyInfoAll = append(keyInfoAll, keyInfoGameLaunch...)
 	keyInfoAll = append(keyInfoAll, keyInfoGameDetails...)
 	keyInfoAll = append(keyInfoAll, keyInfoGameTable...)
-	keyInfoAll = append(keyInfoAll, keyInfoOthers...)
 
 	// could be easier / more static, but like this the layout can maybe be made more dynamic in the future
 	rows := 4
@@ -92,7 +89,29 @@ ADDITEMS:
 func makeHelp() *tview.TextView {
 	explanation := tview.NewTextView().SetRegions(true).SetWrap(true).SetWordWrap(true).SetDynamicColors(true)
 	explanation.SetBorder(true)
+	explanation.SetTitle("Help")
 	explanation.Clear()
+
+	explanation.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		k := event.Key()
+		// switch back to nowmal mode
+		if k == tcell.KeyF1 {
+			appModeNormal()
+			return nil
+		}
+
+		if k == tcell.KeyRune {
+			switch event.Rune() {
+
+			// get out
+			case 'q':
+				app.Stop()
+				return nil
+			}
+		}
+
+		return event
+	})
 
 	header := "%s%s\n"
 
@@ -102,7 +121,7 @@ func makeHelp() *tview.TextView {
 	}
 	fmt.Fprint(explanation, "\n")
 
-	fmt.Fprintf(explanation, header, colorTagContrast, "UI")
+	fmt.Fprintf(explanation, header, colorTagContrast, "General Functions")
 	for _, keyText := range keyInfoMain {
 		fmt.Fprintf(explanation, "%s\n", keyText)
 	}
@@ -122,12 +141,6 @@ func makeHelp() *tview.TextView {
 
 	fmt.Fprintf(explanation, header, colorTagContrast, "Add/Edit Game")
 	for _, keyText := range keyInfoGameTable {
-		fmt.Fprintf(explanation, "%s\n", keyText)
-	}
-	fmt.Fprint(explanation, "\n")
-
-	fmt.Fprintf(explanation, header, colorTagContrast, "Others")
-	for _, keyText := range keyInfoOthers {
 		fmt.Fprintf(explanation, "%s\n", keyText)
 	}
 	fmt.Fprint(explanation, "\n")

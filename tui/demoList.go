@@ -53,9 +53,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 	}
 
 	// do it
-	if demos != nil {
-		populate()
-	}
+	populate()
 
 	// hit enter plays demo
 	demoList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
@@ -73,7 +71,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 			return
 		}
 
-		if len(demos) != 0 {
+		if len(demos) > 0 {
 			populate()
 			app.SetFocus(demoList)
 		} else {

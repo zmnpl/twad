@@ -11,3 +11,4 @@ signal: segmentation fault (core dumped)
 [-iwad doom2.wad -file Mappacks/spooktober.pk3 -savedir /home/simon/.config/twad/savegames/MapSpooktober]
 
 /usr/bin/gzdoom -iwad doom2.wad -file Mappacks/spooktober.pk3 -savedir /home/simon/.config/twad/savegames/MapSpooktober
+foo

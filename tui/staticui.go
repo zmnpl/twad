@@ -104,5 +104,26 @@ func makeLicense() *tview.TextView {
 	fmt.Fprintf(disclaimer, "%s", mitLicense)
 	disclaimer.SetBorder(true).SetTitle("Credits / License")
 
+	disclaimer.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		k := event.Key()
+		// switch back to nowmal mode
+		if k == tcell.KeyRune {
+			switch event.Rune() {
+
+			// get out
+			case 'q':
+				app.Stop()
+				return nil
+
+			case 'c':
+				appModeNormal()
+				return nil
+			}
+
+		}
+
+		return event
+	})
+
 	return disclaimer
 }
