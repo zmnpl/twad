@@ -1,6 +1,6 @@
 module github.com/zmnpl/twad
 
-go 1.13
+go 1.16
 
 require (
 	github.com/DATA-DOG/go-sqlmock v1.3.3 // indirect
@@ -14,5 +14,6 @@ require (
 	github.com/pierrec/lz4/v4 v4.1.3 // indirect
 	github.com/rivo/tview v0.0.0-20210312174852-ae9464cc3598
 	github.com/ulikunitz/xz v0.5.10 // indirect
+	github.com/zmnpl/goidgames v0.0.0-20210409072952-63345a257555 // indirect
 	golang.org/x/sys v0.0.0-20210315160823-c6e025ad8005 // indirect
 )
