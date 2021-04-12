@@ -23,6 +23,7 @@ const (
 )
 
 type zipImportUI struct {
+	layout                *tview.Flex
 	selectTree            *tview.TreeView
 	modNameInput          *tview.InputField
 	modNameForm           *tview.Form
@@ -37,6 +38,11 @@ func newZipImportUI() *zipImportUI {
 	zui.initZipSelect()
 	zui.initZipImportForm("")
 	zui.importSecurityWarning = tview.NewTextView().SetText(zipImportSecurityWarn).SetTextColor(tcell.ColorRed)
+
+	zui.layout = tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(zui.importSecurityWarning, 1, 0, true).
+		AddItem(zui.selectTree, 0, 1, true).
+		AddItem(zui.modNameForm, 7, 0, false)
 	return &zui
 }
 

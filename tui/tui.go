@@ -1,8 +1,6 @@
 package tui
 
 import (
-	"fmt"
-
 	"github.com/zmnpl/twad/cfg"
 	"github.com/zmnpl/twad/games"
 
@@ -217,13 +215,8 @@ func initUIElements() {
 			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
 			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
 
-	// zip import page
 	zipInput = newZipImportUI()
-	fmt.Println(zipInput)
-	contentPages.AddPage(pageZipImport, tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(zipInput.importSecurityWarning, 1, 0, true).
-		AddItem(zipInput.selectTree, 0, 1, true).
-		AddItem(zipInput.modNameForm, 7, 0, false), true, true)
+	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
 }
