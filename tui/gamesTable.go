@@ -235,6 +235,13 @@ func populateGamesTable() {
 			return nil
 		}
 
+		if k == tcell.KeyF2 {
+			contentPages.SwitchToPage(pageIdgamesBrowser)
+			app.SetFocus(idgamesBrowser.list)
+			idgamesBrowser.UpdateLatest()
+			return nil
+		}
+
 		// "quickload" tries to load the latest savegame
 		if k == tcell.KeyF9 && r > 0 {
 			allGames[r-fixRows].Quickload()

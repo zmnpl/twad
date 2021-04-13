@@ -35,28 +35,29 @@ const (
 	goodColor  = "[green]"
 	goodColorO = tcell.ColorGreen
 
-	pageOptions      = "options"
-	pageStats        = "stats"
-	pageAddEdit      = "addEdit"
-	pageModSelector  = "modselector"
-	pageFirstSetup   = "firstsetup"
-	pageHeader       = "header"
-	pageMain         = "main"
-	pageDetailGrid   = "detailgrid"
-	pageContent      = "content"
-	pageContentMain  = "maincontent"
-	pageHelp         = "help"
-	pageLicense      = "license"
-	pageYouSure      = "yousure"
-	pageMods         = "mods"
-	pageDefaultRight = "right"
-	pageWarp         = "warp"
-	pageDemos        = "demos"
-	pageSaves        = "saves"
-	pageError        = "error"
-	pageZipImport    = "zipselect"
-	pageHello        = "hello"
-	pageHelpKeymap   = "helpkeymap"
+	pageOptions        = "options"
+	pageStats          = "stats"
+	pageAddEdit        = "addEdit"
+	pageModSelector    = "modselector"
+	pageFirstSetup     = "firstsetup"
+	pageHeader         = "header"
+	pageMain           = "main"
+	pageDetailGrid     = "detailgrid"
+	pageContent        = "content"
+	pageContentMain    = "maincontent"
+	pageHelp           = "help"
+	pageLicense        = "license"
+	pageYouSure        = "yousure"
+	pageMods           = "mods"
+	pageDefaultRight   = "right"
+	pageWarp           = "warp"
+	pageDemos          = "demos"
+	pageSaves          = "saves"
+	pageError          = "error"
+	pageZipImport      = "zipselect"
+	pageHello          = "hello"
+	pageHelpKeymap     = "helpkeymap"
+	pageIdgamesBrowser = "idgamesbrowse"
 
 	tableBorders = false
 )
@@ -77,7 +78,8 @@ var (
 	gamesTable     *tview.Table
 	commandPreview *tview.TextView
 
-	zipInput *zipImportUI
+	zipInput       *zipImportUI
+	idgamesBrowser *IdgamesBrowser
 
 	fiMain, fiSub1, fiSub2 Bar
 )
@@ -217,6 +219,9 @@ func initUIElements() {
 
 	zipInput = newZipImportUI()
 	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
+
+	idgamesBrowser = makeIdgamesBrowser()
+	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.layout, true, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
 }
