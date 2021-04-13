@@ -19,13 +19,11 @@ type IdgamesBrowser struct {
 	search          *tview.InputField
 }
 
-func init() {
-	//goidgames.Get(1338, "")
-}
-
 func makeIdgamesBrowser() *IdgamesBrowser {
+	browser := &IdgamesBrowser{}
+
 	layout := tview.NewGrid()
-	layout.SetRows(1, -1)
+	layout.SetRows(3, -1, -1)
 	layout.SetColumns(-1, -1)
 
 	// list with results
@@ -34,7 +32,7 @@ func makeIdgamesBrowser() *IdgamesBrowser {
 		SetSelectable(true, false).
 		SetBorders(tableBorders).SetSeparator('|')
 	gamesTable.SetBorderPadding(0, 0, 1, 2)
-	layout.AddItem(list, 1, 0, 1, 1, 0, 0, true)
+	layout.AddItem(list, 1, 0, 1, 1, 0, 0, false)
 
 	// details for selection
 	details := tview.NewTextView().
@@ -43,11 +41,47 @@ func makeIdgamesBrowser() *IdgamesBrowser {
 	details.SetBorderPadding(0, 0, 1, 1)
 	layout.AddItem(details, 1, 1, 1, 1, 0, 0, false)
 
-	return &IdgamesBrowser{
-		layout:          layout,
-		list:            list,
-		fileDetailsText: details,
+	// search form
+	searchForm := tview.NewForm()
+	searchForm.SetHorizontal(true)
+	search := tview.NewInputField().SetLabel("foo").SetText("bar")
+	searchForm.AddFormItem(search)
+	searchForm.AddButton("Search", func() {
+		browser.UpdateSearch(search.GetText())
+		app.SetFocus(browser.list)
+	})
+	layout.AddItem(searchForm, 0, 0, 1, 2, 0, 0, true)
+
+	browser.layout = layout
+	browser.list = list
+	browser.fileDetailsText = details
+
+	return browser
+}
+
+// updateGameDetails iterates the given slice and fetches the detail data from Idgames via the api's get function
+func updateGameDetails(idgames []goidgames.Idgame) {
+	for i := range idgames {
+		g, err := goidgames.Get(idgames[i].Id, "")
+		if err != nil {
+			continue
+		}
+		idgames[i] = g
 	}
+}
+
+func (browser *IdgamesBrowser) UpdateSearch(query string) {
+	go func() {
+		app.QueueUpdateDraw(func() {
+			idgames, _ := goidgames.Search(query, goidgames.SEARCH_TYPE_TITLE, goidgames.SEARCH_SORT_RATING, goidgames.SEARCH_SORT_DESC)
+
+			go func() {
+				updateGameDetails(idgames)
+			}()
+
+			browser.populateList(idgames)
+		})
+	}()
 }
 
 func (browser *IdgamesBrowser) UpdateLatest() {
@@ -56,13 +90,7 @@ func (browser *IdgamesBrowser) UpdateLatest() {
 			idgames, _ := goidgames.LatestFiles(10, 0)
 
 			go func() {
-				for i, _ := range idgames {
-					g, err := goidgames.Get(idgames[i].Id, "")
-					if err != nil {
-						continue
-					}
-					idgames[i] = g
-				}
+				updateGameDetails(idgames)
 			}()
 
 			browser.populateList(idgames)
@@ -118,7 +146,7 @@ func (browser *IdgamesBrowser) populateList(idgames []goidgames.Idgame) {
 
 func (browser *IdgamesBrowser) populateDetails(idgame goidgames.Idgame) {
 	browser.fileDetailsText.Clear()
-	fmt.Fprintf(browser.fileDetailsText, "%s", idgame.Filename)
+	fmt.Fprintf(browser.fileDetailsText, "%s", idgame.Textfile)
 }
 
 func ratingString(rating float32) string {
