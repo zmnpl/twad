@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/goidgames"
 )
@@ -11,52 +12,122 @@ import (
 //"github.com/zmnpl/goidgames"
 
 type IdgamesBrowser struct {
-	layout          *tview.Grid
-	list            *tview.Table
-	fileDetails     *tview.Table
-	fileDetailsText *tview.TextView
-	reviews         *tview.Table
-	search          *tview.InputField
+	app         *tview.Application
+	layout      *tview.Grid
+	list        *tview.Table
+	fileDetails *tview.TextView
+	reviews     *tview.TextView
+	search      *tview.InputField
+	idgames     []goidgames.Idgame
 }
 
-func makeIdgamesBrowser() *IdgamesBrowser {
-	browser := &IdgamesBrowser{}
+func NewIdgamesBrowser(app *tview.Application) *IdgamesBrowser {
+	browser := &IdgamesBrowser{app: app}
 
 	layout := tview.NewGrid()
-	layout.SetRows(3, -1, -1)
+	layout.SetRows(5, -1, 5)
 	layout.SetColumns(-1, -1)
 
-	// list with results
+	browser.layout = layout
+
+	browser.initList()
+	browser.initDetails()
+	browser.initSearchForm()
+
+	return browser
+}
+
+func (b *IdgamesBrowser) initSearchForm() {
+	searchForm := tview.NewForm()
+	searchForm.SetHorizontal(true).SetBorder(true)
+
+	search := tview.NewInputField().SetLabel("Search Query").SetText("")
+	searchForm.AddFormItem(search)
+
+	searchByTitle := true
+	searchByAuthor := false
+	searchForm.AddCheckbox("By Title", true, func(checked bool) { searchByTitle = checked })
+	searchForm.AddCheckbox("By Author", false, func(checked bool) { searchByAuthor = checked })
+
+	searchForm.AddButton("Search", func() {
+		query := search.GetText()
+		if len(query) == 0 {
+			b.UpdateLatest()
+		} else {
+			types := make([]string, 0)
+			if searchByTitle {
+				types = append(types, goidgames.SEARCH_TYPE_TITLE)
+			}
+			if searchByAuthor {
+				types = append(types, goidgames.SEARCH_TYPE_AUTHOR)
+			}
+
+			b.UpdateSearch(search.GetText(), types)
+		}
+		app.SetFocus(b.list)
+	})
+
+	b.layout.AddItem(searchForm, 0, 0, 1, 2, 0, 0, true)
+
+	b.search = search
+}
+
+func (b *IdgamesBrowser) initDetails() {
+	details := tview.NewTextView().
+		SetDynamicColors(true).
+		SetRegions(true)
+	details.SetBorder(true).
+		SetBorderPadding(0, 0, 1, 1)
+
+	b.layout.AddItem(details, 1, 1, 1, 1, 0, 0, false)
+
+	details.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		k := event.Key()
+		if k == tcell.KeyTAB {
+			b.app.SetFocus(b.search)
+			return nil
+		}
+		if k == tcell.KeyBacktab {
+			b.app.SetFocus(b.list)
+			return nil
+		}
+		return event
+	})
+
+	b.fileDetails = details
+}
+
+func (b *IdgamesBrowser) initList() {
 	list := tview.NewTable().
 		SetFixed(1, 2).
 		SetSelectable(true, false).
 		SetBorders(tableBorders).SetSeparator('|')
-	gamesTable.SetBorderPadding(0, 0, 1, 2)
-	layout.AddItem(list, 1, 0, 1, 1, 0, 0, false)
+	list.SetBorder(true)
 
-	// details for selection
-	details := tview.NewTextView().
-		SetDynamicColors(true).
-		SetRegions(true)
-	details.SetBorderPadding(0, 0, 1, 1)
-	layout.AddItem(details, 1, 1, 1, 1, 0, 0, false)
+	b.layout.AddItem(list, 1, 0, 1, 1, 0, 0, false)
 
-	// search form
-	searchForm := tview.NewForm()
-	searchForm.SetHorizontal(true)
-	search := tview.NewInputField().SetLabel("foo").SetText("bar")
-	searchForm.AddFormItem(search)
-	searchForm.AddButton("Search", func() {
-		browser.UpdateSearch(search.GetText())
-		app.SetFocus(browser.list)
+	list.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		k := event.Key()
+		if k == tcell.KeyTAB {
+			b.app.SetFocus(b.fileDetails)
+			return nil
+		}
+		if k == tcell.KeyBacktab {
+			b.app.SetFocus(b.search)
+			return nil
+		}
+		return event
 	})
-	layout.AddItem(searchForm, 0, 0, 1, 2, 0, 0, true)
 
-	browser.layout = layout
-	browser.list = list
-	browser.fileDetailsText = details
+	list.SetSelectedFunc(func(r int, c int) {
+		switch {
+		case r > 0:
+			// TODO - what to do now? select multiple or install right away?
+			//fmt.Println(b.idgames[r-1].Url)
+		}
+	})
 
-	return browser
+	b.list = list
 }
 
 // updateGameDetails iterates the given slice and fetches the detail data from Idgames via the api's get function
@@ -70,10 +141,10 @@ func updateGameDetails(idgames []goidgames.Idgame) {
 	}
 }
 
-func (browser *IdgamesBrowser) UpdateSearch(query string) {
+func (browser *IdgamesBrowser) UpdateSearch(query string, types []string) {
 	go func() {
 		app.QueueUpdateDraw(func() {
-			idgames, _ := goidgames.Search(query, goidgames.SEARCH_TYPE_TITLE, goidgames.SEARCH_SORT_RATING, goidgames.SEARCH_SORT_DESC)
+			idgames, _ := goidgames.SearchMultipleTypes(query, types, goidgames.SEARCH_SORT_RATING, goidgames.SEARCH_SORT_DESC)
 
 			go func() {
 				updateGameDetails(idgames)
@@ -100,6 +171,8 @@ func (browser *IdgamesBrowser) UpdateLatest() {
 
 func (browser *IdgamesBrowser) populateList(idgames []goidgames.Idgame) {
 	browser.list.Clear()
+	browser.idgames = idgames
+
 	// header
 	browser.list.SetCell(0, 0, tview.NewTableCell("Rating").SetTextColor(tview.Styles.SecondaryTextColor))
 	browser.list.SetCell(0, 1, tview.NewTableCell("Title").SetTextColor(tview.Styles.SecondaryTextColor))
@@ -142,11 +215,12 @@ func (browser *IdgamesBrowser) populateList(idgames []goidgames.Idgame) {
 			browser.list.SetCell(r, c, cell)
 		}
 	}
+	browser.list.ScrollToBeginning()
 }
 
 func (browser *IdgamesBrowser) populateDetails(idgame goidgames.Idgame) {
-	browser.fileDetailsText.Clear()
-	fmt.Fprintf(browser.fileDetailsText, "%s", idgame.Textfile)
+	browser.fileDetails.Clear()
+	fmt.Fprintf(browser.fileDetails, "%s", idgame.Textfile)
 }
 
 func ratingString(rating float32) string {

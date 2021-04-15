@@ -220,7 +220,7 @@ func initUIElements() {
 	zipInput = newZipImportUI()
 	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
 
-	idgamesBrowser = makeIdgamesBrowser()
+	idgamesBrowser = NewIdgamesBrowser(app)
 	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.layout, true, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
