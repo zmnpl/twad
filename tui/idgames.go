@@ -9,8 +9,7 @@ import (
 	"github.com/zmnpl/goidgames"
 )
 
-//"github.com/zmnpl/goidgames"
-
+// IdgamesBrowser holds all fields of the module
 type IdgamesBrowser struct {
 	app         *tview.Application
 	layout      *tview.Grid
@@ -19,8 +18,12 @@ type IdgamesBrowser struct {
 	reviews     *tview.TextView
 	search      *tview.InputField
 	idgames     []goidgames.Idgame
+
+	enterCallback func(idgamesurul string)
 }
 
+// NewIdgamesBrowser is the modules constructor
+// Must be initialized with a *tview.Application in which it is drawn
 func NewIdgamesBrowser(app *tview.Application) *IdgamesBrowser {
 	browser := &IdgamesBrowser{app: app}
 
@@ -37,31 +40,29 @@ func NewIdgamesBrowser(app *tview.Application) *IdgamesBrowser {
 	return browser
 }
 
+// SetEnterCallback sets a callback function that receives the idgames url of a row on which "ENTER" is pressed by the user
+// This callbak function could, for example, launch a download of given file
+func (b *IdgamesBrowser) SetEnterCallback(f func(idgamesurl string)) {
+	b.enterCallback = f
+}
+
+// init search form ui component
 func (b *IdgamesBrowser) initSearchForm() {
 	searchForm := tview.NewForm()
 	searchForm.SetHorizontal(true).SetBorder(true)
 
-	search := tview.NewInputField().SetLabel("Search Query").SetText("")
+	search := tview.NewInputField().SetLabel("Search Idgames (leave empty for latest)").SetText("").SetFieldWidth(25)
 	searchForm.AddFormItem(search)
-
-	searchByTitle := true
-	searchByAuthor := false
-	searchForm.AddCheckbox("By Title", true, func(checked bool) { searchByTitle = checked })
-	searchForm.AddCheckbox("By Author", false, func(checked bool) { searchByAuthor = checked })
 
 	searchForm.AddButton("Search", func() {
 		query := search.GetText()
 		if len(query) == 0 {
 			b.UpdateLatest()
 		} else {
-			types := make([]string, 0)
-			if searchByTitle {
-				types = append(types, goidgames.SEARCH_TYPE_TITLE)
+			types := []string{
+				goidgames.SEARCH_TYPE_TITLE,
+				goidgames.SEARCH_TYPE_AUTHOR,
 			}
-			if searchByAuthor {
-				types = append(types, goidgames.SEARCH_TYPE_AUTHOR)
-			}
-
 			b.UpdateSearch(search.GetText(), types)
 		}
 		app.SetFocus(b.list)
@@ -72,6 +73,7 @@ func (b *IdgamesBrowser) initSearchForm() {
 	b.search = search
 }
 
+// init details ui component
 func (b *IdgamesBrowser) initDetails() {
 	details := tview.NewTextView().
 		SetDynamicColors(true).
@@ -97,6 +99,7 @@ func (b *IdgamesBrowser) initDetails() {
 	b.fileDetails = details
 }
 
+// init list ui component
 func (b *IdgamesBrowser) initList() {
 	list := tview.NewTable().
 		SetFixed(1, 2).
@@ -122,8 +125,9 @@ func (b *IdgamesBrowser) initList() {
 	list.SetSelectedFunc(func(r int, c int) {
 		switch {
 		case r > 0:
-			// TODO - what to do now? select multiple or install right away?
-			//fmt.Println(b.idgames[r-1].Url)
+			if b.enterCallback != nil {
+				b.enterCallback(b.idgames[r-1].Idgamesurl)
+			}
 		}
 	})
 
@@ -141,6 +145,7 @@ func updateGameDetails(idgames []goidgames.Idgame) {
 	}
 }
 
+// UpdateSearch triggers an API call with given search query and types and populates the UI with the results
 func (browser *IdgamesBrowser) UpdateSearch(query string, types []string) {
 	go func() {
 		app.QueueUpdateDraw(func() {
@@ -155,10 +160,11 @@ func (browser *IdgamesBrowser) UpdateSearch(query string, types []string) {
 	}()
 }
 
+// UpdateLatest triggers an API call for the latest entries and populates the UI with the results
 func (browser *IdgamesBrowser) UpdateLatest() {
 	go func() {
 		app.QueueUpdateDraw(func() {
-			idgames, _ := goidgames.LatestFiles(10, 0)
+			idgames, _ := goidgames.LatestFiles(50, 0)
 
 			go func() {
 				updateGameDetails(idgames)
@@ -169,6 +175,7 @@ func (browser *IdgamesBrowser) UpdateLatest() {
 	}()
 }
 
+// populate the UIs list
 func (browser *IdgamesBrowser) populateList(idgames []goidgames.Idgame) {
 	browser.list.Clear()
 	browser.idgames = idgames
@@ -218,11 +225,13 @@ func (browser *IdgamesBrowser) populateList(idgames []goidgames.Idgame) {
 	browser.list.ScrollToBeginning()
 }
 
+// populate the detail pane
 func (browser *IdgamesBrowser) populateDetails(idgame goidgames.Idgame) {
 	browser.fileDetails.Clear()
 	fmt.Fprintf(browser.fileDetails, "%s", idgame.Textfile)
 }
 
+// helper to make a string from the games rating
 func ratingString(rating float32) string {
 	return strings.Repeat("*", int(rating)) + strings.Repeat("-", 5-int(rating))
 }

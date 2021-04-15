@@ -75,15 +75,11 @@ func populateGamesTable() {
 
 	gamesTable.SetSelectionChangedFunc(func(r int, c int) {
 		var g *games.Game
-		//var cell *tview.TableCell
 		switch r {
 		case 0:
-			//g = &games.Game{}
 			return
-			//cell = tview.NewTableCell("")
 		default:
 			g = &allGames[r-fixRows]
-			//cell = gamesTable.GetCell(r, len(g.Mods)+3)
 		}
 		selectedGameChanged(g)
 	})
@@ -238,7 +234,7 @@ func populateGamesTable() {
 		if k == tcell.KeyF2 {
 			contentPages.SwitchToPage(pageIdgamesBrowser)
 			app.SetFocus(idgamesBrowser.layout)
-			idgamesBrowser.UpdateLatest()
+			//idgamesBrowser.UpdateLatest()
 			return nil
 		}
 
