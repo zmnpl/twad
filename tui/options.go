@@ -103,7 +103,7 @@ func makeOptions() *tview.Flex {
 
 		// No entries yet get entries in goroutine
 		go func() {
-			dir := currentText[:strings.LastIndex(currentText, "/")]
+			dir := filepath.Dir(currentText)
 			files, err := os.ReadDir(dir)
 			if err != nil {
 				return
