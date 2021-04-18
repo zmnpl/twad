@@ -3,6 +3,7 @@ package tui
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -27,6 +28,77 @@ const (
 	optsIwadsLabel               = "IWADs"
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
+)
+
+var (
+	autocompletePathMaker = func(path *tview.InputField, dirsOnly bool, extensionFilter map[string]bool) func(pathText string) (entries []string) {
+		var mutex sync.Mutex
+		prefixMap := make(map[string][]string)
+		firstStart := true
+
+		foo := func(pathText string) (entries []string) {
+			// Ignore empty text.
+			prefix := strings.TrimSpace(strings.ToLower(pathText))
+			if prefix == "" {
+				return nil
+			}
+
+			// Do we have entries for this text already?
+			mutex.Lock()
+			defer mutex.Unlock()
+			// Prevent autocomplete to be shown when the options panel is drawn initially
+			if firstStart {
+				firstStart = false
+				return nil
+			}
+			entries, ok := prefixMap[prefix]
+			if ok {
+				return entries
+			}
+
+			// No entries yet get entries in goroutine
+			go func() {
+				dir := filepath.Dir(pathText)
+				files, err := os.ReadDir(dir)
+
+				if err != nil {
+					return
+				}
+
+				entries := make([]string, 0, len(files))
+				for _, file := range files {
+					// dont't show hidden folders
+					if strings.HasPrefix(file.Name(), ".") {
+						continue
+					}
+					if dirsOnly && !file.IsDir() {
+						continue
+					}
+					if len(extensionFilter) > 0 {
+						_, extensionOk := extensionFilter[strings.ToLower(filepath.Ext(file.Name()))]
+						if !(extensionOk || file.IsDir()) {
+							continue
+						}
+					}
+					entries = append(entries, filepath.Join(dir, file.Name()))
+				}
+
+				mutex.Lock()
+				prefixMap[prefix] = entries
+				mutex.Unlock()
+
+				// Trigger an update to the input field.
+				path.Autocomplete()
+
+				// Also redraw the screen.
+				app.Draw()
+
+			}()
+			return nil
+		}
+
+		return foo
+	}
 )
 
 func pathHasIwad(path string) (bool, error) {
@@ -78,62 +150,18 @@ func makeOptions() *tview.Flex {
 	})
 
 	// autocompletion for path
-	var mutex sync.Mutex
-	prefixMap := make(map[string][]string)
-	firstStart := true
-	path.SetAutocompleteFunc(func(currentText string) (entries []string) {
-		// Ignore empty text.
-		prefix := strings.TrimSpace(strings.ToLower(currentText))
-		if prefix == "" {
-			return nil
-		}
-
-		// Do we have entries for this text already?
-		mutex.Lock()
-		defer mutex.Unlock()
-		// Prevent autocomplete to be shown when the options panel is drawn initially
-		if firstStart {
-			firstStart = false
-			return nil
-		}
-		entries, ok := prefixMap[prefix]
-		if ok {
-			return entries
-		}
-
-		// No entries yet get entries in goroutine
-		go func() {
-			dir := filepath.Dir(currentText)
-			files, err := os.ReadDir(dir)
-			if err != nil {
-				return
-			}
-
-			entries := make([]string, 0, len(files))
-			for _, file := range files {
-				// dont't show hidden folders
-				if strings.HasPrefix(file.Name(), ".") {
-					continue
-				}
-				entries = append(entries, filepath.Join(dir, file.Name()))
-			}
-
-			mutex.Lock()
-			prefixMap[prefix] = entries
-			mutex.Unlock()
-
-			// Trigger an update to the input field.
-			path.Autocomplete()
-
-			// Also redraw the screen.
-			app.Draw()
-		}()
-
-		return nil
-	})
+	autocompleteDoomwaddir := autocompletePathMaker(path, true, nil)
+	path.SetAutocompleteFunc(autocompleteDoomwaddir)
 
 	sourcePorts := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().SourcePorts, ","))
 	o.AddFormItem(sourcePorts)
+
+	sourcePort1 := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().SourcePorts, ","))
+	autocompleteSourcePort1 := autocompletePathMaker(sourcePort1, false, map[string]bool{".exe": true})
+	sourcePort1.SetAutocompleteFunc(autocompleteSourcePort1)
+	if runtime.GOOS == "windows" {
+		o.AddFormItem(sourcePort1)
+	}
 
 	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().IWADs, ","))
 	o.AddFormItem(iwads)

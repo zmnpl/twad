@@ -208,6 +208,14 @@ func ImportArchive(zipPath, modName string) (err error) {
 	return
 }
 
+func SourcePorts() []string {
+	sourceports := make([]string, len(instance.SourcePorts))
+	for i, _ := range instance.SourcePorts {
+		sourceports[i] = filepath.Base(instance.SourcePorts[i])
+	}
+	return sourceports
+}
+
 // Helper functions
 
 func processSourcePortCfg(path string) {
