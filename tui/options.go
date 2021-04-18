@@ -1,7 +1,9 @@
 package tui
 
 import (
+	"fmt"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strconv"
@@ -24,7 +26,7 @@ const (
 	optsDontDOOMWADDIR           = "Do NOT set DOOMWADDIR for current session (use your shell's default)"
 	optsWriteBasePathToEngineCFG = "Write the path into DOOM engines *.ini files"
 	optsDontWarn                 = "Do NOT warn before deletion"
-	optsSourcePortLabel          = "Source Ports"
+	optsSourcePortLabel          = "Source Port"
 	optsIwadsLabel               = "IWADs"
 	optsHideHeader               = "UI - Hide big DOOM logo"
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
@@ -156,6 +158,10 @@ func makeOptions() *tview.Flex {
 	sourcePortDoneCheck := func(input *tview.InputField) {
 		// does this path exist?
 		if _, err := os.Stat(input.GetText()); os.IsNotExist(err) {
+			if commandExists(strings.TrimSpace(input.GetText())) {
+				input.SetLabel(optsSourcePortLabel + goodColor + " " + optsLooksGood)
+				return
+			}
 			input.SetLabel(optsPathLabel + warnColor + " " + optsErrPathDoesntExist)
 			return
 		}
@@ -163,21 +169,31 @@ func makeOptions() *tview.Flex {
 		input.SetLabel(optsSourcePortLabel + goodColor + " " + optsLooksGood)
 	}
 
-	sourcePorts := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().SourcePorts, ","))
-	o.AddFormItem(sourcePorts)
-
-	sourcePort1 := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().SourcePorts, ","))
-	autocompleteSourcePort1 := autocompletePathMaker(sourcePort1, false, map[string]bool{".exe": true})
-	sourcePort1.SetAutocompleteFunc(autocompleteSourcePort1)
-	sourcePort1.SetDoneFunc(func(key tcell.Key) {
-		sourcePortDoneCheck(sourcePort1)
-	})
-	if runtime.GOOS == "windows" {
-		o.AddFormItem(sourcePort1)
-	}
-
 	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().IWADs, ","))
 	o.AddFormItem(iwads)
+
+	// windows exe filter
+	var spExtensionFilter map[string]bool
+	if runtime.GOOS == "windows" {
+		spExtensionFilter = make(map[string]bool)
+		spExtensionFilter[".exe"] = true
+	}
+
+	// add source port input fields
+	spCount := cfg.Instance().MaxSourcePorts
+	spInputs := make([]*tview.InputField, spCount, spCount)
+	for i := 0; i < spCount; i++ {
+		sourcePort := tview.NewInputField().SetLabel(optsSourcePortLabel + fmt.Sprintf(" %v", i)).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.Instance().SourcePorts[i])
+		autocompleteSourcePort := autocompletePathMaker(sourcePort, false, spExtensionFilter)
+		if runtime.GOOS == "windows" {
+			sourcePort.SetAutocompleteFunc(autocompleteSourcePort)
+		}
+		sourcePort.SetDoneFunc(func(key tcell.Key) {
+			sourcePortDoneCheck(sourcePort)
+		})
+		spInputs[i] = sourcePort
+		o.AddFormItem(sourcePort)
+	}
 
 	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
@@ -200,9 +216,9 @@ func makeOptions() *tview.Flex {
 
 		c.WadDir = path.GetText()
 
-		sps := strings.Split(sourcePorts.GetText(), ",")
-		for i := range sps {
-			sps[i] = strings.TrimSpace(sps[i])
+		sps := make([]string, spCount, spCount)
+		for i := range spInputs {
+			sps[i] = strings.TrimSpace(spInputs[i].GetText())
 		}
 		c.SourcePorts = sps
 
@@ -227,4 +243,10 @@ func makeOptions() *tview.Flex {
 		AddItem(tview.NewBox().SetBorder(false), 0, 1, false)
 
 	return settingsPage
+}
+
+// as util
+func commandExists(cmd string) bool {
+	_, err := exec.LookPath(cmd)
+	return err == nil
 }

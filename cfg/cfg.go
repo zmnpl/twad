@@ -34,6 +34,7 @@ type Cfg struct {
 	DontSetDoomwaddir      bool     `json:"dont_set_doomwaddir"`
 	ModExtensions          string   `json:"mod_extensions"`
 	SourcePorts            []string `json:"source_ports"`
+	MaxSourcePorts         int      `json:"max_source_ports"`
 	IWADs                  []string `json:"iwa_ds"`
 	Configured             bool     `json:"configured"`
 	DeleteWithoutWarning   bool     `json:"delete_without_warning"`
@@ -57,6 +58,7 @@ func defaultConfig() Cfg {
 		IWADs:                 []string{"doom2.wad", "doom.wad"},
 		GameListRelativeWidth: 40,
 		GameListAbsoluteWidth: 0,
+		MaxSourcePorts:        6,
 	}
 
 	// check if user has set DOOMWADDIR
