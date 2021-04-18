@@ -1,10 +1,14 @@
 # twad - terminal wad launcher
 
-If you love __DOOM__ and rather not leave your terminal like me, then you might be one of the few that might like **twad**. It is a terminal based WAD manager and launcher for doom source ports. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with a couple of key strokes.
+If you love __DOOM__ and love your terminal like me, then you might like this. **twad** is a terminal based WAD manager and launcher for doom source ports. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with a couple of key strokes. It is light weight and blazing fast to use.
 
-There are already great alternatives to manage and launch your WADs out there for many years and twad will probably never be as sophisticated. Though I figured: there are not so many for the terminal. Twad let's you stay in the terminal and on your keyboard as long as possible until you decide to rip and tear. Simple as that.
+## Start **classic DOOM** with a **classic terminal user interface**
 
-Needless to say, that this mostly was designed for *nix systems. However, with WSL this might as well be usable in Windows somewhen in the future. Though quite some testing needs to go into this.
+Twad let's you stay in the terminal and on your keyboard as long as possible until you decide to **rip and tear**. Simple as that.
+
+Needless to say that this mostly was designed for *nix systems. However, meanwhile I've added some OS-sensitive stuff and cross compiled for Windows. Actually it works quite well. So...
+
+## Now with experimental **Windows support**
 
 **Watch Out**: This tool is still in early state and might contain bugs.
 
@@ -23,7 +27,7 @@ Needless to say, that this mostly was designed for *nix systems. However, with W
 * Collect stats from savegames
 * Run games from rofi or dmenu
 * Separate savegame / demo folders for games (in **~/.config/twad/...***)
-* Responsive layout
+* Responsive layout (kind of)
 
 # Installation Options
 
@@ -40,6 +44,11 @@ I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl
 ```golang
 go get -u github.com/zmnpl/twad
 ```
+
+## d) Windows
+
+* Download the .exe from the [releases page](https://github.com/zmnpl/twad/releases)
+* Doubleclick
 
 # Setup your environment
 
@@ -65,7 +74,7 @@ An example could look like this:
 └── doom.wad
 ```
 1) Setup your **DOOMWADDIR** as described above
-2) twad's first start will ask you for the path of **DOOMWADDIR**
+2) twad's first start will ask you to configure your **DOOMWADDIR** in the options
 3) Within twad create games
 4) Add mods to your games
 666)   __Rip and Tear__
@@ -117,14 +126,18 @@ twad --dmenu
 - ~~Demo recording / viewing~~
 - ~~More statistics; Parse from savegames~~
 - ~~Zip-Import~~
-- WSL support
+- ~~WSL support~~ Windows support
 - idgames download + autoinstall
+- wad archive download + autoinstall
 - All the TODO flags
 - Error Handling
 - Metadata scraping(?)
 - Tagging / Searching / Filtering
 
 # Credit where credit is due
+
+## All the other Doom launchers
+There are already great alternatives to manage and launch your WADs out there for many years and I give credits to all of them since I've taken a lot of inspiration and knowledge on their functionality. Especially [Doomlauncher](https://github.com/nstlaurent/DoomLauncher) is a cool piece of software and the source code is well structured and good to read which helped me quite a lot.
 
 ## Doom logo
 
