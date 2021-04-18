@@ -18,12 +18,30 @@ var (
 	instance *Cfg
 	once     sync.Once
 	// KnownIwads contains names of the most common iwads
-	KnownIwads = [...]string{"doom.wad", "doom2.wad", "tnt.wad", "plutonia.wad", "heretic.wad", "hexen.wad", "strive1.wad", "sve.wad", "chex.wad", "strife0.wad", "freedoom1.wad", "freedoom2.wad", "freedm.wad", "chex3.wad", "action2.wad", "harm1.wad", "hacx.wad"}
+	KnownIwads = map[string]bool{
+		"doom.wad":      true,
+		"doom2.wad":     true,
+		"tnt.wad":       true,
+		"plutonia.wad":  true,
+		"heretic.wad":   true,
+		"hexen.wad":     true,
+		"strive1.wad":   true,
+		"sve.wad":       true,
+		"chex.wad":      true,
+		"strife0.wad":   true,
+		"freedoom1.wad": true,
+		"freedoom2.wad": true,
+		"freedm.wad":    true,
+		"chex3.wad":     true,
+		"action2.wad":   true,
+		"harm1.wad":     true,
+		"hacx.wad":      true}
 )
 
 const (
-	configName = "twad.json"
-	configPath = ".config/twad"
+	configName       = "twad.json"
+	configPath       = ".config/twad"
+	MAX_SOURCE_PORTS = 6
 )
 
 // Cfg holds basic configuration settings
@@ -34,7 +52,6 @@ type Cfg struct {
 	DontSetDoomwaddir      bool     `json:"dont_set_doomwaddir"`
 	ModExtensions          string   `json:"mod_extensions"`
 	SourcePorts            []string `json:"source_ports"`
-	MaxSourcePorts         int      `json:"max_source_ports"`
 	IWADs                  []string `json:"iwa_ds"`
 	Configured             bool     `json:"configured"`
 	DeleteWithoutWarning   bool     `json:"delete_without_warning"`
@@ -58,7 +75,6 @@ func defaultConfig() Cfg {
 		IWADs:                 []string{"doom2.wad", "doom.wad"},
 		GameListRelativeWidth: 40,
 		GameListAbsoluteWidth: 0,
-		MaxSourcePorts:        6,
 	}
 
 	// check if user has set DOOMWADDIR
@@ -269,4 +285,41 @@ func sourcePortIniLines(path string) []string {
 
 func configFullPath() string {
 	return filepath.Join(GetConfigFolder(), configName)
+}
+
+// General Helper
+func PathHasIwads(path string) (bool, error) {
+	files, err := os.ReadDir(path)
+
+	if err != nil {
+		return false, err
+	}
+
+	for _, file := range files {
+		_, isIwad := KnownIwads[strings.ToLower(file.Name())]
+		if isIwad {
+			return true, nil
+		}
+	}
+
+	return false, nil
+}
+
+func GePathIwads(path string) ([]string, error) {
+	files, err := os.ReadDir(path)
+
+	if err != nil {
+		return nil, err
+	}
+
+	availableIwads := make([]string, 0, len(KnownIwads))
+	for _, file := range files {
+		iwadName := strings.ToLower(file.Name())
+		_, isIwad := KnownIwads[iwadName]
+		if isIwad {
+			availableIwads = append(availableIwads, iwadName)
+		}
+	}
+
+	return availableIwads, nil
 }

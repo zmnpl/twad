@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -32,145 +31,142 @@ const (
 	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
 )
 
-var (
-	autocompletePathMaker = func(path *tview.InputField, dirsOnly bool, extensionFilter map[string]bool) func(pathText string) (entries []string) {
-		var mutex sync.Mutex
-		prefixMap := make(map[string][]string)
-		firstStart := true
+// function to check source port entry
+var sourcePortCheck = func(input *tview.InputField) {
+	// does this path exist?
+	if _, err := os.Stat(input.GetText()); os.IsNotExist(err) {
+		if commandExists(strings.TrimSpace(input.GetText())) {
+			input.SetLabel(optsSourcePortLabel + goodColor + " " + optsLooksGood)
+			return
+		}
+		input.SetLabel(optsSourcePortLabel + warnColor + " " + optsErrPathDoesntExist)
+		return
+	}
 
-		foo := func(pathText string) (entries []string) {
-			// Ignore empty text.
-			prefix := strings.TrimSpace(strings.ToLower(pathText))
-			if prefix == "" {
-				return nil
-			}
+	input.SetLabel(optsSourcePortLabel + goodColor + " " + optsLooksGood)
+}
 
-			// Do we have entries for this text already?
-			mutex.Lock()
-			defer mutex.Unlock()
-			// Prevent autocomplete to be shown when the options panel is drawn initially
-			if firstStart {
-				firstStart = false
-				return nil
-			}
-			entries, ok := prefixMap[prefix]
-			if ok {
-				return entries
-			}
+// builder function that creates a function which autocompletes input fields
+var autocompletePathMaker = func(path *tview.InputField, dirsOnly bool, extensionFilter map[string]bool) func(pathText string) (entries []string) {
+	var mutex sync.Mutex
+	prefixMap := make(map[string][]string)
+	firstStart := true
 
-			// No entries yet get entries in goroutine
-			go func() {
-				dir := filepath.Dir(pathText)
-				files, err := os.ReadDir(dir)
-
-				if err != nil {
-					return
-				}
-
-				entries := make([]string, 0, len(files))
-				for _, file := range files {
-					// dont't show hidden folders
-					if strings.HasPrefix(file.Name(), ".") {
-						continue
-					}
-					if dirsOnly && !file.IsDir() {
-						continue
-					}
-					if len(extensionFilter) > 0 {
-						_, extensionOk := extensionFilter[strings.ToLower(filepath.Ext(file.Name()))]
-						if !(extensionOk || file.IsDir()) {
-							continue
-						}
-					}
-					entries = append(entries, filepath.Join(dir, file.Name()))
-				}
-
-				mutex.Lock()
-				prefixMap[prefix] = entries
-				mutex.Unlock()
-
-				// Trigger an update to the input field.
-				path.Autocomplete()
-
-				// Also redraw the screen.
-				app.Draw()
-
-			}()
+	foo := func(pathText string) (entries []string) {
+		// Ignore empty text.
+		prefix := strings.TrimSpace(strings.ToLower(pathText))
+		if prefix == "" {
 			return nil
 		}
 
-		return foo
-	}
-)
-
-func pathHasIwad(path string) (bool, error) {
-	files, err := os.ReadDir(path)
-
-	if err != nil {
-		return false, err
-	}
-
-	for _, file := range files {
-		for _, iwad := range cfg.KnownIwads {
-			if strings.ToLower(file.Name()) == iwad {
-				return true, nil
-			}
+		// Do we have entries for this text already?
+		mutex.Lock()
+		defer mutex.Unlock()
+		// Prevent autocomplete to be shown when the options panel is drawn initially
+		if firstStart {
+			firstStart = false
+			return nil
 		}
+		entries, ok := prefixMap[prefix]
+		if ok {
+			return entries
+		}
+
+		// No entries yet get entries in goroutine
+		go func() {
+			dir := filepath.Dir(pathText)
+			files, err := os.ReadDir(dir)
+
+			if err != nil {
+				return
+			}
+
+			entries := make([]string, 0, len(files))
+			for _, file := range files {
+				// dont't show hidden folders
+				if strings.HasPrefix(file.Name(), ".") {
+					continue
+				}
+				// only show dirs if that is wanted
+				if dirsOnly && !file.IsDir() {
+					continue
+				}
+				// filter specific extensions
+				if len(extensionFilter) > 0 {
+					_, extensionOk := extensionFilter[strings.ToLower(filepath.Ext(file.Name()))]
+					if !(extensionOk || file.IsDir()) {
+						continue
+					}
+				}
+				entries = append(entries, filepath.Join(dir, file.Name()))
+			}
+
+			mutex.Lock()
+			prefixMap[prefix] = entries
+			mutex.Unlock()
+
+			path.Autocomplete()
+
+			app.Draw()
+
+		}()
+		return nil
 	}
 
-	return false, nil
+	return foo
 }
 
 func makeOptions() *tview.Flex {
 	o := tview.NewForm()
 
-	path := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.Instance().WadDir)
-	o.AddFormItem(path)
-	pathDoneCheck := func() {
+	// doomwaddir
+	//#######################################################################
+
+	// added to form later
+	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().IWADs, ","))
+	// path for doomwaddir
+	doomwaddirPath := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.Instance().WadDir)
+
+	// add doomwaddir to form
+	o.AddFormItem(doomwaddirPath)
+	// add iwads input to form
+	o.AddFormItem(iwads)
+
+	// autocompletion for path
+	autocompleteDoomwaddir := autocompletePathMaker(doomwaddirPath, true, nil)
+	doomwaddirPath.SetAutocompleteFunc(autocompleteDoomwaddir)
+
+	// check iwad path
+	doomwaddirPathCheck := func() {
 		// does this path exist?
-		if _, err := os.Stat(path.GetText()); os.IsNotExist(err) {
-			path.SetLabel(optsPathLabel + warnColor + " " + optsErrPathDoesntExist)
+		if _, err := os.Stat(doomwaddirPath.GetText()); os.IsNotExist(err) {
+			doomwaddirPath.SetLabel(optsPathLabel + warnColor + " " + optsErrPathDoesntExist)
 			return
 		}
 
 		// check if selected path contains any iwads
-		if hasIwad, err := pathHasIwad(path.GetText()); !hasIwad {
+		if hasIwad, err := cfg.PathHasIwads(doomwaddirPath.GetText()); !hasIwad {
 			if err != nil {
-				path.SetLabel(optsPathLabel + warnColor + " (" + err.Error() + ")")
+				doomwaddirPath.SetLabel(optsPathLabel + warnColor + " (" + err.Error() + ")")
 			}
-			path.SetLabel(optsPathLabel + warnColor + " " + optsErrPathNoIWads)
+			doomwaddirPath.SetLabel(optsPathLabel + warnColor + " " + optsErrPathNoIWads)
 			return
 		}
 
-		path.SetLabel(optsPathLabel + goodColor + " " + optsLooksGood)
+		availableIwads, _ := cfg.GePathIwads(doomwaddirPath.GetText())
+		iwads.SetText(strings.Join(availableIwads, ","))
+
+		doomwaddirPath.SetLabel(optsPathLabel + goodColor + " " + optsLooksGood)
 	}
 	// initial check of configured path
-	pathDoneCheck()
+	doomwaddirPathCheck()
 	// check after entry
-	path.SetDoneFunc(func(key tcell.Key) {
-		pathDoneCheck()
+	doomwaddirPath.SetDoneFunc(func(key tcell.Key) {
+		doomwaddirPathCheck()
 	})
 
-	// autocompletion for path
-	autocompleteDoomwaddir := autocompletePathMaker(path, true, nil)
-	path.SetAutocompleteFunc(autocompleteDoomwaddir)
-
-	sourcePortDoneCheck := func(input *tview.InputField) {
-		// does this path exist?
-		if _, err := os.Stat(input.GetText()); os.IsNotExist(err) {
-			if commandExists(strings.TrimSpace(input.GetText())) {
-				input.SetLabel(optsSourcePortLabel + goodColor + " " + optsLooksGood)
-				return
-			}
-			input.SetLabel(optsPathLabel + warnColor + " " + optsErrPathDoesntExist)
-			return
-		}
-
-		input.SetLabel(optsSourcePortLabel + goodColor + " " + optsLooksGood)
-	}
-
-	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().IWADs, ","))
-	o.AddFormItem(iwads)
+	// source ports
+	//#######################################################################
 
 	// windows exe filter
 	var spExtensionFilter map[string]bool
@@ -180,21 +176,28 @@ func makeOptions() *tview.Flex {
 	}
 
 	// add source port input fields
-	spCount := cfg.Instance().MaxSourcePorts
-	spInputs := make([]*tview.InputField, spCount, spCount)
-	for i := 0; i < spCount; i++ {
-		sourcePort := tview.NewInputField().SetLabel(optsSourcePortLabel + fmt.Sprintf(" %v", i)).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.Instance().SourcePorts[i])
+	spInputs := make([]*tview.InputField, cfg.MAX_SOURCE_PORTS, cfg.MAX_SOURCE_PORTS)
+	for i := 0; i < cfg.MAX_SOURCE_PORTS; i++ {
+		sourcePort := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor)
 		autocompleteSourcePort := autocompletePathMaker(sourcePort, false, spExtensionFilter)
+
+		// only autocomplete source ports on windows
+		// on linux the simple executable name is usually enough when it is in path
 		if runtime.GOOS == "windows" {
 			sourcePort.SetAutocompleteFunc(autocompleteSourcePort)
 		}
 		sourcePort.SetDoneFunc(func(key tcell.Key) {
-			sourcePortDoneCheck(sourcePort)
+			sourcePortCheck(sourcePort)
 		})
+		if i < len(cfg.Instance().SourcePorts) {
+			sourcePort.SetText(cfg.Instance().SourcePorts[i])
+		}
 		spInputs[i] = sourcePort
 		o.AddFormItem(sourcePort)
 	}
 
+	// ui options
+	//#######################################################################
 	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
@@ -211,12 +214,14 @@ func makeOptions() *tview.Flex {
 	gameListRelWidth.SetText(strconv.Itoa(cfg.Instance().GameListRelativeWidth))
 	o.AddFormItem(gameListRelWidth)
 
+	// ok button and processing of options
+	//#######################################################################
 	o.AddButton(optsOkButtonLabel, func() {
 		c := cfg.Instance()
 
-		c.WadDir = path.GetText()
+		c.WadDir = doomwaddirPath.GetText()
 
-		sps := make([]string, spCount, spCount)
+		sps := make([]string, cfg.MAX_SOURCE_PORTS, cfg.MAX_SOURCE_PORTS)
 		for i := range spInputs {
 			sps[i] = strings.TrimSpace(spInputs[i].GetText())
 		}
