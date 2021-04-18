@@ -153,12 +153,25 @@ func makeOptions() *tview.Flex {
 	autocompleteDoomwaddir := autocompletePathMaker(path, true, nil)
 	path.SetAutocompleteFunc(autocompleteDoomwaddir)
 
+	sourcePortDoneCheck := func(input *tview.InputField) {
+		// does this path exist?
+		if _, err := os.Stat(input.GetText()); os.IsNotExist(err) {
+			input.SetLabel(optsPathLabel + warnColor + " " + optsErrPathDoesntExist)
+			return
+		}
+
+		input.SetLabel(optsSourcePortLabel + goodColor + " " + optsLooksGood)
+	}
+
 	sourcePorts := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().SourcePorts, ","))
 	o.AddFormItem(sourcePorts)
 
 	sourcePort1 := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().SourcePorts, ","))
 	autocompleteSourcePort1 := autocompletePathMaker(sourcePort1, false, map[string]bool{".exe": true})
 	sourcePort1.SetAutocompleteFunc(autocompleteSourcePort1)
+	sourcePort1.SetDoneFunc(func(key tcell.Key) {
+		sourcePortDoneCheck(sourcePort1)
+	})
 	if runtime.GOOS == "windows" {
 		o.AddFormItem(sourcePort1)
 	}
