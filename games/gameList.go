@@ -15,13 +15,11 @@ type GameList []Game
 var (
 	once            sync.Once
 	instance        GameList
-	config          *cfg.Cfg
 	changeListeners []func()
 	gamesJSONName   = "games.json"
 )
 
 func init() {
-	config = cfg.Instance()
 	GetInstance()
 	changeListeners = make([]func(), 0)
 }
@@ -29,7 +27,7 @@ func init() {
 // GetInstance sets up and returns the singleton instance of games
 func GetInstance() GameList {
 	once.Do(func() {
-		instance = make(GameList, 0, 0)
+		instance = make(GameList, 0)
 		loadGames()
 	})
 	return instance
@@ -125,7 +123,7 @@ func loadGames() error {
 		return err
 	}
 
-	for i, _ := range instance {
+	for i := range instance {
 		go instance[i].ReadLatestStats()
 	}
 

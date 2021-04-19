@@ -7,6 +7,7 @@ import (
 	"path"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"sort"
 	"strconv"
 	"strings"
@@ -183,6 +184,11 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
 		params = append(params, g.spSaveDirParam())
 		params = append(params, g.getSaveDir())
+	}
+
+	// stats for zdoom on windows
+	if sourcePortFamily(g.SourcePort) == zdoom && runtime.GOOS == "windows" {
+		params = append(params, "-stdout")
 	}
 
 	// stats for chocolate doom and ports
@@ -418,6 +424,9 @@ func (g *Game) Demos() ([]os.DirEntry, error) {
 	}
 	sort.Slice(demos, func(i, j int) bool {
 		foo, err := demos[i].Info()
+		if err != nil {
+			return false
+		}
 		bar, err := demos[j].Info()
 		if err != nil {
 			return true
