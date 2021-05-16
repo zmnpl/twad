@@ -15,6 +15,7 @@ const (
 	aeName       = "Name"
 	aeSourcePort = "Source Port"
 	aeIWAD       = "IWAD"
+	aeOwnCfg     = "Use Own Source Port CFG"
 	aeLink       = "Mod URL"
 
 	aeEnvironment       = "Environment Variables *"
@@ -79,6 +80,9 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 			inputIwad.SetCurrentOption(0)
 		}
 	}
+
+	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
+	ae.AddFormItem(inputOwnCfg)
 
 	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(aeLink).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputURL)
