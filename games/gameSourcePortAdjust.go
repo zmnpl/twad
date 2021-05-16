@@ -34,14 +34,25 @@ func sourcePortFamily(sourcePort string) (t int) {
 	return
 }
 
-func (g Game) spSavegameExt() string {
-	switch sourcePortFamily(g.SourcePort) {
-	case zdoom:
-		return zdoomSaveExtension
-	case chocolate:
-		return chocolateSaveExtension
+func portCanonicalName(port string) string {
+	sp := strings.ToLower(port)
+	switch {
+	case strings.Contains(sp, "gzdoom"):
+		return "gzdoom"
+	case strings.Contains(sp, "zandronum"):
+		return "zandronum"
+	case strings.Contains(sp, "lzdoom"):
+		return "lzdoom"
+	case strings.Contains(sp, "crispy"):
+		return "crispy"
+	case strings.Contains(sp, "chocolate"):
+		return "chocolate"
+	case strings.Contains(sp, "prboomplus"):
+		return "prboomplus"
+	case strings.Contains(sp, "boom"):
+		return "boom"
 	default:
-		return boomSaveExtension
+		return "unknown_port"
 	}
 }
 
@@ -79,6 +90,16 @@ func (g Game) spSaveFileExtension() string {
 		return ".dsg"
 	default:
 		return ".zds"
+	}
+}
+
+// TODO: double check
+func (g Game) spConfigFileExtension() string {
+	switch sourcePortFamily(g.SourcePort) {
+	case chocolate, boom:
+		return ".cfg"
+	default:
+		return ".ini"
 	}
 }
 

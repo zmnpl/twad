@@ -33,6 +33,7 @@ type Game struct {
 	Rating           int            `json:"rating"`
 	AddEdit          time.Time      `json:"added"`
 	Link             string         `json:"link"`
+	PersonalPortCfg  bool           `json:"own_source_port_cfg`
 	Stats            []st.MapStats
 	StatsTotal       st.MapStats
 	Savegames        []*st.Savegame
@@ -184,6 +185,14 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
 		params = append(params, g.spSaveDirParam())
 		params = append(params, g.getSaveDir())
+	}
+
+	// custom config directory
+	if g.PersonalPortCfg {
+		if err := os.MkdirAll(g.getConfigDir(), 0755); err == nil {
+			params = append(params, "-config")
+			params = append(params, filepath.Join(g.getConfigDir(), portCanonicalName(g.SourcePort)+g.spConfigFileExtension()))
+		}
 	}
 
 	// stats for zdoom on windows
@@ -379,6 +388,10 @@ func (g *Game) SwitchMods(a, b int) {
 
 func (g *Game) getSaveDir() string {
 	return filepath.Join(cfg.GetSavegameFolder(), g.cleansedName())
+}
+
+func (g *Game) getConfigDir() string {
+	return filepath.Join(cfg.GetGameConfigFolder(), g.cleansedName())
 }
 
 // lastSave returns the the file name or slotnumber (depending on source port) for the game

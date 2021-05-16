@@ -35,7 +35,9 @@ var (
 		"chex3.wad":     true,
 		"action2.wad":   true,
 		"harm1.wad":     true,
-		"hacx.wad":      true}
+		"hacx.wad":      true,
+		"boa.ipk3":      true,
+	}
 )
 
 const (
@@ -87,10 +89,19 @@ func defaultConfig() Cfg {
 
 func firstStart() {
 	// create directory for games and configs
-	configFolder := GetSavegameFolder()
 	configPath := configFullPath()
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		err := os.MkdirAll(configFolder, 0755)
+		err := os.MkdirAll(GetSavegameFolder(), 0755)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = os.MkdirAll(GetGameConfigFolder(), 0755)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		err = os.MkdirAll(GetSharedGameConfigFolder(), 0755)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -168,6 +179,16 @@ func GetConfigFolder() string {
 // GetSavegameFolder returns the folder where savegames are stored
 func GetSavegameFolder() string {
 	return filepath.Join(GetConfigFolder(), "savegames")
+}
+
+// GetGameConfigFolder returns the folder where savegames are stored
+func GetGameConfigFolder() string {
+	return filepath.Join(GetConfigFolder(), "configs")
+}
+
+// GetSharedGameConfigFolder returns the folder where savegames are stored
+func GetSharedGameConfigFolder() string {
+	return filepath.Join(GetConfigFolder(), "configs_shared")
 }
 
 // GetDemoFolder returns the folder where demos are stored
