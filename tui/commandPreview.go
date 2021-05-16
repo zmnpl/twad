@@ -32,6 +32,7 @@ func stylizeCommandList(params []string) string {
 		"-file":          true,
 		"-savedir":       true,
 		"-save":          true,
+		"-config":        true,
 		"-statdump":      true,
 		"-levelstat":     true,
 		"zdoom":          true,

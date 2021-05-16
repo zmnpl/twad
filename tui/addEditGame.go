@@ -97,6 +97,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		g.Name = strings.TrimSpace(inputName.GetText())
 		_, g.SourcePort = inputSourcePort.GetCurrentOption()
 		_, g.Iwad = inputIwad.GetCurrentOption()
+		g.PersonalPortCfg = inputOwnCfg.IsChecked()
 		g.Environment = splitParams(inputEnvVars.GetText())
 		g.CustomParameters = splitParams(inputCustomParams.GetText())
 		g.Link = inputURL.GetText()
