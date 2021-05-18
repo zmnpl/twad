@@ -1,12 +1,14 @@
 package tui
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/cfg"
 	"github.com/zmnpl/twad/games"
+	"github.com/zmnpl/twad/helper"
 )
 
 const (
@@ -16,8 +18,8 @@ const (
 	aeName       = "Name"
 	aeSourcePort = "Source Port"
 	aeIWAD       = "IWAD"
-	aeOwnCfg     = "Use Own Source Port CFG"
-	aeSharedCfg  = "Use Shared Port CFG"
+	aeOwnCfg     = "Use Own Config"
+	aeSharedCfgT = "Use Shared Config [%v]"
 	aeLink       = "Mod URL"
 
 	aeEnvironment       = "Environment Variables *"
@@ -55,14 +57,25 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		title = addGame
 		gWasNil = true
 	}
+	expectedExtension := helper.PortConfigFileExtension(g.SourcePort)
+
+	// create basic form items
+	inputName := tview.NewInputField().SetText(g.Name).SetLabel(aeName).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig).SetLabel(fmt.Sprintf(aeSharedCfgT, expectedExtension)).SetLabelColor(tview.Styles.SecondaryTextColor)
+	if g.PersonalPortCfg {
+		inputSharedCfg.SetLabel(warnColor + fmt.Sprintf(aeSharedCfgT, expectedExtension))
+	}
+	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeSourcePort).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeIWAD).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(aeLink).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(aeEnvironment).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputCustomParams := tview.NewInputField().SetText(g.ParamsString()).SetLabel(aeOtherParams).SetLabelColor(tview.Styles.SecondaryTextColor)
 
 	ae := tview.NewForm()
 
-	inputName := tview.NewInputField().SetText(g.Name).SetLabel(aeName).SetLabelColor(tview.Styles.SecondaryTextColor)
-	ae.AddFormItem(inputName)
-
-	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeSourcePort).SetLabelColor(tview.Styles.SecondaryTextColor)
-	ae.AddFormItem(inputSourcePort)
+	// functionality of form items
+	// port
 	if len(cfg.Instance().SourcePorts) > 0 {
 		inputSourcePort.SetOptions(cfg.Instance().SourcePorts, nil)
 		if i, isIn := indexOfItemIn(g.SourcePort, cfg.Instance().SourcePorts); isIn {
@@ -71,15 +84,20 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 			inputSourcePort.SetCurrentOption(0)
 		}
 	}
-	// get shared configs for selected source port
+	// get shared configs for selected port
 	sharedCfgs := []string{}
 	inputSourcePort.SetDoneFunc(func(key tcell.Key) {
 		_, selectedPort := inputSourcePort.GetCurrentOption()
 		sharedCfgs = cfg.GetSharedGameConfigs(selectedPort)
+		expectedExtension = helper.PortConfigFileExtension(selectedPort)
+
+		inputSharedCfg.SetLabel(fmt.Sprintf(aeSharedCfgT, expectedExtension))
+		if inputOwnCfg.IsChecked() {
+			inputSharedCfg.SetLabel(warnColor + fmt.Sprintf(aeSharedCfgT, expectedExtension))
+		}
 	})
 
-	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeIWAD).SetLabelColor(tview.Styles.SecondaryTextColor)
-	ae.AddFormItem(inputIwad)
+	// for iwad
 	if len(cfg.Instance().IWADs) > 0 {
 		inputIwad.SetOptions(cfg.Instance().IWADs, nil)
 		if i, isIn := indexOfItemIn(g.Iwad, cfg.Instance().IWADs); isIn {
@@ -89,10 +107,16 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		}
 	}
 
-	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
-	ae.AddFormItem(inputOwnCfg)
+	// own configs
+	inputOwnCfg.SetDoneFunc(func(key tcell.Key) {
+		if inputOwnCfg.IsChecked() {
+			inputSharedCfg.SetLabel(warnColor + fmt.Sprintf(aeSharedCfgT, expectedExtension))
+			return
+		}
+		inputSharedCfg.SetLabel(fmt.Sprintf(aeSharedCfgT, expectedExtension))
+	})
 
-	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig).SetLabel(aeSharedCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
+	// shared configs
 	inputSharedCfg.SetAutocompleteFunc(
 		func(currentText string) (entries []string) {
 			if len(currentText) == 0 {
@@ -105,15 +129,21 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 			}
 			return
 		})
+	inputSharedCfg.SetDoneFunc(func(key tcell.Key) {
+		if len(inputSharedCfg.GetText()) > 0 && !strings.HasSuffix(strings.ToLower(inputSharedCfg.GetText()), expectedExtension) {
+			inputSharedCfg.SetText(inputSharedCfg.GetText() + expectedExtension)
+		}
+	})
+
+	// add controls in order
+
+	ae.AddFormItem(inputName)
+	ae.AddFormItem(inputSourcePort)
+	ae.AddFormItem(inputIwad)
+	ae.AddFormItem(inputOwnCfg)
 	ae.AddFormItem(inputSharedCfg)
-
-	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(aeLink).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputURL)
-
-	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(aeEnvironment).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputEnvVars)
-
-	inputCustomParams := tview.NewInputField().SetText(g.ParamsString()).SetLabel(aeOtherParams).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputCustomParams)
 
 	ae.AddButton(aeOkButton, func() {

@@ -38,17 +38,6 @@ var (
 		"hacx.wad":      true,
 		"boa.ipk3":      true,
 	}
-
-	PortCanonicalNames = map[string]string{
-		"gzdoom":     "gzdoom",
-		"zandronum":  "zandronum",
-		"lzdoom":     "lzdoom",
-		"crispy":     "crispydoom",
-		"chocolate":  "chocolatedoom",
-		"prboomplus": "prboomplus",
-		"boom":       "boom",
-		"na":         "unknown_port",
-	}
 )
 
 const (
@@ -116,7 +105,7 @@ func firstStart() {
 	}
 
 	// shared config paths
-	for _, canonical := range PortCanonicalNames {
+	for _, canonical := range helper.PortCanonicalNames {
 		err = os.MkdirAll(PortSharedConfigPath(canonical), 0755)
 		if err != nil {
 			log.Fatal(err)
@@ -382,7 +371,7 @@ func GePathIwads(path string) ([]string, error) {
 
 func PortCanonicalName(port string) string {
 	sp := strings.ToLower(port)
-	for test, canonical := range PortCanonicalNames {
+	for test, canonical := range helper.PortCanonicalNames {
 		if strings.Contains(sp, test) {
 			return canonical
 		}

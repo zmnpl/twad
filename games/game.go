@@ -127,7 +127,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 
 	// change working directory to redirect stat file output for boom
 	wd, wdChangeError := os.Getwd()
-	if sourcePortFamily(g.SourcePort) == boom {
+	if helper.PortFamily(g.SourcePort) == boom {
 		os.Chdir(g.getSaveDir())
 	}
 
@@ -192,7 +192,7 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	if g.PersonalPortCfg {
 		if err := os.MkdirAll(g.getConfigDir(), 0755); err == nil {
 			params = append(params, "-config")
-			params = append(params, filepath.Join(g.getConfigDir(), cfg.PortCanonicalName(g.SourcePort)+g.spConfigFileExtension()))
+			params = append(params, filepath.Join(g.getConfigDir(), cfg.PortCanonicalName(g.SourcePort)+helper.PortConfigFileExtension(g.SourcePort)))
 		}
 	} else if g.SharedConfig != "" {
 		if err := os.MkdirAll(cfg.PortSharedConfigPath(g.SourcePort), 0755); err == nil {
@@ -202,18 +202,18 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	}
 
 	// stats for zdoom on windows
-	if sourcePortFamily(g.SourcePort) == zdoom && runtime.GOOS == "windows" {
+	if helper.PortFamily(g.SourcePort) == zdoom && runtime.GOOS == "windows" {
 		params = append(params, "-stdout")
 	}
 
 	// stats for chocolate doom and ports
-	if sourcePortFamily(g.SourcePort) == chocolate {
+	if helper.PortFamily(g.SourcePort) == chocolate {
 		params = append(params, "-statdump")
 		params = append(params, path.Join(g.getSaveDir(), "statdump.txt"))
 	}
 
 	// stats for chocolate doom and ports
-	if sourcePortFamily(g.SourcePort) == boom {
+	if helper.PortFamily(g.SourcePort) == boom {
 		params = append(params, "-levelstat")
 	}
 
@@ -329,10 +329,10 @@ func (g *Game) loadSaveStats(s *st.Savegame) {
 
 // GetSaveMeta reads meta information for the given savegame
 func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
-	if sourcePortFamily(g.SourcePort) == chocolate {
+	if helper.PortFamily(g.SourcePort) == chocolate {
 		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
-	} else if sourcePortFamily(g.SourcePort) == boom {
+	} else if helper.PortFamily(g.SourcePort) == boom {
 		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
 	}
@@ -344,9 +344,9 @@ func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
 // If the port is boom or chocolate, their respective dump-files are used
 func (g *Game) GetStats(savePath string) []st.MapStats {
 	var stats []st.MapStats
-	if sourcePortFamily(g.SourcePort) == chocolate {
+	if helper.PortFamily(g.SourcePort) == chocolate {
 		stats, _ = st.GetChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
-	} else if sourcePortFamily(g.SourcePort) == boom {
+	} else if helper.PortFamily(g.SourcePort) == boom {
 		stats, _ = st.GetBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
 	} else {
 		stats = st.GetZDoomStats(savePath)
