@@ -16,6 +16,7 @@ const (
 	aeSourcePort = "Source Port"
 	aeIWAD       = "IWAD"
 	aeOwnCfg     = "Use Own Source Port CFG"
+	aeSharedCfg  = "Use Shared Port CFG"
 	aeLink       = "Mod URL"
 
 	aeEnvironment       = "Environment Variables *"
@@ -48,7 +49,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	gWasNil := false
 	title := editGame
 	if g == nil {
-		foo := games.NewGame("", "", "")
+		foo := games.NewGame("", "", "", "")
 		g = &foo
 		title = addGame
 		gWasNil = true
@@ -83,6 +84,18 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputOwnCfg)
+
+	// inputSharedCfg := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeSharedCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
+	// ae.AddFormItem(inputSharedCfg)
+	// sharedCfgs := cfg.GetSharedGameConfigs(g.PortCanonicalName())
+	// if len(sharedCfgs) > 0 {
+	// 	inputSharedCfg.SetOptions(sharedCfgs, nil)
+	// 	if i, isIn := indexOfItemIn(g.SharedConfig, sharedCfgs); isIn {
+	// 		inputSharedCfg.SetCurrentOption(i)
+	// 	} else {
+	// 		inputSharedCfg.SetCurrentOption(0)
+	// 	}
+	// }
 
 	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(aeLink).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputURL)

@@ -34,8 +34,8 @@ func sourcePortFamily(sourcePort string) (t int) {
 	return
 }
 
-func portCanonicalName(port string) string {
-	sp := strings.ToLower(port)
+func (g Game) PortCanonicalName() string {
+	sp := strings.ToLower(g.SourcePort)
 	switch {
 	case strings.Contains(sp, "gzdoom"):
 		return "gzdoom"

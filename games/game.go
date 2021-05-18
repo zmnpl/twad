@@ -33,14 +33,15 @@ type Game struct {
 	Rating           int            `json:"rating"`
 	AddEdit          time.Time      `json:"added"`
 	Link             string         `json:"link"`
-	PersonalPortCfg  bool           `json:"own_source_port_cfg`
+	PersonalPortCfg  bool           `json:"own_source_port_cfg"`
+	SharedConfig     string         `json:"shared_config"`
 	Stats            []st.MapStats
 	StatsTotal       st.MapStats
 	Savegames        []*st.Savegame
 }
 
 // NewGame creates new instance of a game
-func NewGame(name, sourceport, iwad string) Game {
+func NewGame(name, sourceport, sharedConfig, iwad string) Game {
 	config := cfg.Instance()
 
 	game := Game{
@@ -191,7 +192,12 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	if g.PersonalPortCfg {
 		if err := os.MkdirAll(g.getConfigDir(), 0755); err == nil {
 			params = append(params, "-config")
-			params = append(params, filepath.Join(g.getConfigDir(), portCanonicalName(g.SourcePort)+g.spConfigFileExtension()))
+			params = append(params, filepath.Join(g.getConfigDir(), cfg.PortCanonicalName(g.SourcePort)+g.spConfigFileExtension()))
+		}
+	} else if g.SharedConfig != "" {
+		if err := os.MkdirAll(cfg.PortSharedConfigPath(g.SourcePort), 0755); err == nil {
+			params = append(params, "-config")
+			params = append(params, filepath.Join(cfg.PortSharedConfigPath(g.SourcePort), g.SharedConfig))
 		}
 	}
 

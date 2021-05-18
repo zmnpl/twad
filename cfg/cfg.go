@@ -89,23 +89,23 @@ func defaultConfig() Cfg {
 
 func firstStart() {
 	// create directory for games and configs
+	err := os.MkdirAll(GetSavegameFolder(), 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = os.MkdirAll(GetGameConfigFolder(), 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = os.MkdirAll(GetSharedGameConfigFolder(), 0755)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	configPath := configFullPath()
 	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		err := os.MkdirAll(GetSavegameFolder(), 0755)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = os.MkdirAll(GetGameConfigFolder(), 0755)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		err = os.MkdirAll(GetSharedGameConfigFolder(), 0755)
-		if err != nil {
-			log.Fatal(err)
-		}
-
 		f, err := os.Create(configPath)
 		if err != nil {
 			log.Fatal(err)
@@ -189,6 +189,23 @@ func GetGameConfigFolder() string {
 // GetSharedGameConfigFolder returns the folder where savegames are stored
 func GetSharedGameConfigFolder() string {
 	return filepath.Join(GetConfigFolder(), "configs_shared")
+}
+
+// GetSharedGameConfigs returns a list with configs for given port name in the according shared subfolder
+func GetSharedGameConfigs(port string) []string {
+	files, err := os.ReadDir(filepath.Join(GetSharedGameConfigFolder(), port))
+
+	if err != nil {
+		return nil
+	}
+
+	cfgs := make([]string, len(files)+1)
+	cfgs[0] = "" // Empty string as first and default entry
+	for i, file := range files {
+		cfgs[i+1] = file.Name()
+	}
+
+	return cfgs
 }
 
 // GetDemoFolder returns the folder where demos are stored
@@ -343,4 +360,30 @@ func GePathIwads(path string) ([]string, error) {
 	}
 
 	return availableIwads, nil
+}
+
+func PortCanonicalName(port string) string {
+	sp := strings.ToLower(port)
+	switch {
+	case strings.Contains(sp, "gzdoom"):
+		return "gzdoom"
+	case strings.Contains(sp, "zandronum"):
+		return "zandronum"
+	case strings.Contains(sp, "lzdoom"):
+		return "lzdoom"
+	case strings.Contains(sp, "crispy"):
+		return "crispy"
+	case strings.Contains(sp, "chocolate"):
+		return "chocolate"
+	case strings.Contains(sp, "prboomplus"):
+		return "prboomplus"
+	case strings.Contains(sp, "boom"):
+		return "boom"
+	default:
+		return "unknown_port"
+	}
+}
+
+func PortSharedConfigPath(port string) string {
+	return filepath.Join(GetSharedGameConfigFolder(), PortCanonicalName(port))
 }
