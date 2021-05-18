@@ -3,6 +3,7 @@ package tui
 import (
 	"strings"
 
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/cfg"
 	"github.com/zmnpl/twad/games"
@@ -70,6 +71,12 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 			inputSourcePort.SetCurrentOption(0)
 		}
 	}
+	// get shared configs for selected source port
+	sharedCfgs := []string{}
+	inputSourcePort.SetDoneFunc(func(key tcell.Key) {
+		_, selectedPort := inputSourcePort.GetCurrentOption()
+		sharedCfgs = cfg.GetSharedGameConfigs(selectedPort)
+	})
 
 	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeIWAD).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputIwad)
@@ -85,17 +92,20 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputOwnCfg)
 
-	// inputSharedCfg := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(aeSharedCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
-	// ae.AddFormItem(inputSharedCfg)
-	// sharedCfgs := cfg.GetSharedGameConfigs(g.PortCanonicalName())
-	// if len(sharedCfgs) > 0 {
-	// 	inputSharedCfg.SetOptions(sharedCfgs, nil)
-	// 	if i, isIn := indexOfItemIn(g.SharedConfig, sharedCfgs); isIn {
-	// 		inputSharedCfg.SetCurrentOption(i)
-	// 	} else {
-	// 		inputSharedCfg.SetCurrentOption(0)
-	// 	}
-	// }
+	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig).SetLabel(aeSharedCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputSharedCfg.SetAutocompleteFunc(
+		func(currentText string) (entries []string) {
+			if len(currentText) == 0 {
+				return
+			}
+			for _, word := range sharedCfgs {
+				if strings.HasPrefix(strings.ToLower(word), strings.ToLower(currentText)) {
+					entries = append(entries, word)
+				}
+			}
+			return
+		})
+	ae.AddFormItem(inputSharedCfg)
 
 	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(aeLink).SetLabelColor(tview.Styles.SecondaryTextColor)
 	ae.AddFormItem(inputURL)
@@ -111,6 +121,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		_, g.SourcePort = inputSourcePort.GetCurrentOption()
 		_, g.Iwad = inputIwad.GetCurrentOption()
 		g.PersonalPortCfg = inputOwnCfg.IsChecked()
+		g.SharedConfig = inputSharedCfg.GetText()
 		g.Environment = splitParams(inputEnvVars.GetText())
 		g.CustomParameters = splitParams(inputCustomParams.GetText())
 		g.Link = inputURL.GetText()

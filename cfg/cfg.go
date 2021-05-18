@@ -193,16 +193,15 @@ func GetSharedGameConfigFolder() string {
 
 // GetSharedGameConfigs returns a list with configs for given port name in the according shared subfolder
 func GetSharedGameConfigs(port string) []string {
-	files, err := os.ReadDir(filepath.Join(GetSharedGameConfigFolder(), port))
+	files, err := os.ReadDir(PortSharedConfigPath(port))
 
 	if err != nil {
 		return nil
 	}
 
-	cfgs := make([]string, len(files)+1)
-	cfgs[0] = "" // Empty string as first and default entry
+	cfgs := make([]string, len(files))
 	for i, file := range files {
-		cfgs[i+1] = file.Name()
+		cfgs[i] = file.Name()
 	}
 
 	return cfgs
