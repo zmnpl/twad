@@ -38,6 +38,17 @@ var (
 		"hacx.wad":      true,
 		"boa.ipk3":      true,
 	}
+
+	PortCanonicalNames = map[string]string{
+		"gzdoom":     "gzdoom",
+		"zandronum":  "zandronum",
+		"lzdoom":     "lzdoom",
+		"crispy":     "crispydoom",
+		"chocolate":  "chocolatedoom",
+		"prboomplus": "prboomplus",
+		"boom":       "boom",
+		"na":         "unknown_port",
+	}
 )
 
 const (
@@ -102,6 +113,14 @@ func firstStart() {
 	err = os.MkdirAll(GetSharedGameConfigFolder(), 0755)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// shared config paths
+	for _, canonical := range PortCanonicalNames {
+		err = os.MkdirAll(PortSharedConfigPath(canonical), 0755)
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	configPath := configFullPath()
@@ -363,24 +382,12 @@ func GePathIwads(path string) ([]string, error) {
 
 func PortCanonicalName(port string) string {
 	sp := strings.ToLower(port)
-	switch {
-	case strings.Contains(sp, "gzdoom"):
-		return "gzdoom"
-	case strings.Contains(sp, "zandronum"):
-		return "zandronum"
-	case strings.Contains(sp, "lzdoom"):
-		return "lzdoom"
-	case strings.Contains(sp, "crispy"):
-		return "crispy"
-	case strings.Contains(sp, "chocolate"):
-		return "chocolate"
-	case strings.Contains(sp, "prboomplus"):
-		return "prboomplus"
-	case strings.Contains(sp, "boom"):
-		return "boom"
-	default:
-		return "unknown_port"
+	for test, canonical := range PortCanonicalNames {
+		if strings.Contains(sp, test) {
+			return canonical
+		}
 	}
+	return "unknown_port"
 }
 
 func PortSharedConfigPath(port string) string {
