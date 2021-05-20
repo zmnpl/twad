@@ -19,7 +19,7 @@ type IdgamesBrowser struct {
 	search      *tview.InputField
 	idgames     []goidgames.Idgame
 
-	enterCallback func(idgamesurul string)
+	confirmCallback func(idgame goidgames.Idgame)
 }
 
 // NewIdgamesBrowser is the modules constructor
@@ -40,10 +40,10 @@ func NewIdgamesBrowser(app *tview.Application) *IdgamesBrowser {
 	return browser
 }
 
-// SetEnterCallback sets a callback function that receives the idgames url of a row on which "ENTER" is pressed by the user
+// SetConfirmCallback sets a callback function that receives the idgames url of a row on which "ENTER" is pressed by the user
 // This callbak function could, for example, launch a download of given file
-func (b *IdgamesBrowser) SetEnterCallback(f func(idgamesurl string)) {
-	b.enterCallback = f
+func (b *IdgamesBrowser) SetConfirmCallback(f func(idgame goidgames.Idgame)) {
+	b.confirmCallback = f
 }
 
 // init search form ui component
@@ -125,8 +125,8 @@ func (b *IdgamesBrowser) initList() {
 	list.SetSelectedFunc(func(r int, c int) {
 		switch {
 		case r > 0:
-			if b.enterCallback != nil {
-				b.enterCallback(b.idgames[r-1].Idgamesurl)
+			if b.confirmCallback != nil {
+				b.confirmCallback(b.idgames[r-1])
 			}
 		}
 	})
