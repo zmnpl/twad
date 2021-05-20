@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"path/filepath"
+
 	"github.com/zmnpl/twad/cfg"
 	"github.com/zmnpl/twad/games"
 
@@ -221,6 +223,7 @@ func initUIElements() {
 	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
 
 	idgamesBrowser = NewIdgamesBrowser(app)
+	idgamesBrowser.SetDownloadPath(filepath.Join(cfg.Instance().WadDir, "twad_downloads"))
 	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.layout, true, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)

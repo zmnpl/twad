@@ -11,13 +11,14 @@ import (
 
 // IdgamesBrowser holds all fields of the module
 type IdgamesBrowser struct {
-	app         *tview.Application
-	layout      *tview.Grid
-	list        *tview.Table
-	fileDetails *tview.TextView
-	reviews     *tview.TextView
-	search      *tview.InputField
-	idgames     []goidgames.Idgame
+	app          *tview.Application
+	layout       *tview.Grid
+	list         *tview.Table
+	fileDetails  *tview.TextView
+	reviews      *tview.TextView
+	search       *tview.InputField
+	idgames      []goidgames.Idgame
+	downloadPath string
 
 	confirmCallback func(idgame goidgames.Idgame)
 }
@@ -44,6 +45,11 @@ func NewIdgamesBrowser(app *tview.Application) *IdgamesBrowser {
 // This callbak function could, for example, launch a download of given file
 func (b *IdgamesBrowser) SetConfirmCallback(f func(idgame goidgames.Idgame)) {
 	b.confirmCallback = f
+}
+
+// SetDownloadPath sets the path where the browser can download game files to
+func (b *IdgamesBrowser) SetDownloadPath(path string) {
+	b.downloadPath = path
 }
 
 // init search form ui component
@@ -128,6 +134,7 @@ func (b *IdgamesBrowser) initList() {
 			if b.confirmCallback != nil {
 				b.confirmCallback(b.idgames[r-1])
 			}
+			b.idgames[r-1].DownloadTo(b.downloadPath)
 		}
 	})
 
@@ -175,7 +182,7 @@ func (browser *IdgamesBrowser) UpdateLatest() {
 	}()
 }
 
-// populate the UIs list
+// populateList populates the UIs list
 func (browser *IdgamesBrowser) populateList(idgames []goidgames.Idgame) {
 	browser.list.Clear()
 	browser.idgames = idgames
