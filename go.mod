@@ -16,7 +16,7 @@ require (
 	github.com/rivo/tview v0.0.0-20210521091241-1fd4a5b7aab3
 	github.com/tidwall/gjson v1.8.0 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
-	github.com/zmnpl/goidgames v0.0.7
+	github.com/zmnpl/goidgames v0.0.8
 	golang.org/x/term v0.0.0-20210503060354-a79de5458b56 // indirect
 	golang.org/x/text v0.3.6 // indirect
 )

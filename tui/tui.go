@@ -225,7 +225,7 @@ func initUIElements() {
 
 	idgamesBrowser = goidgames.NewIdgamesBrowser(app)
 	idgamesBrowser.SetDownloadPath(filepath.Join(cfg.Instance().WadDir, "twad_downloads"))
-	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.layout, true, true)
+	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.GetRootLayout(), true, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
 }

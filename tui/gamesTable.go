@@ -233,7 +233,7 @@ func populateGamesTable() {
 
 		if k == tcell.KeyF2 {
 			contentPages.SwitchToPage(pageIdgamesBrowser)
-			app.SetFocus(idgamesBrowser.layout)
+			app.SetFocus(idgamesBrowser.GetRootLayout())
 			//idgamesBrowser.UpdateLatest()
 			return nil
 		}
