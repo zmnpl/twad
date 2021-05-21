@@ -92,6 +92,8 @@ github.com/rivo/tview v0.0.0-20210514202809-22dbf8415b04 h1:9e47a4RJ9rCkPn6D2eb5
 github.com/rivo/tview v0.0.0-20210514202809-22dbf8415b04/go.mod h1:Uajo+DndkMDGPzEw/Z92AgJrpx6Rvy2HRo/xP1YbXAI=
 github.com/rivo/tview v0.0.0-20210520163342-c723ed076977 h1:f7oeRHwjcrSGihJRDk7LIIDG8BIpm5oH2sB9bT3SrT4=
 github.com/rivo/tview v0.0.0-20210520163342-c723ed076977/go.mod h1:IxQujbYMAh4trWr0Dwa8jfciForjVmxyHpskZX6aydQ=
+github.com/rivo/tview v0.0.0-20210521091241-1fd4a5b7aab3 h1:cMfrTaYkr/2oSkxk8ZVeKLf6qd+ZdRyHfBlVbL5aw/A=
+github.com/rivo/tview v0.0.0-20210521091241-1fd4a5b7aab3/go.mod h1:IxQujbYMAh4trWr0Dwa8jfciForjVmxyHpskZX6aydQ=
 github.com/rivo/uniseg v0.1.0 h1:+2KBaVoUmb9XzDsrx/Ct0W/EYOSFf/nWTauy++DprtY=
 github.com/rivo/uniseg v0.1.0/go.mod h1:J6wj4VEh+S6ZtnVlnTBMWIodfgj8LQOQFoIToxlJtxc=
 github.com/rivo/uniseg v0.2.0 h1:S1pD9weZBuJdFmowNwbpi7BJ8TNftyUImj/0WQi72jY=
@@ -121,6 +123,8 @@ github.com/zmnpl/goidgames v0.0.3 h1:IY1+snpX/skryxrauuekhcBs3WOomaUmeX3MMniVt9k
 github.com/zmnpl/goidgames v0.0.3/go.mod h1:MR44wmUcQsSL0CWzUc6saxSeMwSnLw4gAiReA2IZNFo=
 github.com/zmnpl/goidgames v0.0.4 h1:nzKkm9gksHmbaPgwAPJxEqw/YGdjXGiaaMxGENZIyd4=
 github.com/zmnpl/goidgames v0.0.4/go.mod h1:MR44wmUcQsSL0CWzUc6saxSeMwSnLw4gAiReA2IZNFo=
+github.com/zmnpl/goidgames v0.0.6 h1:P6bSyH3KKQJVLrGtZr7y8bd1bzwP5a3O5J9GrBjLojk=
+github.com/zmnpl/goidgames v0.0.6/go.mod h1:RsOrup35+uCXXSIz+Wkqh3Ys1A7pkznDfLxZQibLdUc=
 golang.org/x/sys v0.0.0-20190626150813-e07cf5db2756/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20191018095205-727590c5006e h1:ZtoklVMHQy6BFRHkbG6JzK+S6rX82//Yeok1vMlizfQ=
 golang.org/x/sys v0.0.0-20191018095205-727590c5006e/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
@@ -143,6 +147,8 @@ golang.org/x/sys v0.0.0-20210415045647-66c3f260301c h1:6L+uOeS3OQt/f4eFHXZcTxeZr
 golang.org/x/sys v0.0.0-20210415045647-66c3f260301c/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 h1:hZR0X1kPW+nwyJ9xRxqZk1vx5RUObAPBdKVvXPDUH/E=
 golang.org/x/sys v0.0.0-20210514084401-e8d321eab015/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20210521090106-6ca3eb03dfc2 h1:48AqIJLs69Wmc3mA52aIcqt544rjrDCqolKAv7L8leA=
+golang.org/x/sys v0.0.0-20210521090106-6ca3eb03dfc2/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf h1:MZ2shdL+ZM/XzY3ZGOnh4Nlpnxz5GSOhOmtHo3iPU6M=
 golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d h1:SZxvLBoTP5yHO3Frd4z4vrF+DBX9vMVanchswa69toE=

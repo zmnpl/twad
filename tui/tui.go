@@ -8,6 +8,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/zmnpl/goidgames"
 )
 
 type Foo *tview.TextView
@@ -81,7 +82,7 @@ var (
 	commandPreview *tview.TextView
 
 	zipInput       *zipImportUI
-	idgamesBrowser *IdgamesBrowser
+	idgamesBrowser *goidgames.IdgamesBrowser
 
 	fiMain, fiSub1, fiSub2 Bar
 )
@@ -222,7 +223,7 @@ func initUIElements() {
 	zipInput = newZipImportUI()
 	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
 
-	idgamesBrowser = NewIdgamesBrowser(app)
+	idgamesBrowser = goidgames.NewIdgamesBrowser(app)
 	idgamesBrowser.SetDownloadPath(filepath.Join(cfg.Instance().WadDir, "twad_downloads"))
 	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.layout, true, true)
 
