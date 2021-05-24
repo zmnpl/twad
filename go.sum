@@ -60,6 +60,8 @@ github.com/mattn/go-runewidth v0.0.10 h1:CoZ3S2P7pvtP45xOtBw+/mDL2z0RKI576gSkzRR
 github.com/mattn/go-runewidth v0.0.10/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
 github.com/mattn/go-runewidth v0.0.12 h1:Y41i/hVW3Pgwr8gV+J23B9YEY0zxjptBuCWEaxmAOow=
 github.com/mattn/go-runewidth v0.0.12/go.mod h1:RAqKPSqVFrSLVXbA8x7dzmKdmGzieGRCM46jaSJTDAk=
+github.com/mattn/go-runewidth v0.0.13 h1:lTGmDsbAYt5DmK6OnoV7EuIF1wEIFAcxld6ypU4OSgU=
+github.com/mattn/go-runewidth v0.0.13/go.mod h1:Jdepj2loyihRzMpdS35Xk/zdY8IAYHsh153qUoGf23w=
 github.com/mholt/archiver v1.1.2 h1:xukR55YIrnhDHp10lrNtRSsAK5THpWrOCuviweNSBw4=
 github.com/mholt/archiver v3.1.1+incompatible h1:1dCVxuqs0dJseYEhi5pl7MYPH9zDa1wBi7mF09cbNkU=
 github.com/mholt/archiver/v3 v3.5.0 h1:nE8gZIrw66cu4osS/U7UW7YDuGMHssxKutU8IfWxwWE=
@@ -127,6 +129,12 @@ github.com/zmnpl/goidgames v0.0.6 h1:P6bSyH3KKQJVLrGtZr7y8bd1bzwP5a3O5J9GrBjLojk
 github.com/zmnpl/goidgames v0.0.6/go.mod h1:RsOrup35+uCXXSIz+Wkqh3Ys1A7pkznDfLxZQibLdUc=
 github.com/zmnpl/goidgames v0.0.8 h1:i9A/JbrcOuOuN11EG/mJ6dptZHMk3KV5RBsPp/92XSk=
 github.com/zmnpl/goidgames v0.0.8/go.mod h1:RsOrup35+uCXXSIz+Wkqh3Ys1A7pkznDfLxZQibLdUc=
+github.com/zmnpl/goidgames v0.0.13 h1:4B1fU73A8o3GyGm9PsY+sIlaqxbC/TkF+sUx3FtThIE=
+github.com/zmnpl/goidgames v0.0.13/go.mod h1:RsOrup35+uCXXSIz+Wkqh3Ys1A7pkznDfLxZQibLdUc=
+github.com/zmnpl/goidgames v0.0.14 h1:fqGikyzqFWJQMfIEkvmbTXFrpc3ki6REgwm8ILgY2AQ=
+github.com/zmnpl/goidgames v0.0.14/go.mod h1:RsOrup35+uCXXSIz+Wkqh3Ys1A7pkznDfLxZQibLdUc=
+github.com/zmnpl/goidgames v0.0.15 h1:vt3EXfKF9uJUta2nAhLA/Tkgj2InEUwwndgYH+UAVsk=
+github.com/zmnpl/goidgames v0.0.15/go.mod h1:RsOrup35+uCXXSIz+Wkqh3Ys1A7pkznDfLxZQibLdUc=
 golang.org/x/sys v0.0.0-20190626150813-e07cf5db2756/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20191018095205-727590c5006e h1:ZtoklVMHQy6BFRHkbG6JzK+S6rX82//Yeok1vMlizfQ=
 golang.org/x/sys v0.0.0-20191018095205-727590c5006e/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
@@ -151,6 +159,8 @@ golang.org/x/sys v0.0.0-20210514084401-e8d321eab015 h1:hZR0X1kPW+nwyJ9xRxqZk1vx5
 golang.org/x/sys v0.0.0-20210514084401-e8d321eab015/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.0.0-20210521090106-6ca3eb03dfc2 h1:48AqIJLs69Wmc3mA52aIcqt544rjrDCqolKAv7L8leA=
 golang.org/x/sys v0.0.0-20210521090106-6ca3eb03dfc2/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.0.0-20210521203332-0cec03c779c1 h1:lCnv+lfrU9FRPGf8NeRuWAAPjNnema5WtBinMgs1fD8=
+golang.org/x/sys v0.0.0-20210521203332-0cec03c779c1/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf h1:MZ2shdL+ZM/XzY3ZGOnh4Nlpnxz5GSOhOmtHo3iPU6M=
 golang.org/x/term v0.0.0-20201210144234-2321bbc49cbf/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/term v0.0.0-20210220032956-6a3ed077a48d h1:SZxvLBoTP5yHO3Frd4z4vrF+DBX9vMVanchswa69toE=

@@ -17,7 +17,8 @@ var (
 	keyFormNav      = fmt.Sprintf(template, "TAB", "Switch Focus")
 	keyConfirm      = fmt.Sprintf(template, "ENTER", "Confirm")
 	keyHelp         = fmt.Sprintf(template, "F1", "Help/Keymap")
-	keyInfoNavigate = []string{keyNavigate, keyFormNav, keyConfirm}
+	keyIdgames      = fmt.Sprintf(template, "F2", "IDGames Browser")
+	keyInfoNavigate = []string{keyNavigate, keyFormNav, keyConfirm, keyIdgames}
 
 	// general
 	keyResetUI       = fmt.Sprintf(template, "ESC", "Reset UI")
