@@ -76,7 +76,7 @@ func defaultConfig() Cfg {
 		WadDir:                filepath.Join(helper.Home(), "/DOOM"),
 		ModExtensions:         ".wad.pk3.ipk3.pke",
 		SourcePorts:           []string{"gzdoom", "zandronum", "lzdoom"},
-		IWADs:                 []string{"doom2.wad", "doom.wad"},
+		IWADs:                 []string{"doom2.wad", "doom.wad", "plutonia.wad", "tnt.wad", "heretic.wad", "boa.ipk3"},
 		GameListRelativeWidth: 40,
 		GameListAbsoluteWidth: 0,
 		CfgVersion:            CFG_VERSION,
@@ -178,11 +178,15 @@ func loadConfig() error {
 func updateConfig() {
 	// going to v1 apply these changes
 	if instance.CfgVersion < 1 {
+		// new known mod extension
 		if !strings.Contains(instance.ModExtensions, ".pke") {
 			instance.ModExtensions = instance.ModExtensions + ".pke"
 		}
-		instance.CfgVersion = CFG_VERSION
+		// additional known iwads
+		instance.IWADs = append(instance.IWADs, "boa.ipk3", "plutonia.wad", "tnt.wad", "heretic.wad")
 	}
+
+	instance.CfgVersion = CFG_VERSION
 	go Persist()
 }
 
