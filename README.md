@@ -1,6 +1,6 @@
 # twad - terminal wad launcher
 
-If you love classic __DOOM__ and want to manage modern source ports to play it along with the plethora of maps, skins and gameplay mods then **twad** is for you. At it's core **twad** lets you set up a multitude of WAD file combinations, store and launch them with a couple of key strokes. It is light weight and fast to use. If your are living in the termninal you'll feel right at home. Though, even if you are on Windows, double-click and get an intuitive, simplistic and fast retro style user interface.
+If you love classic __DOOM__ and want to manage modern source ports to play it along with the plethora of maps, skins and gameplay mods then **twad** is for you. At it's core **twad** lets you set up a multitude of WAD file combinations, store and launch them with a couple of key strokes. It is light weight and fast to use. If your are living in the termninal you'll feel right at home. Though, even if you are on Windows, double-click and get an intuitive, simplistic and fast retro style user interface to manage your ripping and tearing.
 
 ## Start **classic DOOM** with a **classic** retro style terminal user interface
 
@@ -28,6 +28,8 @@ Twad let's you stay in the terminal and on your keyboard as long as possible unt
 * Run games from rofi or dmenu
 * Import .zip files containing mods
 * Separate savegame / demo folders for games (in **~/.config/twad/...***)
+* Separate configs per game and shared configs per source port
+* IDGames search/browser and download
 * Responsive layout (kind of)
 
 # Installation Options
@@ -143,7 +145,7 @@ twad --dmenu
 - ~~More statistics; Parse from savegames~~
 - ~~Zip-Import~~
 - ~~WSL support~~ Windows support
-- idgames download + autoinstall
+- ~~idgames download~~ + autoinstall
 - wad archive download + autoinstall
 - All the TODO flags
 - Error Handling
