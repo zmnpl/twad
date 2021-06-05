@@ -1,8 +1,8 @@
 # twad - terminal wad launcher
 
-If you love __DOOM__ and love your terminal then **twad** is for you. **twad** is a terminal based WAD manager and launcher for doom source ports. At it's core twad lets you set up a multitude of WAD file combinations, store them and launch them with a couple of key strokes. It is light weight and fast to use.
+If you love classic __DOOM__ and want to manage modern source ports to play it along with the plethora of maps, skins and gameplay mods then **twad** is for you. At it's core **twad** lets you set up a multitude of WAD file combinations, store and launch them with a couple of key strokes. It is light weight and fast to use. If your are living in the termninal you'll feel right at home. Though, even if you are on Windows, double-click and get an intuitive, simplistic and fast retro style user interface.
 
-## Start **classic DOOM** with a **classic terminal user interface**
+## Start **classic DOOM** with a **classic** retro style terminal user interface
 
 Twad let's you stay in the terminal and on your keyboard as long as possible until you decide to **rip and tear**. Simple as that. Needless to say that this mostly was designed for *nix systems. However, meanwhile I've added some OS-sensitive behaviour and cross compiled for Windows. Actually it works quite well. So...
 
@@ -38,7 +38,7 @@ https://aur.archlinux.org/packages/twad-git
 
 ## b) Binary Download
 
-I'll to add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it** (in a terminal).
+I'll add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it**.
 
 ## c) Compile yourself
 

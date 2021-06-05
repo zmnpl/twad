@@ -41,7 +41,6 @@ func PortFamily(sourcePort string) (t int) {
 	return
 }
 
-// TODO: double check
 func PortConfigFileExtension(port string) string {
 	switch PortFamily(port) {
 	case chocolate, boom:
