@@ -41,6 +41,7 @@ var (
 )
 
 const (
+	CFG_VERSION      = 1
 	configName       = "twad.json"
 	configPath       = ".config/twad"
 	MAX_SOURCE_PORTS = 6
@@ -60,6 +61,7 @@ type Cfg struct {
 	HideHeader             bool     `json:"hide_header"`
 	GameListAbsoluteWidth  int      `json:"game_list_absolute_width"`
 	GameListRelativeWidth  int      `json:"game_list_relative_width"`
+	CfgVersion             int      `json:"cfg_version"`
 }
 
 func init() {
@@ -72,11 +74,12 @@ func init() {
 func defaultConfig() Cfg {
 	config := Cfg{
 		WadDir:                filepath.Join(helper.Home(), "/DOOM"),
-		ModExtensions:         ".wad.pk3.ipk3",
+		ModExtensions:         ".wad.pk3.ipk3.pke",
 		SourcePorts:           []string{"gzdoom", "zandronum", "lzdoom"},
 		IWADs:                 []string{"doom2.wad", "doom.wad"},
 		GameListRelativeWidth: 40,
 		GameListAbsoluteWidth: 0,
+		CfgVersion:            CFG_VERSION,
 	}
 
 	// check if user has set DOOMWADDIR
@@ -165,7 +168,22 @@ func loadConfig() error {
 		instance.GameListAbsoluteWidth = 40
 	}
 
+	updateConfig()
+
 	return nil
+}
+
+// if something needs to be added to the config this can be done here
+// existing configs otherwise would not get additions
+func updateConfig() {
+	// going to v1 apply these changes
+	if instance.CfgVersion < 1 {
+		if !strings.Contains(instance.ModExtensions, ".pke") {
+			instance.ModExtensions = instance.ModExtensions + ".pke"
+		}
+		instance.CfgVersion = CFG_VERSION
+	}
+	go Persist()
 }
 
 // Exported functions
