@@ -29,7 +29,7 @@ func makeGamesTable() *tview.Table {
 
 func populateGamesTable() {
 	gamesTable.Clear()
-	allGames := games.GetInstance()
+	allGames := games.Games()
 
 	fixRows, fixCols := 1, 4
 	rows, cols := len(allGames), 0

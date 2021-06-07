@@ -20,12 +20,12 @@ var (
 )
 
 func init() {
-	GetInstance()
+	Games()
 	changeListeners = make([]func(), 0)
 }
 
-// GetInstance sets up and returns the singleton instance of games
-func GetInstance() GameList {
+// Games sets up and returns the singleton instance of games
+func Games() GameList {
 	once.Do(func() {
 		instance = make(GameList, 0)
 		loadGames()

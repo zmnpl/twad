@@ -34,7 +34,7 @@ func RunRofiMode(command string) {
 	}
 
 	rofiToGame := make(map[string]int)
-	for i, v := range games.GetInstance() {
+	for i, v := range games.Games() {
 		displayName := fmt.Sprintf("%v: %s\n", i, v.Name)
 		rofiToGame[displayName] = i
 		w.Write([]byte(displayName)) // pipe game name to rofi
@@ -48,7 +48,7 @@ func RunRofiMode(command string) {
 
 	// run selected game
 	if i, exists := rofiToGame[result]; exists {
-		games.GetInstance()[i].Run()
+		games.Games()[i].Run()
 	}
 }
 
