@@ -66,7 +66,7 @@ type Cfg struct {
 
 func init() {
 	firstStart()
-	Instance()
+	Config()
 	Persist() // just in case new settings made it into the programm
 	EnableBasePath()
 }
@@ -192,8 +192,8 @@ func updateConfig() {
 
 // Exported functions
 
-// Instance sets up and returns the singleton instance of config
-func Instance() *Cfg {
+// Config returns the singleton instance of config
+func Config() *Cfg {
 	once.Do(func() {
 		instance = &Cfg{}
 		loadConfig()

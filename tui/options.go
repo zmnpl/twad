@@ -123,9 +123,9 @@ func makeOptions() *tview.Flex {
 	//#######################################################################
 
 	// added to form later
-	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Instance().IWADs, ","))
+	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Config().IWADs, ","))
 	// path for doomwaddir
-	doomwaddirPath := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.Instance().WadDir)
+	doomwaddirPath := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.Config().WadDir)
 
 	// add doomwaddir to form
 	o.AddFormItem(doomwaddirPath)
@@ -189,8 +189,8 @@ func makeOptions() *tview.Flex {
 		sourcePort.SetDoneFunc(func(key tcell.Key) {
 			sourcePortCheck(sourcePort)
 		})
-		if i < len(cfg.Instance().SourcePorts) {
-			sourcePort.SetText(cfg.Instance().SourcePorts[i])
+		if i < len(cfg.Config().SourcePorts) {
+			sourcePort.SetText(cfg.Config().SourcePorts[i])
 		}
 		spInputs[i] = sourcePort
 		o.AddFormItem(sourcePort)
@@ -198,10 +198,10 @@ func makeOptions() *tview.Flex {
 
 	// ui options
 	//#######################################################################
-	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().DeleteWithoutWarning)
+	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Config().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
-	printHeader := tview.NewCheckbox().SetLabel(optsHideHeader).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Instance().HideHeader)
+	printHeader := tview.NewCheckbox().SetLabel(optsHideHeader).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Config().HideHeader)
 	o.AddFormItem(printHeader)
 
 	gameListRelWidth := tview.NewInputField().SetLabel(optsGamesListRelativeWitdh).SetLabelColor(tview.Styles.SecondaryTextColor).SetAcceptanceFunc(func(text string, char rune) bool {
@@ -211,13 +211,13 @@ func makeOptions() *tview.Flex {
 		i, err := strconv.Atoi(text)
 		return err == nil && i > 0 && i <= 100
 	})
-	gameListRelWidth.SetText(strconv.Itoa(cfg.Instance().GameListRelativeWidth))
+	gameListRelWidth.SetText(strconv.Itoa(cfg.Config().GameListRelativeWidth))
 	o.AddFormItem(gameListRelWidth)
 
 	// ok button and processing of options
 	//#######################################################################
 	o.AddButton(optsOkButtonLabel, func() {
-		c := cfg.Instance()
+		c := cfg.Config()
 
 		c.WadDir = doomwaddirPath.GetText()
 

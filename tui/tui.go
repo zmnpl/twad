@@ -88,7 +88,7 @@ var (
 )
 
 func init() {
-	config = cfg.Instance()
+	config = cfg.Config()
 	games.RegisterChangeListener(whenGamesChanged)
 
 	// ui stylepageSettings
@@ -224,7 +224,7 @@ func initUIElements() {
 	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
 
 	idgamesBrowser = goidgames.NewIdgamesBrowser(app)
-	idgamesBrowser.SetDownloadPath(filepath.Join(cfg.Instance().WadDir, "twad_downloads"))
+	idgamesBrowser.SetDownloadPath(filepath.Join(cfg.Config().WadDir, "twad_downloads"))
 	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.GetRootLayout(), true, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
@@ -235,7 +235,7 @@ func getHeader() (tview.Primitive, int) {
 	headerHeight := 19
 	var header tview.Primitive
 	header = makeHeader()
-	if cfg.Instance().HideHeader {
+	if cfg.Config().HideHeader {
 		headerHeight = 1
 		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
 	}

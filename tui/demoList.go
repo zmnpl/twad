@@ -91,7 +91,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 			if demoList.GetItemCount() > 0 {
 				// when in edit mode, this is only confusing
 				ci := demoList.GetCurrentItem()
-				if cfg.Instance().DeleteWithoutWarning {
+				if cfg.Config().DeleteWithoutWarning {
 					removeDemo(ci)
 					return nil
 				}

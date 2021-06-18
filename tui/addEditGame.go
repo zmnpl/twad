@@ -76,9 +76,9 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	// functionality of form items
 	// port
-	if len(cfg.Instance().SourcePorts) > 0 {
-		inputSourcePort.SetOptions(cfg.Instance().SourcePorts, nil)
-		if i, isIn := indexOfItemIn(g.SourcePort, cfg.Instance().SourcePorts); isIn {
+	if len(cfg.Config().SourcePorts) > 0 {
+		inputSourcePort.SetOptions(cfg.Config().SourcePorts, nil)
+		if i, isIn := indexOfItemIn(g.SourcePort, cfg.Config().SourcePorts); isIn {
 			inputSourcePort.SetCurrentOption(i)
 		} else {
 			inputSourcePort.SetCurrentOption(0)
@@ -98,9 +98,9 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	})
 
 	// for iwad
-	if len(cfg.Instance().IWADs) > 0 {
-		inputIwad.SetOptions(cfg.Instance().IWADs, nil)
-		if i, isIn := indexOfItemIn(g.Iwad, cfg.Instance().IWADs); isIn {
+	if len(cfg.Config().IWADs) > 0 {
+		inputIwad.SetOptions(cfg.Config().IWADs, nil)
+		if i, isIn := indexOfItemIn(g.Iwad, cfg.Config().IWADs); isIn {
 			inputIwad.SetCurrentOption(i)
 		} else {
 			inputIwad.SetCurrentOption(0)

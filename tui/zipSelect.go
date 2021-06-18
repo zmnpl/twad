@@ -121,7 +121,7 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 			z.modNameInput.SetLabel(zipImportToLabel + warnColor + " " + zipImportToBadNameLabel)
 			return
 		}
-		if _, err := os.Stat(path.Join(cfg.Instance().WadDir, suggestedName)); !os.IsNotExist(err) {
+		if _, err := os.Stat(path.Join(cfg.Config().WadDir, suggestedName)); !os.IsNotExist(err) {
 			z.modNameInput.SetLabel(zipImportToLabel + warnColor + " " + zipImportToExistsLabel)
 			return
 		}
