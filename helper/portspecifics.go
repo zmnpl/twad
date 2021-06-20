@@ -21,7 +21,7 @@ var (
 	}
 )
 
-// sourcePortFamily checks the games engine type by inspecting the string
+// PortFamily checks the games engine type by inspecting the string
 // known keyphrases will be interpreted as a certain source port family
 func PortFamily(sourcePort string) (t int) {
 	t = zdoom
@@ -41,6 +41,7 @@ func PortFamily(sourcePort string) (t int) {
 	return
 }
 
+// PortConfigFileExtension returns the file extension of config files for the give port
 func PortConfigFileExtension(port string) string {
 	switch PortFamily(port) {
 	case chocolate, boom:
