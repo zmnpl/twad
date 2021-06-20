@@ -44,7 +44,6 @@ type MapStats struct {
 	SecretCount  uint32 `json:"secretcount"`
 	LevelTime    uint32 `json:"leveltime"`
 
-	//
 	TotalItems uint32 `json:"totalitems"`
 	ItemCount  uint32 `json:"itemcount"`
 	LevelName  string `json:"levelname"`
