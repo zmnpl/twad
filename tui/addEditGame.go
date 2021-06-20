@@ -6,7 +6,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/core"
 	"github.com/zmnpl/twad/games"
 	"github.com/zmnpl/twad/helper"
 )
@@ -76,9 +76,9 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	// functionality of form items
 	// port
-	if len(cfg.Config().SourcePorts) > 0 {
-		inputSourcePort.SetOptions(cfg.Config().SourcePorts, nil)
-		if i, isIn := indexOfItemIn(g.SourcePort, cfg.Config().SourcePorts); isIn {
+	if len(core.Config().SourcePorts) > 0 {
+		inputSourcePort.SetOptions(core.Config().SourcePorts, nil)
+		if i, isIn := indexOfItemIn(g.SourcePort, core.Config().SourcePorts); isIn {
 			inputSourcePort.SetCurrentOption(i)
 		} else {
 			inputSourcePort.SetCurrentOption(0)
@@ -88,7 +88,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	sharedCfgs := []string{}
 	inputSourcePort.SetDoneFunc(func(key tcell.Key) {
 		_, selectedPort := inputSourcePort.GetCurrentOption()
-		sharedCfgs = cfg.GetSharedGameConfigs(selectedPort)
+		sharedCfgs = core.GetSharedGameConfigs(selectedPort)
 		expectedExtension = helper.PortConfigFileExtension(selectedPort)
 
 		inputSharedCfg.SetLabel(fmt.Sprintf(aeSharedCfgT, expectedExtension))
@@ -98,9 +98,9 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	})
 
 	// for iwad
-	if len(cfg.Config().IWADs) > 0 {
-		inputIwad.SetOptions(cfg.Config().IWADs, nil)
-		if i, isIn := indexOfItemIn(g.Iwad, cfg.Config().IWADs); isIn {
+	if len(core.Config().IWADs) > 0 {
+		inputIwad.SetOptions(core.Config().IWADs, nil)
+		if i, isIn := indexOfItemIn(g.Iwad, core.Config().IWADs); isIn {
 			inputIwad.SetCurrentOption(i)
 		} else {
 			inputIwad.SetCurrentOption(0)

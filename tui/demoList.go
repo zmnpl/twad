@@ -6,7 +6,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/core"
 	"github.com/zmnpl/twad/games"
 )
 
@@ -91,7 +91,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 			if demoList.GetItemCount() > 0 {
 				// when in edit mode, this is only confusing
 				ci := demoList.GetCurrentItem()
-				if cfg.Config().DeleteWithoutWarning {
+				if core.Config().DeleteWithoutWarning {
 					removeDemo(ci)
 					return nil
 				}

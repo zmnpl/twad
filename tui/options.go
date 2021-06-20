@@ -11,7 +11,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/core"
 )
 
 const (
@@ -123,9 +123,9 @@ func makeOptions() *tview.Flex {
 	//#######################################################################
 
 	// added to form later
-	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(cfg.Config().IWADs, ","))
+	iwads := tview.NewInputField().SetLabel(optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(core.Config().IWADs, ","))
 	// path for doomwaddir
-	doomwaddirPath := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(cfg.Config().WadDir)
+	doomwaddirPath := tview.NewInputField().SetLabel(optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(core.Config().WadDir)
 
 	// add doomwaddir to form
 	o.AddFormItem(doomwaddirPath)
@@ -145,7 +145,7 @@ func makeOptions() *tview.Flex {
 		}
 
 		// check if selected path contains any iwads
-		if hasIwad, err := cfg.PathHasIwads(doomwaddirPath.GetText()); !hasIwad {
+		if hasIwad, err := core.PathHasIwads(doomwaddirPath.GetText()); !hasIwad {
 			if err != nil {
 				doomwaddirPath.SetLabel(optsPathLabel + warnColor + " (" + err.Error() + ")")
 			}
@@ -153,7 +153,7 @@ func makeOptions() *tview.Flex {
 			return
 		}
 
-		availableIwads, _ := cfg.GePathIwads(doomwaddirPath.GetText())
+		availableIwads, _ := core.GePathIwads(doomwaddirPath.GetText())
 		iwads.SetText(strings.Join(availableIwads, ","))
 
 		doomwaddirPath.SetLabel(optsPathLabel + goodColor + " " + optsLooksGood)
@@ -176,8 +176,8 @@ func makeOptions() *tview.Flex {
 	}
 
 	// add source port input fields
-	spInputs := make([]*tview.InputField, cfg.MAX_SOURCE_PORTS, cfg.MAX_SOURCE_PORTS)
-	for i := 0; i < cfg.MAX_SOURCE_PORTS; i++ {
+	spInputs := make([]*tview.InputField, core.MAX_SOURCE_PORTS, core.MAX_SOURCE_PORTS)
+	for i := 0; i < core.MAX_SOURCE_PORTS; i++ {
 		sourcePort := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor)
 		autocompleteSourcePort := autocompletePathMaker(sourcePort, false, spExtensionFilter)
 
@@ -189,8 +189,8 @@ func makeOptions() *tview.Flex {
 		sourcePort.SetDoneFunc(func(key tcell.Key) {
 			sourcePortCheck(sourcePort)
 		})
-		if i < len(cfg.Config().SourcePorts) {
-			sourcePort.SetText(cfg.Config().SourcePorts[i])
+		if i < len(core.Config().SourcePorts) {
+			sourcePort.SetText(core.Config().SourcePorts[i])
 		}
 		spInputs[i] = sourcePort
 		o.AddFormItem(sourcePort)
@@ -198,10 +198,10 @@ func makeOptions() *tview.Flex {
 
 	// ui options
 	//#######################################################################
-	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Config().DeleteWithoutWarning)
+	dontWarn := tview.NewCheckbox().SetLabel(optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(core.Config().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
-	printHeader := tview.NewCheckbox().SetLabel(optsHideHeader).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(cfg.Config().HideHeader)
+	printHeader := tview.NewCheckbox().SetLabel(optsHideHeader).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(core.Config().HideHeader)
 	o.AddFormItem(printHeader)
 
 	gameListRelWidth := tview.NewInputField().SetLabel(optsGamesListRelativeWitdh).SetLabelColor(tview.Styles.SecondaryTextColor).SetAcceptanceFunc(func(text string, char rune) bool {
@@ -211,17 +211,17 @@ func makeOptions() *tview.Flex {
 		i, err := strconv.Atoi(text)
 		return err == nil && i > 0 && i <= 100
 	})
-	gameListRelWidth.SetText(strconv.Itoa(cfg.Config().GameListRelativeWidth))
+	gameListRelWidth.SetText(strconv.Itoa(core.Config().GameListRelativeWidth))
 	o.AddFormItem(gameListRelWidth)
 
 	// ok button and processing of options
 	//#######################################################################
 	o.AddButton(optsOkButtonLabel, func() {
-		c := cfg.Config()
+		c := core.Config()
 
 		c.WadDir = doomwaddirPath.GetText()
 
-		sps := make([]string, cfg.MAX_SOURCE_PORTS, cfg.MAX_SOURCE_PORTS)
+		sps := make([]string, core.MAX_SOURCE_PORTS, core.MAX_SOURCE_PORTS)
 		for i := range spInputs {
 			sps[i] = strings.TrimSpace(spInputs[i].GetText())
 		}
@@ -237,8 +237,8 @@ func makeOptions() *tview.Flex {
 		c.DeleteWithoutWarning = dontWarn.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
 
-		cfg.Persist()
-		cfg.EnableBasePath()
+		core.Persist()
+		core.EnableBasePath()
 		appModeNormal()
 	})
 

@@ -5,7 +5,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/core"
 	"github.com/zmnpl/twad/games"
 )
 
@@ -96,7 +96,7 @@ func makeModList(g *games.Game) *tview.Flex {
 			// when in edit mode, this is only confusing
 			if !editMode && modList.GetItemCount() > 0 {
 				ci := modList.GetCurrentItem()
-				if cfg.Config().DeleteWithoutWarning {
+				if core.Config().DeleteWithoutWarning {
 					removeMod(ci)
 					return nil
 				}

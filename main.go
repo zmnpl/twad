@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/core"
 	"github.com/zmnpl/twad/rofimode"
 	"github.com/zmnpl/twad/tui"
 )
@@ -11,7 +11,7 @@ import (
 func main() {
 	args := os.Args[1:]
 
-	cfg.Config()
+	core.Config()
 
 	for _, v := range args {
 		switch v {

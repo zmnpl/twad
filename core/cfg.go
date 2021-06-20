@@ -1,4 +1,4 @@
-package cfg
+package core
 
 import (
 	"bufio"

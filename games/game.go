@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/core"
 	st "github.com/zmnpl/twad/games/savesStats"
 	"github.com/zmnpl/twad/helper"
 )
@@ -42,7 +42,7 @@ type Game struct {
 
 // NewGame creates new instance of a game
 func NewGame(name, sourceport, sharedConfig, iwad string) Game {
-	config := cfg.Config()
+	config := core.Config()
 
 	game := Game{
 		Name:             name,
@@ -192,12 +192,12 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	if g.PersonalPortCfg {
 		if err := os.MkdirAll(g.getConfigDir(), 0755); err == nil {
 			params = append(params, "-config")
-			params = append(params, filepath.Join(g.getConfigDir(), cfg.PortCanonicalName(g.SourcePort)+helper.PortConfigFileExtension(g.SourcePort)))
+			params = append(params, filepath.Join(g.getConfigDir(), core.PortCanonicalName(g.SourcePort)+helper.PortConfigFileExtension(g.SourcePort)))
 		}
 	} else if g.SharedConfig != "" {
-		if err := os.MkdirAll(cfg.PortSharedConfigPath(g.SourcePort), 0755); err == nil {
+		if err := os.MkdirAll(core.PortSharedConfigPath(g.SourcePort), 0755); err == nil {
 			params = append(params, "-config")
-			params = append(params, filepath.Join(cfg.PortSharedConfigPath(g.SourcePort), g.SharedConfig))
+			params = append(params, filepath.Join(core.PortSharedConfigPath(g.SourcePort), g.SharedConfig))
 		}
 	}
 
@@ -393,11 +393,11 @@ func (g *Game) SwitchMods(a, b int) {
 }
 
 func (g *Game) getSaveDir() string {
-	return filepath.Join(cfg.GetSavegameFolder(), g.cleansedName())
+	return filepath.Join(core.GetSavegameFolder(), g.cleansedName())
 }
 
 func (g *Game) getConfigDir() string {
-	return filepath.Join(cfg.GetGameConfigFolder(), g.cleansedName())
+	return filepath.Join(core.GetGameConfigFolder(), g.cleansedName())
 }
 
 // lastSave returns the the file name or slotnumber (depending on source port) for the game
@@ -480,7 +480,7 @@ func (g *Game) RemoveDemo(name string) ([]os.DirEntry, error) {
 }
 
 func (g *Game) getDemoDir() string {
-	return filepath.Join(cfg.GetDemoFolder(), g.cleansedName())
+	return filepath.Join(core.GetDemoFolder(), g.cleansedName())
 }
 
 // cleansedName removes all but alphanumeric characters from name

@@ -3,7 +3,7 @@ package tui
 import (
 	"path/filepath"
 
-	"github.com/zmnpl/twad/cfg"
+	"github.com/zmnpl/twad/core"
 	"github.com/zmnpl/twad/games"
 
 	"github.com/gdamore/tcell/v2"
@@ -66,7 +66,7 @@ const (
 )
 
 var (
-	config *cfg.Cfg
+	config *core.Cfg
 	app    *tview.Application
 
 	canvas       *tview.Pages
@@ -88,7 +88,7 @@ var (
 )
 
 func init() {
-	config = cfg.Config()
+	config = core.Config()
 	games.RegisterChangeListener(whenGamesChanged)
 
 	// ui stylepageSettings
@@ -224,7 +224,7 @@ func initUIElements() {
 	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
 
 	idgamesBrowser = goidgames.NewIdgamesBrowser(app)
-	idgamesBrowser.SetDownloadPath(filepath.Join(cfg.Config().WadDir, "twad_downloads"))
+	idgamesBrowser.SetDownloadPath(filepath.Join(core.Config().WadDir, "twad_downloads"))
 	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.GetRootLayout(), true, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
@@ -235,7 +235,7 @@ func getHeader() (tview.Primitive, int) {
 	headerHeight := 19
 	var header tview.Primitive
 	header = makeHeader()
-	if cfg.Config().HideHeader {
+	if core.Config().HideHeader {
 		headerHeight = 1
 		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
 	}
