@@ -42,8 +42,6 @@ type Game struct {
 
 // NewGame creates new instance of a game
 func NewGame(name, sourceport, sharedConfig, iwad string) Game {
-	config := core.Config()
-
 	game := Game{
 		Name:             name,
 		SourcePort:       "gzdoom",
