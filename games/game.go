@@ -55,22 +55,12 @@ func NewGame(name, sourceport, sharedConfig, iwad string) Game {
 		AddEdit:          time.Now(),
 	}
 
-	// replace with given or first list entry
+	// replace with given
 	if sourceport != "" {
 		game.SourcePort = sourceport
-	} else {
-		if len(config.SourcePorts) > 0 {
-			game.SourcePort = config.SourcePorts[0]
-		}
 	}
-
-	// replace with given or first list entry
 	if iwad != "" {
 		game.Iwad = iwad
-	} else {
-		if len(config.IWADs) > 0 {
-			game.Iwad = config.IWADs[0]
-		}
 	}
 
 	return game

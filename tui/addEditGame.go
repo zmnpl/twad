@@ -51,8 +51,17 @@ func indexOfItemIn(item string, list []string) (int, bool) {
 func makeAddEditGame(g *games.Game) *tview.Flex {
 	gWasNil := false
 	title := editGame
+
+	port, iwad := "", ""
+	if len(config.SourcePorts) > 0 {
+		port = config.SourcePorts[0]
+	}
+	if len(config.IWADs) > 0 {
+		iwad = config.IWADs[0]
+	}
+
 	if g == nil {
-		foo := games.NewGame("", "", "", "")
+		foo := games.NewGame("", port, "", iwad)
 		g = &foo
 		title = addGame
 		gWasNil = true
