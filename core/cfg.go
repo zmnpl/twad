@@ -12,6 +12,7 @@ import (
 
 	"github.com/mholt/archiver/v3"
 	"github.com/zmnpl/twad/helper"
+	"github.com/zmnpl/twad/portspec"
 )
 
 var (
@@ -108,7 +109,7 @@ func firstStart() {
 	}
 
 	// shared config paths
-	for _, canonical := range helper.PortCanonicalNames {
+	for _, canonical := range portspec.PortCanonicalNames {
 		err = os.MkdirAll(PortSharedConfigPath(canonical), 0755)
 		if err != nil {
 			log.Fatal(err)
@@ -393,7 +394,7 @@ func GePathIwads(path string) ([]string, error) {
 
 func PortCanonicalName(port string) string {
 	sp := strings.ToLower(port)
-	for test, canonical := range helper.PortCanonicalNames {
+	for test, canonical := range portspec.PortCanonicalNames {
 		if strings.Contains(sp, test) {
 			return canonical
 		}

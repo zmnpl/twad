@@ -1,6 +1,8 @@
 package games
 
-import "github.com/zmnpl/twad/helper"
+import (
+	"github.com/zmnpl/twad/portspec"
+)
 
 const (
 	zdoom = iota
@@ -17,7 +19,7 @@ const (
 // spSaveDirParam returns the right paramter key for specifying the savegame directory
 // accounts for zdoom-, chocolate-doom and boom ports at the moments
 func (g Game) spSaveDirParam() string {
-	switch helper.PortFamily(g.SourcePort) {
+	switch portspec.PortFamily(g.SourcePort) {
 	case boom:
 		return "-save"
 	default:
@@ -30,7 +32,7 @@ func (g Game) spSaveDirParam() string {
 // chocolate: 1-5
 // boom: 1-5
 func (g Game) spAdjustedSkill(inSkill int) int {
-	switch helper.PortFamily(g.SourcePort) {
+	switch portspec.PortFamily(g.SourcePort) {
 	case chocolate:
 		return inSkill + 1
 	case boom:
@@ -43,7 +45,7 @@ func (g Game) spAdjustedSkill(inSkill int) int {
 // spSaveFileExtension gives the appropriate file extension
 // adjusted for the games source port
 func (g Game) spSaveFileExtension() string {
-	switch helper.PortFamily(g.SourcePort) {
+	switch portspec.PortFamily(g.SourcePort) {
 	case chocolate, boom:
 		return ".dsg"
 	default:
@@ -54,7 +56,7 @@ func (g Game) spSaveFileExtension() string {
 // spSaveGameName gives the appropriate syntax for save names
 // adjusted for the games source port
 func (g Game) spSaveGameName(save string) string {
-	switch helper.PortFamily(g.SourcePort) {
+	switch portspec.PortFamily(g.SourcePort) {
 	case chocolate, boom:
 		if save != "" {
 			tmp := []rune(save)
