@@ -6,10 +6,10 @@ import (
 	"github.com/zmnpl/twad/portspec"
 )
 
-// spSaveDirParam returns the right paramter key for specifying the savegame directory
+// PortSaveDirParam returns the right paramter key for specifying the savegame directory
 // accounts for zdoom-, chocolate-doom and boom ports at the moments
-func (g Game) spSaveDirParam() string {
-	switch portspec.PortFamily(g.SourcePort) {
+func PortSaveDirParam(port string) string {
+	switch portspec.PortFamily(port) {
 	case portspec.Boom:
 		return "-save"
 	default:
@@ -17,25 +17,25 @@ func (g Game) spSaveDirParam() string {
 	}
 }
 
-// adjust skill for source port
+// PortAdjustedSkill for source port
 // default(zdoom): 0-4 (documenation seems wrong?, so 1-5)
 // chocolate: 1-5
 // boom: 1-5
-func (g Game) spAdjustedSkill(inSkill int) int {
-	switch portspec.PortFamily(g.SourcePort) {
+func PortAdjustedSkill(port string, skill int) int {
+	switch portspec.PortFamily(port) {
 	case portspec.Chocolate:
-		return inSkill + 1
+		return skill + 1
 	case portspec.Boom:
-		return inSkill + 1
+		return skill + 1
 	default:
-		return inSkill + 1
+		return skill + 1
 	}
 }
 
-// spSaveFileExtension gives the appropriate file extension
+// PortSaveFileExtension gives the appropriate file extension
 // adjusted for the games source port
-func (g Game) spSaveFileExtension() string {
-	switch portspec.PortFamily(g.SourcePort) {
+func PortSaveFileExtension(port string) string {
+	switch portspec.PortFamily(port) {
 	case portspec.Chocolate, portspec.Boom:
 		return ".dsg"
 	default:
@@ -43,10 +43,10 @@ func (g Game) spSaveFileExtension() string {
 	}
 }
 
-// spSaveGameName gives the appropriate syntax for save names
+// PortSaveGameName gives the appropriate syntax for save names
 // adjusted for the games source port
-func (g Game) spSaveGameName(save string) string {
-	switch portspec.PortFamily(g.SourcePort) {
+func PortSaveGameName(port, save string) string {
+	switch portspec.PortFamily(port) {
 	case portspec.Chocolate, portspec.Boom:
 		if save != "" {
 			//tmp := []rune(save)
