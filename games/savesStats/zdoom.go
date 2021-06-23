@@ -96,9 +96,9 @@ func zdoomMetaFromBinary(path string) (SaveMeta, error) {
 				return meta, nil
 			}
 		}
-		return meta, fmt.Errorf("Could not find name end position in binay")
+		return meta, fmt.Errorf("could not find name end position in binay")
 	}
-	return meta, fmt.Errorf("Could not find name start position in binary")
+	return meta, fmt.Errorf("could not find name start position in binary")
 }
 
 func zdoomStatsFromJSON(path string) ([]MapStats, error) {
@@ -121,7 +121,7 @@ func zdoomStatsFromJSON(path string) ([]MapStats, error) {
 	if save.Ticrate > 0 {
 		ticrate = save.Ticrate
 	}
-	for i, _ := range save.Stats.Levels {
+	for i := range save.Stats.Levels {
 		save.Stats.Levels[i].LevelTime = uint32(float64(save.Stats.Levels[i].LevelTime) / ticrate)
 	}
 
@@ -141,7 +141,7 @@ func zdoomStatsFromBinary(path string) ([]MapStats, error) {
 	magicSeries := []byte("sTat")
 	readFrom := binaryStartPosition(content, magicSeries, 0)
 	if readFrom == -1 {
-		return nil, fmt.Errorf("Could not find magic series: %v", magicSeries)
+		return nil, fmt.Errorf("could not find magic series: %v", magicSeries)
 	}
 	contentReader.Seek(int64(readFrom), 0)
 

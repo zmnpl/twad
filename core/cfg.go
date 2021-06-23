@@ -274,7 +274,7 @@ func WadDirIsSane() bool {
 // that enables the engine, to find mod files added with the -file parameter based on relative paths
 func EnableBasePath() error {
 	// DOOMWADDIR
-	if instance.DontSetDoomwaddir == false {
+	if !instance.DontSetDoomwaddir {
 		os.Setenv("DOOMWADDIR", instance.WadDir)
 	}
 
@@ -296,7 +296,7 @@ func ImportArchive(zipPath, modName string) (err error) {
 
 func SourcePorts() []string {
 	sourceports := make([]string, len(instance.SourcePorts))
-	for i, _ := range instance.SourcePorts {
+	for i := range instance.SourcePorts {
 		sourceports[i] = filepath.Base(instance.SourcePorts[i])
 	}
 	return sourceports

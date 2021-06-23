@@ -14,7 +14,7 @@ import (
 func binaryStartPosition(binaryData []byte, startAfterSeries []byte, startAt int) int {
 	seriesLength := len(startAfterSeries)
 	readFrom := -1
-	for index, _ := range binaryData {
+	for index := range binaryData {
 		if index >= startAt {
 			if bytes.Equal(startAfterSeries, binaryData[index:index+seriesLength]) {
 				readFrom = index + seriesLength

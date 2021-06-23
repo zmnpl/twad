@@ -76,7 +76,7 @@ func ChocolateMetaFromBinary(path string) (SaveMeta, error) {
 
 	read, err := contentReader.Read(result)
 	if err != nil || read <= 0 {
-		return meta, fmt.Errorf("Could not read name from save file")
+		return meta, fmt.Errorf("could not read name from save file")
 	}
 
 	// cast to runes (utf8)
