@@ -82,14 +82,14 @@ func (g *Game) Quickload() (err error) {
 // Warp lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) Warp(episode, level, skill int) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(PortAdjustedSkill(g.SourcePort, skill)))
+	g.run(*newRunConfig().warp(episode, level).setSkill(portspec.PortAdjustedSkill(g.SourcePort, skill)))
 	return
 }
 
 // WarpRecord lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(PortAdjustedSkill(g.SourcePort, skill)).recordDemo(demoName))
+	g.run(*newRunConfig().warp(episode, level).setSkill(portspec.PortAdjustedSkill(g.SourcePort, skill)).recordDemo(demoName))
 	return
 }
 
@@ -173,7 +173,7 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	// still keeping it to possibly keep track of it / handle errors
 	// only use separate save dir if directory has been craeted or path exists already
 	if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
-		params = append(params, PortSaveDirParam(g.SourcePort))
+		params = append(params, portspec.PortSaveDirParam(g.SourcePort))
 		params = append(params, g.getSaveDir())
 	}
 
@@ -274,7 +274,7 @@ func (g *Game) savegameFiles() ([]os.DirEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	saves = helper.FilterExtensions(saves, PortSaveFileExtension(g.SourcePort), false)
+	saves = helper.FilterExtensions(saves, portspec.PortSaveFileExtension(g.SourcePort), false)
 
 	sort.Slice(saves, func(i, j int) bool {
 		foo, _ := saves[i].Info()
@@ -398,7 +398,7 @@ func (g *Game) lastSave() (save string, err error) {
 	}
 
 	// assume zdoom
-	portSaveFileExtension := PortSaveFileExtension(g.SourcePort)
+	portSaveFileExtension := portspec.PortSaveFileExtension(g.SourcePort)
 
 	// find the newest file
 	newestTime, _ := time.Parse(time.RFC3339, "1900-01-01T00:00:00+00:00")
@@ -415,7 +415,7 @@ func (g *Game) lastSave() (save string, err error) {
 	}
 
 	// adjust for different souce ports
-	save = PortSaveGameName(g.SourcePort, save)
+	save = portspec.PortSaveGameName(g.SourcePort, save)
 
 	if save == "" {
 		err = os.ErrNotExist
