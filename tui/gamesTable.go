@@ -62,7 +62,7 @@ func populateGamesTable() {
 				case 1:
 					cell = tview.NewTableCell(game.Name).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 2:
-					cell = tview.NewTableCell(game.SourcePort).SetTextColor(tview.Styles.PrimaryTextColor)
+					cell = tview.NewTableCell(game.Port).SetTextColor(tview.Styles.PrimaryTextColor)
 				case 3:
 					cell = tview.NewTableCell(game.Iwad).SetTextColor(tview.Styles.PrimaryTextColor)
 				default:

@@ -108,3 +108,13 @@ func PortSaveGameName(port, save string) string {
 		return save
 	}
 }
+
+func PortCanonicalName(port string) string {
+	sp := strings.ToLower(port)
+	for test, canonical := range PortCanonicalNames {
+		if strings.Contains(sp, test) {
+			return canonical
+		}
+	}
+	return "unknown_port"
+}

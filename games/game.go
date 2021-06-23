@@ -22,7 +22,7 @@ import (
 // Game represents one game configuration
 type Game struct {
 	Name             string         `json:"name"`
-	SourcePort       string         `json:"source_port"`
+	Port             string         `json:"source_port"`
 	Iwad             string         `json:"iwad"`
 	Environment      []string       `json:"environment"`
 	Mods             []string       `json:"mods"`
@@ -45,7 +45,7 @@ type Game struct {
 func NewGame(name, sourceport, sharedConfig, iwad string) Game {
 	game := Game{
 		Name:             name,
-		SourcePort:       "gzdoom",
+		Port:             "gzdoom",
 		Iwad:             "doom2.wad",
 		Environment:      make([]string, 0),
 		CustomParameters: make([]string, 0),
@@ -56,7 +56,7 @@ func NewGame(name, sourceport, sharedConfig, iwad string) Game {
 
 	// replace with given
 	if sourceport != "" {
-		game.SourcePort = sourceport
+		game.Port = sourceport
 	}
 	if iwad != "" {
 		game.Iwad = iwad
@@ -82,14 +82,14 @@ func (g *Game) Quickload() (err error) {
 // Warp lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) Warp(episode, level, skill int) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(portspec.PortAdjustedSkill(g.SourcePort, skill)))
+	g.run(*newRunConfig().warp(episode, level).setSkill(portspec.PortAdjustedSkill(g.Port, skill)))
 	return
 }
 
 // WarpRecord lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(portspec.PortAdjustedSkill(g.SourcePort, skill)).recordDemo(demoName))
+	g.run(*newRunConfig().warp(episode, level).setSkill(portspec.PortAdjustedSkill(g.Port, skill)).recordDemo(demoName))
 	return
 }
 
@@ -116,7 +116,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 
 	// change working directory to redirect stat file output for boom
 	wd, wdChangeError := os.Getwd()
-	if portspec.PortFamily(g.SourcePort) == portspec.Boom {
+	if portspec.PortFamily(g.Port) == portspec.Boom {
 		os.Chdir(g.getSaveDir())
 	}
 
@@ -147,7 +147,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 
 func (g *Game) composeProcess(params []string) (cmd *exec.Cmd) {
 	// create process object
-	cmd = exec.Command(g.SourcePort, params...)
+	cmd = exec.Command(g.Port, params...)
 	// add environment variables; use os environment as basis
 	cmd.Env = os.Environ()
 	cmd.Env = append(cmd.Env, g.Environment...)
@@ -173,7 +173,7 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	// still keeping it to possibly keep track of it / handle errors
 	// only use separate save dir if directory has been craeted or path exists already
 	if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
-		params = append(params, portspec.PortSaveDirParam(g.SourcePort))
+		params = append(params, portspec.PortSaveDirParam(g.Port))
 		params = append(params, g.getSaveDir())
 	}
 
@@ -181,28 +181,28 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	if g.PersonalPortCfg {
 		if err := os.MkdirAll(g.getConfigDir(), 0755); err == nil {
 			params = append(params, "-config")
-			params = append(params, filepath.Join(g.getConfigDir(), core.PortCanonicalName(g.SourcePort)+portspec.PortConfigFileExtension(g.SourcePort)))
+			params = append(params, filepath.Join(g.getConfigDir(), portspec.PortCanonicalName(g.Port)+portspec.PortConfigFileExtension(g.Port)))
 		}
 	} else if g.SharedConfig != "" {
-		if err := os.MkdirAll(core.PortSharedConfigPath(g.SourcePort), 0755); err == nil {
+		if err := os.MkdirAll(core.PortSharedConfigPath(g.Port), 0755); err == nil {
 			params = append(params, "-config")
-			params = append(params, filepath.Join(core.PortSharedConfigPath(g.SourcePort), g.SharedConfig))
+			params = append(params, filepath.Join(core.PortSharedConfigPath(g.Port), g.SharedConfig))
 		}
 	}
 
 	// stats for zdoom on windows
-	if portspec.PortFamily(g.SourcePort) == portspec.Zdoom && runtime.GOOS == "windows" {
+	if portspec.PortFamily(g.Port) == portspec.Zdoom && runtime.GOOS == "windows" {
 		params = append(params, "-stdout")
 	}
 
 	// stats for chocolate doom and ports
-	if portspec.PortFamily(g.SourcePort) == portspec.Chocolate {
+	if portspec.PortFamily(g.Port) == portspec.Chocolate {
 		params = append(params, "-statdump")
 		params = append(params, path.Join(g.getSaveDir(), "statdump.txt"))
 	}
 
 	// stats for chocolate doom and ports
-	if portspec.PortFamily(g.SourcePort) == portspec.Boom {
+	if portspec.PortFamily(g.Port) == portspec.Boom {
 		params = append(params, "-levelstat")
 	}
 
@@ -255,7 +255,7 @@ func (g *Game) getLastSaveLaunchParams() (params []string) {
 // CommandList returns the full slice of strings in order to launch the game
 func (g *Game) CommandList() (command []string) {
 	command = g.Environment
-	command = append(command, g.SourcePort)
+	command = append(command, g.Port)
 	command = append(command, g.getLaunchParams(*newRunConfig().quickload())...)
 	return
 }
@@ -274,7 +274,7 @@ func (g *Game) savegameFiles() ([]os.DirEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	saves = helper.FilterExtensions(saves, portspec.PortSaveFileExtension(g.SourcePort), false)
+	saves = helper.FilterExtensions(saves, portspec.PortSaveFileExtension(g.Port), false)
 
 	sort.Slice(saves, func(i, j int) bool {
 		foo, _ := saves[i].Info()
@@ -318,10 +318,10 @@ func (g *Game) loadSaveStats(s *st.Savegame) {
 
 // GetSaveMeta reads meta information for the given savegame
 func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
-	if portspec.PortFamily(g.SourcePort) == portspec.Chocolate {
+	if portspec.PortFamily(g.Port) == portspec.Chocolate {
 		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
-	} else if portspec.PortFamily(g.SourcePort) == portspec.Boom {
+	} else if portspec.PortFamily(g.Port) == portspec.Boom {
 		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
 	}
@@ -333,9 +333,9 @@ func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
 // If the port is boom or chocolate, their respective dump-files are used
 func (g *Game) GetStats(savePath string) []st.MapStats {
 	var stats []st.MapStats
-	if portspec.PortFamily(g.SourcePort) == portspec.Chocolate {
+	if portspec.PortFamily(g.Port) == portspec.Chocolate {
 		stats, _ = st.GetChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
-	} else if portspec.PortFamily(g.SourcePort) == portspec.Boom {
+	} else if portspec.PortFamily(g.Port) == portspec.Boom {
 		stats, _ = st.GetBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
 	} else {
 		stats = st.GetZDoomStats(savePath)
@@ -398,7 +398,7 @@ func (g *Game) lastSave() (save string, err error) {
 	}
 
 	// assume zdoom
-	portSaveFileExtension := portspec.PortSaveFileExtension(g.SourcePort)
+	portSaveFileExtension := portspec.PortSaveFileExtension(g.Port)
 
 	// find the newest file
 	newestTime, _ := time.Parse(time.RFC3339, "1900-01-01T00:00:00+00:00")
@@ -415,7 +415,7 @@ func (g *Game) lastSave() (save string, err error) {
 	}
 
 	// adjust for different souce ports
-	save = portspec.PortSaveGameName(g.SourcePort, save)
+	save = portspec.PortSaveGameName(g.Port, save)
 
 	if save == "" {
 		err = os.ErrNotExist

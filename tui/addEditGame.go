@@ -66,7 +66,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		title = addGame
 		gWasNil = true
 	}
-	expectedExtension := portspec.PortConfigFileExtension(g.SourcePort)
+	expectedExtension := portspec.PortConfigFileExtension(g.Port)
 
 	// create basic form items
 	inputName := tview.NewInputField().SetText(g.Name).SetLabel(aeName).SetLabelColor(tview.Styles.SecondaryTextColor)
@@ -87,7 +87,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	// port
 	if len(core.Config().SourcePorts) > 0 {
 		inputSourcePort.SetOptions(core.Config().SourcePorts, nil)
-		if i, isIn := indexOfItemIn(g.SourcePort, core.Config().SourcePorts); isIn {
+		if i, isIn := indexOfItemIn(g.Port, core.Config().SourcePorts); isIn {
 			inputSourcePort.SetCurrentOption(i)
 		} else {
 			inputSourcePort.SetCurrentOption(0)
@@ -157,7 +157,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	ae.AddButton(aeOkButton, func() {
 		g.Name = strings.TrimSpace(inputName.GetText())
-		_, g.SourcePort = inputSourcePort.GetCurrentOption()
+		_, g.Port = inputSourcePort.GetCurrentOption()
 		_, g.Iwad = inputIwad.GetCurrentOption()
 		g.PersonalPortCfg = inputOwnCfg.IsChecked()
 		g.SharedConfig = inputSharedCfg.GetText()

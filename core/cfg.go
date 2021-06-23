@@ -392,16 +392,7 @@ func GePathIwads(path string) ([]string, error) {
 	return availableIwads, nil
 }
 
-func PortCanonicalName(port string) string {
-	sp := strings.ToLower(port)
-	for test, canonical := range portspec.PortCanonicalNames {
-		if strings.Contains(sp, test) {
-			return canonical
-		}
-	}
-	return "unknown_port"
-}
-
+// PortSharedConfigPath returns the path where common/shared configs for the given port should be stored
 func PortSharedConfigPath(port string) string {
-	return filepath.Join(GetSharedGameConfigFolder(), PortCanonicalName(port))
+	return filepath.Join(GetSharedGameConfigFolder(), portspec.PortCanonicalName(port))
 }
