@@ -3,9 +3,13 @@ package portspec
 import "strings"
 
 const (
-	zdoom = iota
-	chocolate
-	boom
+	Zdoom = iota
+	Chocolate
+	Boom
+
+	ZdoomSaveExtension     = ".zds.json"
+	BoomSaveExtension      = ".dsg"
+	ChocolateSaveExtension = ".dsg"
 )
 
 var (
@@ -24,17 +28,17 @@ var (
 // PortFamily checks the games engine type by inspecting the string
 // known keyphrases will be interpreted as a certain source port family
 func PortFamily(sourcePort string) (t int) {
-	t = zdoom
+	t = Zdoom
 
 	sp := strings.ToLower(sourcePort)
 
 	if strings.Contains(sp, "crispy") || strings.Contains(sp, "chocolate") {
-		t = chocolate
+		t = Chocolate
 		return
 	}
 
 	if strings.Contains(sp, "boom") {
-		t = boom
+		t = Boom
 		return
 	}
 
@@ -44,7 +48,7 @@ func PortFamily(sourcePort string) (t int) {
 // PortConfigFileExtension returns the file extension of config files for the give port
 func PortConfigFileExtension(port string) string {
 	switch PortFamily(port) {
-	case chocolate, boom:
+	case Chocolate, Boom:
 		return ".cfg"
 	default:
 		return ".ini"

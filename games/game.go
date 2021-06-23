@@ -116,7 +116,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 
 	// change working directory to redirect stat file output for boom
 	wd, wdChangeError := os.Getwd()
-	if portspec.PortFamily(g.SourcePort) == boom {
+	if portspec.PortFamily(g.SourcePort) == portspec.Boom {
 		os.Chdir(g.getSaveDir())
 	}
 
@@ -191,18 +191,18 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	}
 
 	// stats for zdoom on windows
-	if portspec.PortFamily(g.SourcePort) == zdoom && runtime.GOOS == "windows" {
+	if portspec.PortFamily(g.SourcePort) == portspec.Zdoom && runtime.GOOS == "windows" {
 		params = append(params, "-stdout")
 	}
 
 	// stats for chocolate doom and ports
-	if portspec.PortFamily(g.SourcePort) == chocolate {
+	if portspec.PortFamily(g.SourcePort) == portspec.Chocolate {
 		params = append(params, "-statdump")
 		params = append(params, path.Join(g.getSaveDir(), "statdump.txt"))
 	}
 
 	// stats for chocolate doom and ports
-	if portspec.PortFamily(g.SourcePort) == boom {
+	if portspec.PortFamily(g.SourcePort) == portspec.Boom {
 		params = append(params, "-levelstat")
 	}
 
@@ -318,10 +318,10 @@ func (g *Game) loadSaveStats(s *st.Savegame) {
 
 // GetSaveMeta reads meta information for the given savegame
 func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
-	if portspec.PortFamily(g.SourcePort) == chocolate {
+	if portspec.PortFamily(g.SourcePort) == portspec.Chocolate {
 		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
-	} else if portspec.PortFamily(g.SourcePort) == boom {
+	} else if portspec.PortFamily(g.SourcePort) == portspec.Boom {
 		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
 	}
@@ -333,9 +333,9 @@ func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
 // If the port is boom or chocolate, their respective dump-files are used
 func (g *Game) GetStats(savePath string) []st.MapStats {
 	var stats []st.MapStats
-	if portspec.PortFamily(g.SourcePort) == chocolate {
+	if portspec.PortFamily(g.SourcePort) == portspec.Chocolate {
 		stats, _ = st.GetChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
-	} else if portspec.PortFamily(g.SourcePort) == boom {
+	} else if portspec.PortFamily(g.SourcePort) == portspec.Boom {
 		stats, _ = st.GetBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
 	} else {
 		stats = st.GetZDoomStats(savePath)

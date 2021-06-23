@@ -1,26 +1,16 @@
 package games
 
 import (
+	"strings"
+
 	"github.com/zmnpl/twad/portspec"
-)
-
-const (
-	zdoom = iota
-	chocolate
-	boom
-)
-
-const (
-	zdoomSaveExtension     = ".zds.json"
-	boomSaveExtension      = ".dsg"
-	chocolateSaveExtension = ".dsg"
 )
 
 // spSaveDirParam returns the right paramter key for specifying the savegame directory
 // accounts for zdoom-, chocolate-doom and boom ports at the moments
 func (g Game) spSaveDirParam() string {
 	switch portspec.PortFamily(g.SourcePort) {
-	case boom:
+	case portspec.Boom:
 		return "-save"
 	default:
 		return "-savedir"
@@ -33,9 +23,9 @@ func (g Game) spSaveDirParam() string {
 // boom: 1-5
 func (g Game) spAdjustedSkill(inSkill int) int {
 	switch portspec.PortFamily(g.SourcePort) {
-	case chocolate:
+	case portspec.Chocolate:
 		return inSkill + 1
-	case boom:
+	case portspec.Boom:
 		return inSkill + 1
 	default:
 		return inSkill + 1
@@ -46,7 +36,7 @@ func (g Game) spAdjustedSkill(inSkill int) int {
 // adjusted for the games source port
 func (g Game) spSaveFileExtension() string {
 	switch portspec.PortFamily(g.SourcePort) {
-	case chocolate, boom:
+	case portspec.Chocolate, portspec.Boom:
 		return ".dsg"
 	default:
 		return ".zds"
@@ -57,10 +47,11 @@ func (g Game) spSaveFileExtension() string {
 // adjusted for the games source port
 func (g Game) spSaveGameName(save string) string {
 	switch portspec.PortFamily(g.SourcePort) {
-	case chocolate, boom:
+	case portspec.Chocolate, portspec.Boom:
 		if save != "" {
-			tmp := []rune(save)
-			save = string(tmp[len(tmp)-5 : len(tmp)-4])
+			//tmp := []rune(save)
+			//save = string(tmp[len(tmp)-5 : len(tmp)-4])
+			save = strings.TrimSuffix(strings.TrimPrefix(save, "doomsav"), ".dsg")
 			return save
 		}
 		return save
