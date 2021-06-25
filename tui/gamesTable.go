@@ -12,6 +12,9 @@ const (
 	gameTableHeaderName       = "Name"
 	gameTableHeaderSourcePort = "SourcePort"
 	gameTableHeaderIwad       = "Iwad"
+
+	deleteGameQuestion = "Delete '%v'?"
+	deleteModQuestion  = "Remove '%v' from '%v'?"
 )
 
 // center table with mods
@@ -198,11 +201,6 @@ func populateGamesTable() {
 					return nil
 				}
 
-			case 'i':
-				contentPages.SwitchToPage(pageZipImport)
-				app.SetFocus(zipInput.selectTree)
-				return nil
-
 			// edit selected game
 			case 'e':
 				if r > 0 {
@@ -232,6 +230,12 @@ func populateGamesTable() {
 			contentPages.SwitchToPage(pageIdgamesBrowser)
 			app.SetFocus(idgamesBrowser.GetRootLayout())
 			//idgamesBrowser.UpdateLatest()
+			return nil
+		}
+
+		if k == tcell.KeyF3 {
+			contentPages.SwitchToPage(pageZipImport)
+			app.SetFocus(zipInput.selectTree)
 			return nil
 		}
 

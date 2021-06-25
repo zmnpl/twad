@@ -13,21 +13,21 @@ const (
 
 var (
 	// general ui
-	keyNavigate     = fmt.Sprintf(template, "Arrows (or hjkl)", "Navigate")
-	keyFormNav      = fmt.Sprintf(template, "TAB", "Switch Focus")
-	keyConfirm      = fmt.Sprintf(template, "ENTER", "Confirm")
-	keyHelp         = fmt.Sprintf(template, "F1", "Help/Keymap")
-	keyIdgames      = fmt.Sprintf(template, "F2", "IDGames Browser")
-	keyInfoNavigate = []string{keyNavigate, keyFormNav, keyConfirm, keyIdgames}
+	keyNavigate      = fmt.Sprintf(template, "Arrows (or hjkl)", "Navigate")
+	keyFormNav       = fmt.Sprintf(template, "TAB", "Switch Focus")
+	keyConfirm       = fmt.Sprintf(template, "ENTER", "Confirm")
+	keyHelp          = fmt.Sprintf(template, "F1", "Help/Keymap")
+	keyIdgames       = fmt.Sprintf(template, "F2", "IDGames Browser")
+	keyImportArchive = fmt.Sprintf(template, "F3", "Import Archive")
+	keyInfoNavigate  = []string{keyNavigate, keyFormNav, keyConfirm, keyIdgames, keyImportArchive}
 
 	// general
-	keyResetUI       = fmt.Sprintf(template, "ESC", "Reset UI")
-	keyQuit          = fmt.Sprintf(template, "q", "Quit")
-	keyCredits       = fmt.Sprintf(template, "c", "Credits/License")
-	keyOptions       = fmt.Sprintf(template, "o", "Options")
-	keyImportArchive = fmt.Sprintf(template, "i", "Import Archive")
-	keySortAlph      = fmt.Sprintf(template, "s", "Sort Games Alphabetically")
-	keyInfoMain      = []string{keyResetUI, keyQuit, keyCredits, keyOptions, keyImportArchive, keySortAlph}
+	keyResetUI  = fmt.Sprintf(template, "ESC", "Reset UI")
+	keyQuit     = fmt.Sprintf(template, "q", "Quit")
+	keyCredits  = fmt.Sprintf(template, "c", "Credits/License")
+	keyOptions  = fmt.Sprintf(template, "o", "Options")
+	keySortAlph = fmt.Sprintf(template, "s", "Sort Games Alphabetically")
+	keyInfoMain = []string{keyResetUI, keyQuit, keyCredits, keyOptions, keySortAlph}
 
 	// game launching
 	keyRunGame        = fmt.Sprintf(template, "ENTER", "Run Game")
@@ -157,7 +157,9 @@ func makeHelp() *tview.TextView {
 func showHelp() {
 	help := makeHelp()
 	appModeNormal()
-	detailSidePagesSub2.AddPage(pageHelpKeymap, help, true, true)
-	detailSidePagesSub2.SwitchToPage(pageHelpKeymap)
+
+	contentPages.AddPage(pageHelpKeymap, help, true, true)
+	contentPages.SwitchToPage(pageHelpKeymap)
+
 	app.SetFocus(help)
 }
