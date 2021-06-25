@@ -6,8 +6,8 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/games/savesStats"
-	st "github.com/zmnpl/twad/games/savesStats"
+	"github.com/zmnpl/twad/ports/savesStats"
+	st "github.com/zmnpl/twad/ports/savesStats"
 )
 
 //  stats

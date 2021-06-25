@@ -14,9 +14,9 @@ import (
 	"time"
 
 	"github.com/zmnpl/twad/base"
-	st "github.com/zmnpl/twad/games/savesStats"
 	"github.com/zmnpl/twad/helper"
 	"github.com/zmnpl/twad/ports"
+	st "github.com/zmnpl/twad/ports/savesStats"
 )
 
 // Game represents one game configuration
