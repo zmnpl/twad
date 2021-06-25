@@ -53,8 +53,8 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	title := editGame
 
 	port, iwad := "", ""
-	if len(config.SourcePorts) > 0 {
-		port = config.SourcePorts[0]
+	if len(config.Ports) > 0 {
+		port = config.Ports[0]
 	}
 	if len(config.IWADs) > 0 {
 		iwad = config.IWADs[0]
@@ -85,9 +85,9 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	// functionality of form items
 	// port
-	if len(base.Config().SourcePorts) > 0 {
-		inputSourcePort.SetOptions(base.Config().SourcePorts, nil)
-		if i, isIn := indexOfItemIn(g.Port, base.Config().SourcePorts); isIn {
+	if len(base.Config().Ports) > 0 {
+		inputSourcePort.SetOptions(base.Config().Ports, nil)
+		if i, isIn := indexOfItemIn(g.Port, base.Config().Ports); isIn {
 			inputSourcePort.SetCurrentOption(i)
 		} else {
 			inputSourcePort.SetCurrentOption(0)

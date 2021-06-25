@@ -189,8 +189,8 @@ func makeOptions() *tview.Flex {
 		sourcePort.SetDoneFunc(func(key tcell.Key) {
 			sourcePortCheck(sourcePort)
 		})
-		if i < len(base.Config().SourcePorts) {
-			sourcePort.SetText(base.Config().SourcePorts[i])
+		if i < len(base.Config().Ports) {
+			sourcePort.SetText(base.Config().Ports[i])
 		}
 		spInputs[i] = sourcePort
 		o.AddFormItem(sourcePort)
@@ -225,7 +225,7 @@ func makeOptions() *tview.Flex {
 		for i := range spInputs {
 			sps[i] = strings.TrimSpace(spInputs[i].GetText())
 		}
-		c.SourcePorts = sps
+		c.Ports = sps
 
 		iwds := strings.Split(iwads.GetText(), ",")
 		for i := range iwds {

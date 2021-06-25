@@ -55,7 +55,7 @@ type Cfg struct {
 	WriteWadDirToEngineCfg bool     `json:"write_wad_dir_to_engine_cfg"`
 	DontSetDoomwaddir      bool     `json:"dont_set_doomwaddir"`
 	ModExtensions          string   `json:"mod_extensions"`
-	SourcePorts            []string `json:"source_ports"`
+	Ports                  []string `json:"source_ports"`
 	IWADs                  []string `json:"iwa_ds"`
 	Configured             bool     `json:"configured"`
 	DeleteWithoutWarning   bool     `json:"delete_without_warning"`
@@ -76,7 +76,7 @@ func defaultConfig() Cfg {
 	config := Cfg{
 		WadDir:                filepath.Join(helper.Home(), "/DOOM"),
 		ModExtensions:         ".wad.pk3.ipk3.pke",
-		SourcePorts:           []string{"gzdoom", "zandronum", "lzdoom"},
+		Ports:                 []string{"gzdoom", "zandronum", "lzdoom"},
 		IWADs:                 []string{"doom2.wad", "doom.wad", "plutonia.wad", "tnt.wad", "heretic.wad", "boa.ipk3"},
 		GameListRelativeWidth: 40,
 		GameListAbsoluteWidth: 0,
@@ -157,8 +157,8 @@ func loadConfig() error {
 		instance.ModExtensions = dConf.ModExtensions
 	}
 
-	if len(instance.SourcePorts) == 0 {
-		instance.SourcePorts = dConf.SourcePorts
+	if len(instance.Ports) == 0 {
+		instance.Ports = dConf.Ports
 	}
 
 	if len(instance.IWADs) == 0 {
@@ -295,9 +295,9 @@ func ImportArchive(zipPath, modName string) (err error) {
 }
 
 func SourcePorts() []string {
-	sourceports := make([]string, len(instance.SourcePorts))
-	for i := range instance.SourcePorts {
-		sourceports[i] = filepath.Base(instance.SourcePorts[i])
+	sourceports := make([]string, len(instance.Ports))
+	for i := range instance.Ports {
+		sourceports[i] = filepath.Base(instance.Ports[i])
 	}
 	return sourceports
 }
