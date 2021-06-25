@@ -66,7 +66,7 @@ func makeHeader() *tview.TextView {
 func makeFirstStartHello() *tview.TextView {
 	hello := tview.NewTextView().SetDynamicColors(true)
 	hello.SetBorder(true)
-	fmt.Fprintf(hello, helloText)
+	fmt.Fprint(hello, helloText)
 
 	hello.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()

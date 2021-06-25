@@ -47,7 +47,7 @@ func makeModList(g *games.Game) *tview.Flex {
 	}
 
 	modList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
-		if editMode == false {
+		if !editMode {
 			editOn()
 			return
 		}

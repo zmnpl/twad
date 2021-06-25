@@ -75,10 +75,10 @@ func (z *zipImportUI) initZipSelect() {
 			// check if path can at leas be read
 			// otherwise return
 			f, err := os.OpenFile(selPath, os.O_RDONLY, 0666)
-			defer f.Close()
 			if err != nil && os.IsPermission(err) {
 				return
 			}
+			defer f.Close()
 
 			fi, err := os.Stat(selPath)
 			switch {

@@ -12,9 +12,6 @@ const (
 	gameTableHeaderName       = "Name"
 	gameTableHeaderSourcePort = "SourcePort"
 	gameTableHeaderIwad       = "Iwad"
-
-	deleteGameQuestion = "Delete '%v'?"
-	deleteModQuestion  = "Remove '%v' from '%v'?"
 )
 
 // center table with mods

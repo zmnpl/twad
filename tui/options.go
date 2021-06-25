@@ -176,7 +176,7 @@ func makeOptions() *tview.Flex {
 	}
 
 	// add source port input fields
-	spInputs := make([]*tview.InputField, base.MAX_SOURCE_PORTS, base.MAX_SOURCE_PORTS)
+	spInputs := make([]*tview.InputField, base.MAX_SOURCE_PORTS)
 	for i := 0; i < base.MAX_SOURCE_PORTS; i++ {
 		sourcePort := tview.NewInputField().SetLabel(optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor)
 		autocompleteSourcePort := autocompletePathMaker(sourcePort, false, spExtensionFilter)
@@ -221,7 +221,7 @@ func makeOptions() *tview.Flex {
 
 		c.WadDir = doomwaddirPath.GetText()
 
-		sps := make([]string, base.MAX_SOURCE_PORTS, base.MAX_SOURCE_PORTS)
+		sps := make([]string, base.MAX_SOURCE_PORTS)
 		for i := range spInputs {
 			sps[i] = strings.TrimSpace(spInputs[i].GetText())
 		}

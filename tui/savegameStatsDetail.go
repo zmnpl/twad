@@ -7,11 +7,10 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/ports/savesStats"
-	st "github.com/zmnpl/twad/ports/savesStats"
 )
 
 //  stats
-func makeLevelStatsTable(s st.Savegame, lastFocus *tview.List) *tview.Table {
+func makeLevelStatsTable(s savesStats.Savegame, lastFocus *tview.List) *tview.Table {
 	stats := tview.NewTable().
 		SetFixed(1, 1).
 		SetSelectable(true, false).
@@ -23,7 +22,7 @@ func makeLevelStatsTable(s st.Savegame, lastFocus *tview.List) *tview.Table {
 	stats.SetCell(row, 1, tview.NewTableCell("                    ").SetAlign(tview.AlignLeft))
 	row++
 
-	populate := func(lvl st.MapStats) {
+	populate := func(lvl savesStats.MapStats) {
 		stats.SetCell(row, 0, tview.NewTableCell(strings.ToUpper(lvl.LevelName)).SetTextColor(tview.Styles.ContrastBackgroundColor))
 		row++
 		stats.SetCell(row+0, 0, tview.NewTableCell("Time").SetTextColor(tview.Styles.SecondaryTextColor))

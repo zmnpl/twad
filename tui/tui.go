@@ -17,18 +17,7 @@ type Bar struct {
 	*tview.TextView
 }
 
-func (fi Bar) setFocus(focus bool) {
-	if focus {
-		fi.SetBackgroundColor(tview.Styles.ContrastBackgroundColor)
-		return
-	}
-	fi.SetBackgroundColor(tview.Styles.MoreContrastBackgroundColor)
-}
-
 const (
-	previewBackgroundColor = tcell.ColorRoyalBlue
-	accentColor            = tcell.ColorOrange
-
 	colorTagPrimaryText  = "[white]"
 	colorTagContrast     = "[royalblue]"
 	colorTagMoreContrast = "[orange]"
@@ -83,8 +72,6 @@ var (
 
 	zipInput       *zipImportUI
 	idgamesBrowser *goidgames.IdgamesBrowser
-
-	fiMain, fiSub1, fiSub2 Bar
 )
 
 func init() {
@@ -107,14 +94,6 @@ func init() {
 	//fiMain = Bar{tview.NewTextView()}
 	//fiSub1 = Bar{tview.NewTextView()}
 	//fiSub2 = Bar{tview.NewTextView()}
-}
-
-func makeFocusIndicator(focused bool) (fi *tview.TextView) {
-	fi = tview.NewTextView()
-	if focused {
-		fi.SetBackgroundColor(tview.Styles.MoreContrastBackgroundColor)
-	}
-	return
 }
 
 // Draw performs all necessary steps to start the ui
