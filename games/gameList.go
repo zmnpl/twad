@@ -6,7 +6,7 @@ import (
 	"sort"
 	"sync"
 
-	"github.com/zmnpl/twad/core"
+	"github.com/zmnpl/twad/base"
 )
 
 // GameList holds all the games configured
@@ -105,7 +105,7 @@ func Persist() error {
 		return err
 	}
 
-	err = os.WriteFile(core.GetConfigFolder()+"/"+gamesJSONName, gamesJSON, 0755)
+	err = os.WriteFile(base.GetConfigFolder()+"/"+gamesJSONName, gamesJSON, 0755)
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func Persist() error {
 }
 
 func loadGames() error {
-	content, err := os.ReadFile(core.GetConfigFolder() + "/" + gamesJSONName) // TODO: Resolve simlinks
+	content, err := os.ReadFile(base.GetConfigFolder() + "/" + gamesJSONName) // TODO: Resolve simlinks
 	if err != nil {
 		return err
 	}

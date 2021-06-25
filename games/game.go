@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/zmnpl/twad/core"
+	"github.com/zmnpl/twad/base"
 	st "github.com/zmnpl/twad/games/savesStats"
 	"github.com/zmnpl/twad/helper"
 	"github.com/zmnpl/twad/portspec"
@@ -184,9 +184,9 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 			params = append(params, filepath.Join(g.getConfigDir(), portspec.PortCanonicalName(g.Port)+portspec.PortConfigFileExtension(g.Port)))
 		}
 	} else if g.SharedConfig != "" {
-		if err := os.MkdirAll(core.PortSharedConfigPath(g.Port), 0755); err == nil {
+		if err := os.MkdirAll(base.PortSharedConfigPath(g.Port), 0755); err == nil {
 			params = append(params, "-config")
-			params = append(params, filepath.Join(core.PortSharedConfigPath(g.Port), g.SharedConfig))
+			params = append(params, filepath.Join(base.PortSharedConfigPath(g.Port), g.SharedConfig))
 		}
 	}
 
@@ -382,11 +382,11 @@ func (g *Game) SwitchMods(a, b int) {
 }
 
 func (g *Game) getSaveDir() string {
-	return filepath.Join(core.GetSavegameFolder(), g.cleansedName())
+	return filepath.Join(base.GetSavegameFolder(), g.cleansedName())
 }
 
 func (g *Game) getConfigDir() string {
-	return filepath.Join(core.GetGameConfigFolder(), g.cleansedName())
+	return filepath.Join(base.GetGameConfigFolder(), g.cleansedName())
 }
 
 // lastSave returns the the file name or slotnumber (depending on source port) for the game
@@ -469,7 +469,7 @@ func (g *Game) RemoveDemo(name string) ([]os.DirEntry, error) {
 }
 
 func (g *Game) getDemoDir() string {
-	return filepath.Join(core.GetDemoFolder(), g.cleansedName())
+	return filepath.Join(base.GetDemoFolder(), g.cleansedName())
 }
 
 // cleansedName removes all but alphanumeric characters from name

@@ -7,7 +7,7 @@ import (
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/core"
+	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/helper"
 )
 
@@ -121,7 +121,7 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 			z.modNameInput.SetLabel(zipImportToLabel + warnColor + " " + zipImportToBadNameLabel)
 			return
 		}
-		if _, err := os.Stat(path.Join(core.Config().WadDir, suggestedName)); !os.IsNotExist(err) {
+		if _, err := os.Stat(path.Join(base.Config().WadDir, suggestedName)); !os.IsNotExist(err) {
 			z.modNameInput.SetLabel(zipImportToLabel + warnColor + " " + zipImportToExistsLabel)
 			return
 		}
@@ -151,7 +151,7 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 			}
 
 			// START ACTUAL IMPORT
-			if err := core.ImportArchive(z.zipPath, z.modName); err != nil {
+			if err := base.ImportArchive(z.zipPath, z.modName); err != nil {
 				showError("Could not import zip", err.Error(), zipInput.selectTree, nil)
 			}
 			z.reset()
