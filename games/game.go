@@ -16,7 +16,7 @@ import (
 	"github.com/zmnpl/twad/base"
 	st "github.com/zmnpl/twad/games/savesStats"
 	"github.com/zmnpl/twad/helper"
-	"github.com/zmnpl/twad/portspec"
+	"github.com/zmnpl/twad/ports"
 )
 
 // Game represents one game configuration
@@ -82,14 +82,14 @@ func (g *Game) Quickload() (err error) {
 // Warp lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) Warp(episode, level, skill int) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(portspec.PortAdjustedSkill(g.Port, skill)))
+	g.run(*newRunConfig().warp(episode, level).setSkill(ports.AdjustedSkill(g.Port, skill)))
 	return
 }
 
 // WarpRecord lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(portspec.PortAdjustedSkill(g.Port, skill)).recordDemo(demoName))
+	g.run(*newRunConfig().warp(episode, level).setSkill(ports.AdjustedSkill(g.Port, skill)).recordDemo(demoName))
 	return
 }
 
@@ -116,7 +116,7 @@ func (g *Game) run(rcfg runconfig) (err error) {
 
 	// change working directory to redirect stat file output for boom
 	wd, wdChangeError := os.Getwd()
-	if portspec.PortFamily(g.Port) == portspec.Boom {
+	if ports.Family(g.Port) == ports.Boom {
 		os.Chdir(g.getSaveDir())
 	}
 
@@ -173,7 +173,7 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	// still keeping it to possibly keep track of it / handle errors
 	// only use separate save dir if directory has been craeted or path exists already
 	if err := os.MkdirAll(g.getSaveDir(), 0755); err == nil {
-		params = append(params, portspec.PortSaveDirParam(g.Port))
+		params = append(params, ports.SaveDirParam(g.Port))
 		params = append(params, g.getSaveDir())
 	}
 
@@ -181,7 +181,7 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	if g.PersonalPortCfg {
 		if err := os.MkdirAll(g.getConfigDir(), 0755); err == nil {
 			params = append(params, "-config")
-			params = append(params, filepath.Join(g.getConfigDir(), portspec.PortCanonicalName(g.Port)+portspec.PortConfigFileExtension(g.Port)))
+			params = append(params, filepath.Join(g.getConfigDir(), ports.CanonicalName(g.Port)+ports.ConfigFileExtension(g.Port)))
 		}
 	} else if g.SharedConfig != "" {
 		if err := os.MkdirAll(base.PortSharedConfigPath(g.Port), 0755); err == nil {
@@ -191,18 +191,18 @@ func (g *Game) getLaunchParams(rcfg runconfig) []string {
 	}
 
 	// stats for zdoom on windows
-	if portspec.PortFamily(g.Port) == portspec.Zdoom && runtime.GOOS == "windows" {
+	if ports.Family(g.Port) == ports.Zdoom && runtime.GOOS == "windows" {
 		params = append(params, "-stdout")
 	}
 
 	// stats for chocolate doom and ports
-	if portspec.PortFamily(g.Port) == portspec.Chocolate {
+	if ports.Family(g.Port) == ports.Chocolate {
 		params = append(params, "-statdump")
 		params = append(params, path.Join(g.getSaveDir(), "statdump.txt"))
 	}
 
 	// stats for chocolate doom and ports
-	if portspec.PortFamily(g.Port) == portspec.Boom {
+	if ports.Family(g.Port) == ports.Boom {
 		params = append(params, "-levelstat")
 	}
 
@@ -274,7 +274,7 @@ func (g *Game) savegameFiles() ([]os.DirEntry, error) {
 	if err != nil {
 		return nil, err
 	}
-	saves = helper.FilterExtensions(saves, portspec.PortSaveFileExtension(g.Port), false)
+	saves = helper.FilterExtensions(saves, ports.SaveFileExtension(g.Port), false)
 
 	sort.Slice(saves, func(i, j int) bool {
 		foo, _ := saves[i].Info()
@@ -318,10 +318,10 @@ func (g *Game) loadSaveStats(s *st.Savegame) {
 
 // GetSaveMeta reads meta information for the given savegame
 func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
-	if portspec.PortFamily(g.Port) == portspec.Chocolate {
+	if ports.Family(g.Port) == ports.Chocolate {
 		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
-	} else if portspec.PortFamily(g.Port) == portspec.Boom {
+	} else if ports.Family(g.Port) == ports.Boom {
 		meta, _ := st.ChocolateMetaFromBinary(savePath)
 		return meta
 	}
@@ -333,9 +333,9 @@ func (g *Game) GetSaveMeta(savePath string) st.SaveMeta {
 // If the port is boom or chocolate, their respective dump-files are used
 func (g *Game) GetStats(savePath string) []st.MapStats {
 	var stats []st.MapStats
-	if portspec.PortFamily(g.Port) == portspec.Chocolate {
+	if ports.Family(g.Port) == ports.Chocolate {
 		stats, _ = st.GetChocolateStats(path.Join(g.getSaveDir(), "statdump.txt"))
-	} else if portspec.PortFamily(g.Port) == portspec.Boom {
+	} else if ports.Family(g.Port) == ports.Boom {
 		stats, _ = st.GetBoomStats(path.Join(g.getSaveDir(), "levelstat.txt"))
 	} else {
 		stats = st.GetZDoomStats(savePath)
@@ -398,7 +398,7 @@ func (g *Game) lastSave() (save string, err error) {
 	}
 
 	// assume zdoom
-	portSaveFileExtension := portspec.PortSaveFileExtension(g.Port)
+	portSaveFileExtension := ports.SaveFileExtension(g.Port)
 
 	// find the newest file
 	newestTime, _ := time.Parse(time.RFC3339, "1900-01-01T00:00:00+00:00")
@@ -415,7 +415,7 @@ func (g *Game) lastSave() (save string, err error) {
 	}
 
 	// adjust for different souce ports
-	save = portspec.PortSaveGameName(g.Port, save)
+	save = ports.SaveGameName(g.Port, save)
 
 	if save == "" {
 		err = os.ErrNotExist

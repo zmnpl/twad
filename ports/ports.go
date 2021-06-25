@@ -1,4 +1,4 @@
-package portspec
+package ports
 
 import "strings"
 
@@ -25,9 +25,9 @@ var (
 	}
 )
 
-// PortFamily checks the games engine type by inspecting the string
+// Family checks the games engine type by inspecting the string
 // known keyphrases will be interpreted as a certain source port family
-func PortFamily(sourcePort string) (t int) {
+func Family(sourcePort string) (t int) {
 	t = Zdoom
 
 	sp := strings.ToLower(sourcePort)
@@ -45,9 +45,9 @@ func PortFamily(sourcePort string) (t int) {
 	return
 }
 
-// PortConfigFileExtension returns the file extension of config files for the give port
-func PortConfigFileExtension(port string) string {
-	switch PortFamily(port) {
+// ConfigFileExtension returns the file extension of config files for the give port
+func ConfigFileExtension(port string) string {
+	switch Family(port) {
 	case Chocolate, Boom:
 		return ".cfg"
 	default:
@@ -55,10 +55,10 @@ func PortConfigFileExtension(port string) string {
 	}
 }
 
-// PortSaveDirParam returns the right paramter key for specifying the savegame directory
+// SaveDirParam returns the right paramter key for specifying the savegame directory
 // accounts for zdoom-, chocolate-doom and boom ports at the moments
-func PortSaveDirParam(port string) string {
-	switch PortFamily(port) {
+func SaveDirParam(port string) string {
+	switch Family(port) {
 	case Boom:
 		return "-save"
 	default:
@@ -66,12 +66,12 @@ func PortSaveDirParam(port string) string {
 	}
 }
 
-// PortAdjustedSkill for source port
+// AdjustedSkill for source port
 // default(zdoom): 0-4 (documenation seems wrong?, so 1-5)
 // chocolate: 1-5
 // boom: 1-5
-func PortAdjustedSkill(port string, skill int) int {
-	switch PortFamily(port) {
+func AdjustedSkill(port string, skill int) int {
+	switch Family(port) {
 	case Chocolate:
 		return skill + 1
 	case Boom:
@@ -81,10 +81,10 @@ func PortAdjustedSkill(port string, skill int) int {
 	}
 }
 
-// PortSaveFileExtension gives the appropriate file extension
+// SaveFileExtension gives the appropriate file extension
 // adjusted for the games source port
-func PortSaveFileExtension(port string) string {
-	switch PortFamily(port) {
+func SaveFileExtension(port string) string {
+	switch Family(port) {
 	case Chocolate, Boom:
 		return ".dsg"
 	default:
@@ -92,10 +92,10 @@ func PortSaveFileExtension(port string) string {
 	}
 }
 
-// PortSaveGameName gives the appropriate syntax for save names
+// SaveGameName gives the appropriate syntax for save names
 // adjusted for the games source port
-func PortSaveGameName(port, save string) string {
-	switch PortFamily(port) {
+func SaveGameName(port, save string) string {
+	switch Family(port) {
 	case Chocolate, Boom:
 		if save != "" {
 			//tmp := []rune(save)
@@ -109,7 +109,7 @@ func PortSaveGameName(port, save string) string {
 	}
 }
 
-func PortCanonicalName(port string) string {
+func CanonicalName(port string) string {
 	sp := strings.ToLower(port)
 	for test, canonical := range PortCanonicalNames {
 		if strings.Contains(sp, test) {

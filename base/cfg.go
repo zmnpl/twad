@@ -12,7 +12,7 @@ import (
 
 	"github.com/mholt/archiver/v3"
 	"github.com/zmnpl/twad/helper"
-	"github.com/zmnpl/twad/portspec"
+	"github.com/zmnpl/twad/ports"
 )
 
 var (
@@ -109,7 +109,7 @@ func firstStart() {
 	}
 
 	// shared config paths
-	for _, canonical := range portspec.PortCanonicalNames {
+	for _, canonical := range ports.PortCanonicalNames {
 		err = os.MkdirAll(PortSharedConfigPath(canonical), 0755)
 		if err != nil {
 			log.Fatal(err)
@@ -394,5 +394,5 @@ func GePathIwads(path string) ([]string, error) {
 
 // PortSharedConfigPath returns the path where common/shared configs for the given port should be stored
 func PortSharedConfigPath(port string) string {
-	return filepath.Join(GetSharedGameConfigFolder(), portspec.PortCanonicalName(port))
+	return filepath.Join(GetSharedGameConfigFolder(), ports.CanonicalName(port))
 }

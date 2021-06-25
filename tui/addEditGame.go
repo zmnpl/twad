@@ -8,7 +8,7 @@ import (
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/games"
-	"github.com/zmnpl/twad/portspec"
+	"github.com/zmnpl/twad/ports"
 )
 
 const (
@@ -66,7 +66,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		title = addGame
 		gWasNil = true
 	}
-	expectedExtension := portspec.PortConfigFileExtension(g.Port)
+	expectedExtension := ports.ConfigFileExtension(g.Port)
 
 	// create basic form items
 	inputName := tview.NewInputField().SetText(g.Name).SetLabel(aeName).SetLabelColor(tview.Styles.SecondaryTextColor)
@@ -98,7 +98,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	inputSourcePort.SetDoneFunc(func(key tcell.Key) {
 		_, selectedPort := inputSourcePort.GetCurrentOption()
 		sharedCfgs = base.GetSharedGameConfigs(selectedPort)
-		expectedExtension = portspec.PortConfigFileExtension(selectedPort)
+		expectedExtension = ports.ConfigFileExtension(selectedPort)
 
 		inputSharedCfg.SetLabel(fmt.Sprintf(aeSharedCfgT, expectedExtension))
 		if inputOwnCfg.IsChecked() {
