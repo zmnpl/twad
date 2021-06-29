@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -395,4 +397,42 @@ func GePathIwads(path string) ([]string, error) {
 // PortSharedConfigPath returns the path where common/shared configs for the given port should be stored
 func PortSharedConfigPath(port string) string {
 	return filepath.Join(GetSharedGameConfigFolder(), ports.CanonicalName(port))
+}
+
+// GetFileFromPK3 returns one specific file from given wad or pk3 file
+// Don't forget to close the ReadCloser when done reading
+// Can return nil if it didn't work out
+func GetFileFromPK3(pk3Path string, filename string) (io.ReadCloser, error) {
+	f, err := os.Open(pk3Path)
+	if err != nil {
+		return nil, err
+	}
+
+	fi, err := f.Stat()
+	if err != nil {
+		return nil, err
+	}
+
+	z := archiver.NewZip()
+	z.Open(f, fi.Size())
+	for {
+		f, err := z.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			break
+		}
+
+		if f.Name() == filename {
+			fmt.Println(f.Name())
+			return f, nil
+		}
+
+		err = f.Close()
+		if err != nil {
+			// TODO: Does that interest me?
+		}
+	}
+	return nil, fmt.Errorf("couldn't find %v in %v", filename, pk3Path)
 }
