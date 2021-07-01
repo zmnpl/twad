@@ -436,3 +436,38 @@ func GetFileFromPK3(pk3Path string, filename string) (io.ReadCloser, error) {
 	}
 	return nil, fmt.Errorf("couldn't find %v in %v", filename, pk3Path)
 }
+
+// GetFileContentStringFromPK3 is a wrapper for GetFileFromPK3
+// It returns the files contents as string
+func GetFileContentStringFromPK3(pk3path, filename string) (contentString string, err error) {
+	content, err := GetFileFromPK3(pk3path, filename)
+	defer content.Close()
+	if err != nil {
+		return
+	}
+
+	contentBytes, err := io.ReadAll(content)
+	if err != nil {
+		return
+	}
+
+	contentString = string(contentBytes)
+	return
+}
+
+// GetFileLinesFromPK3 is a wrapper for GetFileFromPK3
+// It uses a bufio.Scanner to scan the file line by line and return them as slice
+func GetFileLinesFromPK3(pk3path, filename string) (lines []string, err error) {
+	content, err := GetFileFromPK3(pk3path, filename)
+	defer content.Close()
+	if err != nil {
+		return
+	}
+
+	scanner := bufio.NewScanner(content)
+	for scanner.Scan() {
+		lines = append(lines, scanner.Text())
+	}
+
+	return
+}
