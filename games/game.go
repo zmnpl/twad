@@ -424,6 +424,22 @@ func (g *Game) lastSave() (save string, err error) {
 	return
 }
 
+func (g Game) ModMaps() (maps []string) {
+	for _, v := range g.Mods {
+		if strings.HasSuffix(strings.ToLower(v), ".pk3") {
+			lines, _ := base.GetFileLinesFromPK3(v, "mapinfo")
+			for _, l := range lines {
+				if strings.HasPrefix(l, "map") {
+					fields := strings.Split(l, " ")
+					maps = append(maps, fields[0])
+				}
+			}
+		}
+	}
+
+	return
+}
+
 // Demos returns the demo files existing for the game
 func (g *Game) Demos() ([]os.DirEntry, error) {
 	demos, err := os.ReadDir(g.getDemoDir())

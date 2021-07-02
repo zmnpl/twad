@@ -64,6 +64,10 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	warpTo := tview.NewInputField().SetLabel(warpText).SetAcceptanceFunc(warpStringAcceptance).SetFieldWidth(5)
 	warpRecordForm.AddFormItem(warpTo)
 
+	// map select
+	mapSelect := tview.NewDropDown().SetOptions(game.ModMaps(), nil).SetCurrentOption(0).SetLabel("maps")
+	warpRecordForm.AddFormItem(mapSelect)
+
 	// skill level
 	skl := tview.NewDropDown().SetOptions(skillLevels, nil).SetCurrentOption(2).SetLabel(skillText)
 	warpRecordForm.AddFormItem(skl)
