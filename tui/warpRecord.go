@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"sort"
 	"strconv"
 	"strings"
 	"unicode"
@@ -65,7 +66,14 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	warpRecordForm.AddFormItem(warpTo)
 
 	// map select
-	mapSelect := tview.NewDropDown().SetOptions(game.ModMaps(), nil).SetCurrentOption(0).SetLabel("maps")
+	maps := game.ModMaps()
+	displayMaps := make([]string, 0, len(maps)+1)
+	displayMaps = append(displayMaps, "")
+	for k := range maps {
+		displayMaps = append(displayMaps, k)
+	}
+	sort.Strings(displayMaps)
+	mapSelect := tview.NewDropDown().SetOptions(displayMaps, nil).SetCurrentOption(0).SetLabel("maps")
 	warpRecordForm.AddFormItem(mapSelect)
 
 	// skill level
@@ -102,6 +110,7 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	helpHeight := 5
 	width := 50
 	_, _, _, height := warpRecordForm.GetRect()
+	height += 2 // TODO: WHY is the form too small otherwise?
 	_, _, _, containerHeight := container.GetRect()
 
 	// though, if it flows out of the screen, then on top of the game
@@ -110,12 +119,12 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	}
 
 	warpWindowLayout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, yOffset, 1, false).
+		AddItem(nil, yOffset, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
 			AddItem(nil, xOffset, 1, false).
 			AddItem(warpRecordForm, width, 0, true).
 			AddItem(nil, 0, 1, false),
-			height+1, 1, true).
+			height+1, 0, true).
 		AddItem(nil, 0, 1, false)
 
 	return warpWindowLayout

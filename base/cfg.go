@@ -441,10 +441,10 @@ func GetFileFromPK3(pk3Path string, filename string) (io.ReadCloser, error) {
 // It returns the files contents as string
 func GetFileContentStringFromPK3(pk3path, filename string) (contentString string, err error) {
 	content, err := GetFileFromPK3(pk3path, filename)
-	defer content.Close()
 	if err != nil {
 		return
 	}
+	defer content.Close()
 
 	contentBytes, err := io.ReadAll(content)
 	if err != nil {
@@ -459,10 +459,10 @@ func GetFileContentStringFromPK3(pk3path, filename string) (contentString string
 // It uses a bufio.Scanner to scan the file line by line and return them as slice
 func GetFileLinesFromPK3(pk3path, filename string) (lines []string, err error) {
 	content, err := GetFileFromPK3(pk3path, filename)
-	defer content.Close()
 	if err != nil {
 		return
 	}
+	defer content.Close()
 
 	scanner := bufio.NewScanner(content)
 	for scanner.Scan() {

@@ -424,20 +424,30 @@ func (g *Game) lastSave() (save string, err error) {
 	return
 }
 
-func (g Game) ModMaps() (maps []string) {
+func (g Game) ModMaps() map[string]string {
+	maps := make(map[string]string)
+
+	// check all mods
 	for _, v := range g.Mods {
+		// pk3s
 		if strings.HasSuffix(strings.ToLower(v), ".pk3") {
-			lines, _ := base.GetFileLinesFromPK3(v, "mapinfo")
+			mapCounter := 1
+			lines, _ := base.GetFileLinesFromPK3(filepath.Join(base.Config().WadDir, v), "mapinfo")
 			for _, l := range lines {
+				// example line
+				// map aeon22 "Decayed and Conquered"
 				if strings.HasPrefix(l, "map") {
 					fields := strings.Split(l, " ")
-					maps = append(maps, fields[0])
+					if len(fields) >= 3 {
+						maps[fmt.Sprintf("%02d %v", mapCounter, strings.Trim(fields[2], "\""))] = fields[1]
+						mapCounter += 1
+					}
 				}
 			}
 		}
 	}
 
-	return
+	return maps
 }
 
 // Demos returns the demo files existing for the game
