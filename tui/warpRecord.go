@@ -11,7 +11,8 @@ import (
 )
 
 const (
-	warpText          = "Warp E M"
+	warpText          = "Warp ((Episode) Map)"
+	mapSelectText     = "Select Map from Mod"
 	skillText         = "Difficulty"
 	demoText          = "Demo Name"
 	demoTextOverwrite = "Overwriting"
@@ -95,12 +96,24 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	warpRecordForm.AddButton(warpOkButton, func() {
 		episode, level = splitWarpString(warpTo.GetText())
 		difficulty, _ := skl.GetCurrentOption()
+		demo := demoName.GetText()
 
 		appModeNormal() // TODO: looks like this is only executed after the game closed; not sure why
 
+		i, beamToMapDisplayName := mapSelect.GetCurrentOption()
+		if i > 0 {
+			if len(demo) > 0 {
+				game.BeamRecord(maps[beamToMapDisplayName], difficulty, demo)
+				return
+			} else {
+				game.Beam(maps[beamToMapDisplayName], difficulty)
+				return
+			}
+		}
+
 		// supplying a demoname automatically starts recording
-		if len(demoName.GetText()) > 0 {
-			game.WarpRecord(episode, level, difficulty, demoName.GetText())
+		if len(demo) > 0 {
+			game.WarpRecord(episode, level, difficulty, demo)
 		} else {
 			game.Warp(episode, level, difficulty)
 		}
@@ -110,7 +123,6 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	helpHeight := 5
 	width := 50
 	_, _, _, height := warpRecordForm.GetRect()
-	height += 2 // TODO: WHY is the form too small otherwise?
 	_, _, _, containerHeight := container.GetRect()
 
 	// though, if it flows out of the screen, then on top of the game
@@ -124,7 +136,7 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 			AddItem(nil, xOffset, 1, false).
 			AddItem(warpRecordForm, width, 0, true).
 			AddItem(nil, 0, 1, false),
-			height+1, 0, true).
+			height+3, 0, true). // + 3 because default box size in tview is 15x10 (width x height)
 		AddItem(nil, 0, 1, false)
 
 	return warpWindowLayout

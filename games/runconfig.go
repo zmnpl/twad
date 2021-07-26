@@ -3,7 +3,9 @@ package games
 // just to avoid a truckload of parameters to the composing method...
 type runconfig struct {
 	loadLastSave bool
-	beam         bool
+	shouldWarp   bool
+	shouldBeam   bool
+	beamToMap    string
 	recDemo      bool
 	plyDemo      bool
 	demoName     string
@@ -21,8 +23,14 @@ func (rcfg *runconfig) quickload() *runconfig {
 	return rcfg
 }
 
+func (rcfg *runconfig) beam(beamToMap string) *runconfig {
+	rcfg.shouldBeam = true
+	rcfg.beamToMap = beamToMap
+	return rcfg
+}
+
 func (rcfg *runconfig) warp(episode, level int) *runconfig {
-	rcfg.beam = true
+	rcfg.shouldWarp = true
 	rcfg.warpEpisode = episode
 	rcfg.warpLevel = level
 	return rcfg
