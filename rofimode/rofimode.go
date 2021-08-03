@@ -43,7 +43,7 @@ func RunRofiMode(command string) {
 
 	rofi.Wait()
 
-	result := string(stdout.Bytes())
+	result := stdout.String()
 	fmt.Println(result)
 
 	// run selected game
