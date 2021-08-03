@@ -57,6 +57,7 @@ func FilterExtensions(files []os.DirEntry, extensions string, includeDirs bool) 
 	return files
 }
 
+// OpenBrowser tries to open the users default browser with given url
 func Openbrowser(url string) {
 	// test url
 	timeout := time.Duration(1 * time.Second)

@@ -27,10 +27,10 @@ var (
 
 // Family checks the games engine type by inspecting the string
 // known keyphrases will be interpreted as a certain source port family
-func Family(sourcePort string) (t int) {
+func Family(port string) (t int) {
 	t = Zdoom
 
-	sp := strings.ToLower(sourcePort)
+	sp := strings.ToLower(port)
 
 	if strings.Contains(sp, "crispy") || strings.Contains(sp, "chocolate") {
 		t = Chocolate
@@ -109,6 +109,7 @@ func SaveGameName(port, save string) string {
 	}
 }
 
+// CanonicalName translates the given port name to a canonical version by looking it up
 func CanonicalName(port string) string {
 	sp := strings.ToLower(port)
 	for test, canonical := range PortCanonicalNames {
