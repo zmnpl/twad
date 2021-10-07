@@ -68,49 +68,59 @@ func NewGame(name, sourceport, sharedConfig, iwad string) Game {
 // Run executes given configuration and launches the mod
 // Just a wrapper for game.run
 func (g *Game) Run() (err error) {
-	g.run(*newRunConfig())
+	g.run(newRunConfig())
 	return
 }
 
 // Quickload starts the game from it's last savegame
 // Just a wrapper for game.run
 func (g *Game) Quickload() (err error) {
-	g.run(*newRunConfig().quickload())
+	g.run(newRunConfig(quickload()))
 	return
 }
 
 // Warp lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) Warp(episode, level, skill int) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(ports.AdjustedSkill(g.Port, skill)))
+	g.run(newRunConfig(
+		warp(episode, level),
+		setSkill(ports.AdjustedSkill(g.Port, skill))))
 	return
 }
 
 // WarpRecord lets you select episode and level to start in
 // Just a wrapper for game.run
 func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error) {
-	g.run(*newRunConfig().warp(episode, level).setSkill(ports.AdjustedSkill(g.Port, skill)).recordDemo(demoName))
+	g.run(newRunConfig(
+		warp(episode, level),
+		setSkill(ports.AdjustedSkill(g.Port, skill)),
+		recordDemo(demoName)))
 	return
 }
 
 // Beam lets you select a specific map from a mod based on it's name
 // Just a wrapper for game.run
 func (g *Game) Beam(beamToMap string, skill int) (err error) {
-	g.run(*newRunConfig().beam(beamToMap).setSkill(ports.AdjustedSkill(g.Port, skill)))
+	g.run(newRunConfig(
+		beam(beamToMap),
+		setSkill(ports.AdjustedSkill(g.Port, skill))))
 	return
 }
 
 // BeamRecord lets you select a specific map from a mod based on it's name
 // Just a wrapper for game.run
 func (g *Game) BeamRecord(beamToMap string, skill int, demoName string) (err error) {
-	g.run(*newRunConfig().beam(beamToMap).setSkill(ports.AdjustedSkill(g.Port, skill)).recordDemo(demoName))
+	g.run(newRunConfig(
+		beam(beamToMap),
+		setSkill(ports.AdjustedSkill(g.Port, skill)),
+		recordDemo(demoName)))
 	return
 }
 
 // PlayDemo replays the given demo file
 // Wrapper for game.run
 func (g *Game) PlayDemo(name string) {
-	g.run(*newRunConfig().playDemo(name))
+	g.run(newRunConfig(playDemo(name)))
 }
 
 // AddMod adds mod
@@ -125,10 +135,11 @@ func (g *Game) RemoveMod(i int) {
 	g.Mods = append(g.Mods[0:i], g.Mods[i+1:]...)
 }
 
-func (g *Game) run(rcfg runconfig) (err error) {
+func (g *Game) run(rcfg runOptionSet) (err error) {
 	start := time.Now()
 
-	// change working directory to redirect stat file output for boom
+	// change working directory to redirect stat file output
+	// for boom ports only
 	wd, wdChangeError := os.Getwd()
 	if ports.Family(g.Port) == ports.Boom {
 		os.Chdir(g.getSaveDir())
@@ -168,7 +179,7 @@ func (g *Game) composeProcess(params []string) (cmd *exec.Cmd) {
 	return
 }
 
-func (g *Game) getLaunchParams(rcfg runconfig) []string {
+func (g *Game) getLaunchParams(rcfg runOptionSet) []string {
 	params := make([]string, 0, 10)
 
 	// IWAD
@@ -282,7 +293,7 @@ func (g *Game) getLastSaveLaunchParams() (params []string) {
 func (g *Game) CommandList() (command []string) {
 	command = g.Environment
 	command = append(command, g.Port)
-	command = append(command, g.getLaunchParams(*newRunConfig().quickload())...)
+	command = append(command, g.getLaunchParams(newRunConfig(quickload()))...)
 	return
 }
 

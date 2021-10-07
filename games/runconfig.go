@@ -1,7 +1,7 @@
 package games
 
 // just to avoid a truckload of parameters to the composing method...
-type runconfig struct {
+type runOptionSet struct {
 	loadLastSave bool
 	shouldWarp   bool
 	shouldBeam   bool
@@ -14,43 +14,76 @@ type runconfig struct {
 	skill        int
 }
 
-func newRunConfig() *runconfig {
-	return &runconfig{}
+var defaultRunConfig = runOptionSet{
+	//loadLastSave: false,
+	//shouldWarp: false,
+	//shouldBeam: false,
+	//beamToMap 2,
+	//recDemo: false,
+	//plyDemo: false,
+	//demoName: "",
+	//warpEpisode: 1,
+	//warpLevel: 1,
+	//skill: 2,
 }
 
-func (rcfg *runconfig) quickload() *runconfig {
-	rcfg.loadLastSave = true
-	return rcfg
+// use function currying approach to set options instead of working on a pointer
+// results in nice syntac for using newRunConfig(...)
+type runOption func(r runOptionSet) runOptionSet
+
+func newRunConfig(os ...runOption) runOptionSet {
+	ros := defaultRunConfig
+	for _, o := range os {
+		ros = o(ros)
+	}
+	return ros
 }
 
-func (rcfg *runconfig) beam(beamToMap string) *runconfig {
-	rcfg.shouldBeam = true
-	rcfg.beamToMap = beamToMap
-	return rcfg
+func quickload() runOption {
+	return func(ros runOptionSet) runOptionSet {
+		ros.loadLastSave = true
+		return ros
+	}
 }
 
-func (rcfg *runconfig) warp(episode, level int) *runconfig {
-	rcfg.shouldWarp = true
-	rcfg.warpEpisode = episode
-	rcfg.warpLevel = level
-	return rcfg
+func beam(beamToMap string) runOption {
+	return func(ros runOptionSet) runOptionSet {
+		ros.shouldBeam = true
+		ros.beamToMap = beamToMap
+		return ros
+	}
+}
+
+func warp(episode, level int) runOption {
+	return func(ros runOptionSet) runOptionSet {
+		ros.shouldWarp = true
+		ros.warpEpisode = episode
+		ros.warpLevel = level
+		return ros
+	}
 }
 
 // skill is taken for gzdoom (0-4)
 // game will remap if other engine is used
-func (rcfg *runconfig) setSkill(skillLevel int) *runconfig {
-	rcfg.skill = skillLevel
-	return rcfg
+func setSkill(skillLevel int) runOption {
+	return func(ros runOptionSet) runOptionSet {
+		ros.skill = skillLevel
+		return ros
+	}
 }
 
-func (rcfg *runconfig) recordDemo(name string) *runconfig {
-	rcfg.demoName = name
-	rcfg.recDemo = true
-	return rcfg
+func recordDemo(name string) runOption {
+	return func(ros runOptionSet) runOptionSet {
+		ros.demoName = name
+		ros.recDemo = true
+		return ros
+	}
 }
 
-func (rcfg *runconfig) playDemo(name string) *runconfig {
-	rcfg.demoName = name
-	rcfg.plyDemo = true
-	return rcfg
+func playDemo(name string) runOption {
+	return func(ros runOptionSet) runOptionSet {
+		ros.demoName = name
+		ros.plyDemo = true
+		return ros
+	}
 }
