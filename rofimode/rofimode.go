@@ -33,6 +33,7 @@ func RunRofiMode(command string) {
 		//return err
 	}
 
+	// create map with games / indices to later on select and start one from rofi
 	rofiToGame := make(map[string]int)
 	for i, v := range games.Games() {
 		displayName := fmt.Sprintf("%v: %s\n", i, v.Name)
