@@ -54,7 +54,7 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 		SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
 
 	// warp
-	warpTo := tview.NewInputField().SetLabel(warpText).SetAcceptanceFunc(warpStringAcceptance).SetFieldWidth(5)
+	warpTo := tview.NewInputField().SetLabel(dict.warpText).SetAcceptanceFunc(warpStringAcceptance).SetFieldWidth(5)
 	warpRecordForm.AddFormItem(warpTo)
 
 	// map select
@@ -69,22 +69,22 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	warpRecordForm.AddFormItem(mapSelect)
 
 	// skill level
-	skl := tview.NewDropDown().SetOptions(skillLevels, nil).SetCurrentOption(2).SetLabel(skillText)
+	skl := tview.NewDropDown().SetOptions(skillLevels, nil).SetCurrentOption(2).SetLabel(dict.skillText)
 	warpRecordForm.AddFormItem(skl)
 
 	// to record a demo, specify a name
-	demoName := tview.NewInputField().SetLabel(demoText).SetFieldWidth(21)
+	demoName := tview.NewInputField().SetLabel(dict.demoText).SetFieldWidth(21)
 
 	demoName.SetChangedFunc(func(text string) {
-		demoName.SetLabel(demoText)
+		demoName.SetLabel(dict.demoText)
 		if game.DemoExists(demoName.GetText()) {
-			demoName.SetLabel(warnColor + demoTextOverwrite)
+			demoName.SetLabel(warnColor + dict.demoTextOverwrite)
 		}
 	})
 	warpRecordForm.AddFormItem(demoName)
 
 	// confirm button
-	warpRecordForm.AddButton(warpOkButton, func() {
+	warpRecordForm.AddButton(dict.warpOkButton, func() {
 		episode, level = splitWarpString(warpTo.GetText())
 		difficulty, _ := skl.GetCurrentOption()
 		demo := demoName.GetText()

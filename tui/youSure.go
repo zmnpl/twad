@@ -7,8 +7,8 @@ import (
 // help for navigation
 func makeYouSureBox(title string, onOk func(), onCancel func(), xOffset int, yOffset int, container *tview.Box) *tview.Flex {
 	youSureForm := tview.NewForm().
-		AddButton(confirmText, onOk).
-		AddButton(abortText, onCancel)
+		AddButton(dict.confirmText, onOk).
+		AddButton(dict.abortText, onCancel)
 	youSureForm.
 		SetBorder(true).
 		SetTitle(title)

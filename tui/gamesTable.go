@@ -35,13 +35,13 @@ func populateGamesTable() {
 			if r < 1 {
 				switch c {
 				case 0:
-					cell = tview.NewTableCell(gameTableHeaderRating).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(dict.gameTableHeaderRating).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 1:
-					cell = tview.NewTableCell(gameTableHeaderName).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(dict.gameTableHeaderName).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 2:
-					cell = tview.NewTableCell(gameTableHeaderSourcePort).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(dict.gameTableHeaderSourcePort).SetTextColor(tview.Styles.SecondaryTextColor)
 				case 3:
-					cell = tview.NewTableCell(gameTableHeaderIwad).SetTextColor(tview.Styles.SecondaryTextColor)
+					cell = tview.NewTableCell(dict.gameTableHeaderIwad).SetTextColor(tview.Styles.SecondaryTextColor)
 				default:
 					cell = tview.NewTableCell("").SetTextColor(tview.Styles.SecondaryTextColor)
 				}

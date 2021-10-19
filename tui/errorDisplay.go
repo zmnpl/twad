@@ -24,18 +24,18 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 
 	// YOLO lets the user execute and action despite the error
 	if YOLO != nil {
-		errForm.AddButton(errYolo, func() {
+		errForm.AddButton(dict.errYolo, func() {
 			YOLO()
 			contentPages.RemovePage(pageError)
 			resetFocus()
 		})
 
-		errForm.AddButton(errNotYet, func() {
+		errForm.AddButton(dict.errNotYet, func() {
 			contentPages.RemovePage(pageError)
 			resetFocus()
 		})
 	} else {
-		errForm.AddButton(errAbort, func() {
+		errForm.AddButton(dict.errAbort, func() {
 			contentPages.RemovePage(pageError)
 			resetFocus()
 		})
@@ -55,7 +55,7 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 		AddItem(errForm, 3, 0, true)
 	foo.
 		SetBorder(true).
-		SetTitle(errTitleStart + " - " + errTitle).
+		SetTitle(dict.errTitleStart + " - " + errTitle).
 		SetBorderColor(warnColorO).
 		SetTitleColor(warnColorO)
 

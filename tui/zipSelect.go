@@ -26,7 +26,7 @@ func newZipImportUI() *zipImportUI {
 	var zui zipImportUI
 	zui.initZipSelect()
 	zui.initZipImportForm("")
-	zui.importSecurityWarning = tview.NewTextView().SetText(zipImportSecurityWarn).SetTextColor(tcell.ColorRed)
+	zui.importSecurityWarning = tview.NewTextView().SetText(dict.zipImportSecurityWarn).SetTextColor(tcell.ColorRed)
 
 	zui.layout = tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(zui.importSecurityWarning, 1, 0, true).
@@ -46,7 +46,7 @@ func (z *zipImportUI) initZipSelect() {
 
 	var rootNode *tview.TreeNode
 	z.selectTree, rootNode = newTree(rootDir)
-	z.selectTree.SetTitle(zipSelectTitle)
+	z.selectTree.SetTitle(dict.zipSelectTitle)
 	add := makeFileTreeAddFunc(helper.FilterExtensions, ".zip.tar.gz.rar", true, true)
 	add(rootNode, rootDir)
 
@@ -99,7 +99,7 @@ func (z *zipImportUI) initZipSelect() {
 }
 
 func (z *zipImportUI) initZipImportForm(archivePath string) {
-	z.modNameInput = tview.NewInputField().SetLabel(zipImportToLabel).SetText(path.Base(archivePath))
+	z.modNameInput = tview.NewInputField().SetLabel(dict.zipImportToLabel).SetText(path.Base(archivePath))
 	if archivePath == "" {
 		z.modNameInput.SetText("")
 	}
@@ -107,14 +107,14 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 	modNameDoneCheck := func() {
 		suggestedName := z.modNameInput.GetText()
 		if !helper.IsFileNameValid(suggestedName) {
-			z.modNameInput.SetLabel(zipImportToLabel + warnColor + " " + zipImportToBadNameLabel)
+			z.modNameInput.SetLabel(dict.zipImportToLabel + warnColor + " " + dict.zipImportToBadNameLabel)
 			return
 		}
 		if _, err := os.Stat(path.Join(base.Config().WadDir, suggestedName)); !os.IsNotExist(err) {
-			z.modNameInput.SetLabel(zipImportToLabel + warnColor + " " + zipImportToExistsLabel)
+			z.modNameInput.SetLabel(dict.zipImportToLabel + warnColor + " " + dict.zipImportToExistsLabel)
 			return
 		}
-		z.modNameInput.SetLabel(zipImportToLabel)
+		z.modNameInput.SetLabel(dict.zipImportToLabel)
 	}
 
 	z.modNameInput.SetDoneFunc(func(key tcell.Key) {
@@ -123,7 +123,7 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 
 	z.modNameForm = tview.NewForm().
 		AddFormItem(z.modNameInput).
-		AddButton(zipImportFormOk, func() {
+		AddButton(dict.zipImportFormOk, func() {
 			z.modName = z.modNameInput.GetText()
 
 			// test file name again
@@ -145,18 +145,18 @@ func (z *zipImportUI) initZipImportForm(archivePath string) {
 			}
 			z.reset()
 		}).
-		AddButton(zipImportCancel, func() {
+		AddButton(dict.zipImportCancel, func() {
 			z.reset()
 		})
 
 	z.modNameForm.
 		SetBorder(true).
-		SetTitle(zipImportFormTitle)
+		SetTitle(dict.zipImportFormTitle)
 	z.modNameForm.SetFocus(0)
 }
 
 func (z *zipImportUI) reset() {
-	z.modNameInput.SetText("").SetLabel(zipImportToLabel)
+	z.modNameInput.SetText("").SetLabel(dict.zipImportToLabel)
 	z.modNameForm.SetFocus(0)
 	z.modName = ""
 	z.zipPath = ""

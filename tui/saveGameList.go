@@ -13,7 +13,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	frameFlex := tview.NewFlex().SetDirection(tview.FlexRow)
 	frameFlex.SetBorderPadding(0, 0, 1, 1)
 	frameFlex.AddItem(tview.NewTextView().
-		SetText(savesHeader).
+		SetText(dict.savesHeader).
 		SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
 
 	// list

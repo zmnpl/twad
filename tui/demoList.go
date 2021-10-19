@@ -15,7 +15,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 	demoFlex := tview.NewFlex().SetDirection(tview.FlexRow)
 	demoFlex.SetBorderPadding(0, 0, 1, 1)
 	demoFlex.AddItem(tview.NewTextView().
-		SetText(demosHeader).
+		SetText(dict.demosHeader).
 		SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
 
 	// list

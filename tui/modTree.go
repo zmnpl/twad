@@ -20,7 +20,7 @@ func makeModTree(g *games.Game) *tview.TreeView {
 	}
 
 	modFolderTree, rootNode := newTree(rootDir)
-	modFolderTree.SetTitle(modTreeTitle)
+	modFolderTree.SetTitle(dict.modTreeTitle)
 	add := makeFileTreeAddFunc(helper.FilterExtensions, config.ModExtensions, true, false)
 	add(rootNode, rootDir)
 
