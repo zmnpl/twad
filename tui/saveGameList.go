@@ -8,10 +8,6 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-const (
-	savesHeader = "Savegames"
-)
-
 func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	// surrounding container
 	frameFlex := tview.NewFlex().SetDirection(tview.FlexRow)

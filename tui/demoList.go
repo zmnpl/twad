@@ -10,10 +10,6 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-const (
-	demosHeader = "Demos"
-)
-
 func makeDemoList(g *games.Game) (*tview.Flex, error) {
 	// surrounding container
 	demoFlex := tview.NewFlex().SetDirection(tview.FlexRow)

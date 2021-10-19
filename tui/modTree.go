@@ -10,10 +10,6 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-const (
-	modTreeTitle = "Add new mod to game"
-)
-
 // tree view for selecting additional mods TODO
 func makeModTree(g *games.Game) *tview.TreeView {
 	rootDir := config.WadDir

@@ -5,13 +5,6 @@ import (
 	"github.com/rivo/tview"
 )
 
-const (
-	errTitleStart = "ERROR"
-	errYolo       = "I don't care. Go ahead."
-	errNotYet     = "Let me fix that first!"
-	errAbort      = "Ok"
-)
-
 // can show errors prominently on the screen
 // if a function is supplied, the user gets the choice to proceed
 // without fixing what might have cause this on his/her own risk

@@ -10,15 +10,6 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-const (
-	warpText          = "Warp ((Episode) Map)"
-	mapSelectText     = "Select Map from Mod"
-	skillText         = "Difficulty"
-	demoText          = "Demo Name"
-	demoTextOverwrite = "Overwriting"
-	warpOkButton      = "Rip And Tear!"
-)
-
 var (
 	skillLevels []string
 )

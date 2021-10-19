@@ -9,10 +9,6 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-const (
-	overviewMods = "Mods in order"
-)
-
 func makeModList(g *games.Game) *tview.Flex {
 	// surrounding container
 	modListFlex := tview.NewFlex().SetDirection(tview.FlexRow)

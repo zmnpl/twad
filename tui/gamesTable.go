@@ -7,16 +7,6 @@ import (
 	"github.com/zmnpl/twad/helper"
 )
 
-const (
-	gameTableHeaderRating     = "Rating"
-	gameTableHeaderName       = "Name"
-	gameTableHeaderSourcePort = "SourcePort"
-	gameTableHeaderIwad       = "Iwad"
-
-	deleteGameQuestion = "Delete '%v'?"
-	deleteModQuestion  = "Remove '%v' from '%v'?"
-)
-
 // center table with mods
 func makeGamesTable() *tview.Table {
 	gamesTable = tview.NewTable().

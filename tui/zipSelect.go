@@ -11,17 +11,6 @@ import (
 	"github.com/zmnpl/twad/helper"
 )
 
-const (
-	zipSelectTitle          = "Select archive"
-	zipImportToLabel        = "Folder name"
-	zipImportToExistsLabel  = "exists already"
-	zipImportToBadNameLabel = "cannot use that name"
-	zipImportFormTitle      = "Import to"
-	zipImportFormOk         = "Import"
-	zipImportCancel         = "Back"
-	zipImportSecurityWarn   = "SECURITY WARNING: Only import archives from trusted sources!"
-)
-
 type zipImportUI struct {
 	layout                *tview.Flex
 	selectTree            *tview.TreeView

@@ -11,26 +11,6 @@ import (
 	"github.com/zmnpl/twad/ports"
 )
 
-const (
-	addGame  = "Add New Game"
-	editGame = "Edit Game"
-
-	aeName       = "Name"
-	aeSourcePort = "Source Port"
-	aeIWAD       = "IWAD"
-	aeOwnCfg     = "Use Own Config"
-	aeSharedCfgT = "Use Shared Config [%v]"
-	aeLink       = "Mod URL"
-
-	aeEnvironment       = "Environment Variables *"
-	aeEnvironmentDetail = `* Provide environment variables here; To turn VSync off entirely for example:
-"vblank_mode=1"`
-	aeOtherParams       = "Others **"
-	aeOtherParamsDetail = "** Other parameters you want to pass to your ZDoom port for this game"
-
-	aeOkButton = "Ok"
-)
-
 func splitParams(params string) []string {
 	result := strings.Split(params, " ")
 	for i := range result {
@@ -145,7 +125,6 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	})
 
 	// add controls in order
-
 	ae.AddFormItem(inputName)
 	ae.AddFormItem(inputSourcePort)
 	ae.AddFormItem(inputIwad)

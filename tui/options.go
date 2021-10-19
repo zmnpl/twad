@@ -14,23 +14,6 @@ import (
 	"github.com/zmnpl/twad/base"
 )
 
-const (
-	optsErrPathDoesntExist = "doesn't exist"
-	optsErrPathNoIWads     = "doesn't contain IWADs"
-	optsLooksGood          = "looks good"
-
-	optsHeader                   = "Options"
-	optsOkButtonLabel            = "Save"
-	optsPathLabel                = "WAD Dir"
-	optsDontDOOMWADDIR           = "Do NOT set DOOMWADDIR for current session (use your shell's default)"
-	optsWriteBasePathToEngineCFG = "Write the path into DOOM engines *.ini files"
-	optsDontWarn                 = "Do NOT warn before deletion"
-	optsSourcePortLabel          = "Source Port"
-	optsIwadsLabel               = "IWADs"
-	optsHideHeader               = "UI - Hide big DOOM logo"
-	optsGamesListRelativeWitdh   = "UI - Game list relative width (1-100%)"
-)
-
 // function to check source port entry
 var sourcePortCheck = func(input *tview.InputField) {
 	// does this path exist?

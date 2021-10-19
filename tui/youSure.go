@@ -4,11 +4,6 @@ import (
 	"github.com/rivo/tview"
 )
 
-const (
-	confirmText = "Delete"
-	abortText   = "Hell No!"
-)
-
 // help for navigation
 func makeYouSureBox(title string, onOk func(), onCancel func(), xOffset int, yOffset int, container *tview.Box) *tview.Flex {
 	youSureForm := tview.NewForm().
