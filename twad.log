@@ -1,61 +1,8 @@
-
-(zandronum:528795): Gtk-WARNING **: 08:21:30.639: Unable to locate theme engine in module_path: "adwaita",
-
-(zandronum:528795): Gtk-WARNING **: 08:21:30.640: Unable to locate theme engine in module_path: "adwaita",
-Zandronum 3.0.1 - 191013-1938 - SDL version
-Compiled on Oct 13 2019
-Using video driver x11
-
-M_LoadDefaults: Load system defaults.
-Gameinfo scan took 0 ms
-W_Init: Init WADfiles.
- adding /usr/share/zandronum/zandronum.pk3, 689 lumps
- adding /home/simon/DOOM/doom.wad, 2306 lumps
-I_Init: Setting up machine state.
-CPU Vendor ID: AuthenticAMD
-  Name: AMD Ryzen 7 3700X 8-Core Processor 
-  Family 23 (23), Model 113, Stepping 0
-  Features: MMX MMX+ SSE SSE2 SSE3 SSSE3 SSE4.1 SSE4.2
-I_InitSound: Initializing FMOD
-FMOD Sound System, copyright © Firelight Technologies Pty, Ltd., 1994-2009.
-Loaded FMOD version 4.24.16
-V_Init: allocate screen.
-Using in-memory database. The database will not be saved on exit.
-S_Init: Setting up sound.
-ST_Init: Init startup screen.
-Checking cmd-line parameters...
-S_InitData: Load sound definitions.
-G_ParseMapInfo: Load map definitions.
-Texman.Init: Init texture manager.
-ParseTeamInfo: Load team definitions.
-LoadActors: Load actor definitions.
-R_Init: Init Doom refresh subsystem.
-DecalLibrary: Load decals.
-PWO_Init: Initializing preferred weapon order.
-M_Init: Init menus.
-P_Init: Init Playloop state.
-ParseSBarInfo: Loading default status bar definition.
-ParseSBarInfo: Loading custom status bar definition.
-D_CheckNetGame: Checking network game status.
-player 1 of 1 (1 nodes)
-Initializing network subsystem.
-IP address 127.0.1.1:10667
-UDP Initialized.
-Support for non power 2 textures enabled.
-Occlusion query enabled.
-Resolution: 2560 x 1440
-Starting MIDI playback failed
-Playing demo DEMO1
-Cannot play non-ZDoom demos.
-Playing demo DEMO2
-Cannot play non-ZDoom demos.
+/usr/share/zandronum/zandronum: error while loading shared libraries: libgtk-x11-2.0.so.0: cannot open shared object file: No such file or directory
 
 
-*** Fatal Error ***
+exit status 127
 
+[-iwad doom2.wad -file AeonDM/aeondm.pk3 -savedir /home/simon/.config/twad/savegames/AeonDM -config /home/simon/.config/twad/configs_shared/zandronum/zandronum_sp_base.ini ]
 
-signal: segmentation fault (core dumped)
-
-[-iwad doom.wad -savedir /home/simon/.config/twad/savegames/DoomZandronum ]
-
-/usr/bin/zandronum -iwad doom.wad -savedir /home/simon/.config/twad/savegames/DoomZandronum 
+/usr/bin/zandronum -iwad doom2.wad -file AeonDM/aeondm.pk3 -savedir /home/simon/.config/twad/savegames/AeonDM -config /home/simon/.config/twad/configs_shared/zandronum/zandronum_sp_base.ini 

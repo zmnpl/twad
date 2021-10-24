@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"os"
 	"path"
 
 	"github.com/gdamore/tcell/v2"
@@ -25,7 +24,7 @@ func makeModList(g *games.Game) *tview.Flex {
 	// populate list with data
 	for _, mod := range g.Mods {
 		colorPrefix := ""
-		if _, err := os.Stat(path.Join(config.WadDir, mod)); os.IsNotExist(err) {
+		if !base.ModOk(mod) {
 			colorPrefix = "[red]"
 		}
 		modList.AddItem(colorPrefix+path.Base(mod), path.Dir(mod), '*', nil)
@@ -109,7 +108,6 @@ func makeModList(g *games.Game) *tview.Flex {
 						app.SetFocus(modList)
 					},
 					func() {
-						//appModeNormal()
 						detailSidePagesSub1.RemovePage(pageYouSure)
 						app.SetFocus(modList)
 					},

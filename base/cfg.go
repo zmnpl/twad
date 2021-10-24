@@ -8,6 +8,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -269,6 +270,15 @@ func WadDirIsSane() bool {
 	// TODO: other bad ideas?
 	// contains no wad
 
+	return true
+}
+
+// ModOk checks, if the given mod (relative file path) exists within the configured DOOMWADDIR
+// TODO: Maybe even check with MD5
+func ModOk(mod string) bool {
+	if _, err := os.Stat(path.Join(instance.WadDir, mod)); os.IsNotExist(err) {
+		return false
+	}
 	return true
 }
 
