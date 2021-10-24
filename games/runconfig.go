@@ -2,16 +2,16 @@ package games
 
 // just to avoid a truckload of parameters to the composing method...
 type runOptionSet struct {
-	loadLastSave bool
-	shouldWarp   bool
-	shouldBeam   bool
-	beamToMap    string
-	recDemo      bool
-	plyDemo      bool
-	demoName     string
-	warpEpisode  int
-	warpLevel    int
-	skill        int
+	loadLastSave  bool
+	shouldWarp    bool
+	shouldGoToMap bool
+	goToMap       string
+	recDemo       bool
+	plyDemo       bool
+	demoName      string
+	warpEpisode   int
+	warpLevel     int
+	skill         int
 }
 
 var defaultRunConfig = runOptionSet{
@@ -46,10 +46,10 @@ func quickload() runOption {
 	}
 }
 
-func beam(beamToMap string) runOption {
+func goToMap(mapName string) runOption {
 	return func(ros runOptionSet) runOptionSet {
-		ros.shouldBeam = true
-		ros.beamToMap = beamToMap
+		ros.shouldGoToMap = true
+		ros.goToMap = mapName
 		return ros
 	}
 }

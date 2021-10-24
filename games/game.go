@@ -98,20 +98,20 @@ func (g *Game) WarpRecord(episode, level, skill int, demoName string) (err error
 	return
 }
 
-// Beam lets you select a specific map from a mod based on it's name
+// GoToMap lets you select a specific map from a mod based on it's name
 // Just a wrapper for game.run
-func (g *Game) Beam(beamToMap string, skill int) (err error) {
+func (g *Game) GoToMap(mapName string, skill int) (err error) {
 	g.run(newRunConfig(
-		beam(beamToMap),
+		goToMap(mapName),
 		setSkill(ports.AdjustedSkill(g.Port, skill))))
 	return
 }
 
-// BeamRecord lets you select a specific map from a mod based on it's name
+// GoToMapRecord lets you select a specific map from a mod based on it's name
 // Just a wrapper for game.run
-func (g *Game) BeamRecord(beamToMap string, skill int, demoName string) (err error) {
+func (g *Game) GoToMapRecord(mapName string, skill int, demoName string) (err error) {
 	g.run(newRunConfig(
-		beam(beamToMap),
+		goToMap(mapName),
 		setSkill(ports.AdjustedSkill(g.Port, skill)),
 		recordDemo(demoName)))
 	return
@@ -239,10 +239,10 @@ func (g *Game) getLaunchParams(rcfg runOptionSet) []string {
 	// start a specific map
 	// either by warping to a episode / level
 	// or by
-	if ports.Family(g.Port) == ports.Zdoom && rcfg.shouldBeam && len(rcfg.beamToMap) > 0 {
+	if ports.Family(g.Port) == ports.Zdoom && rcfg.shouldGoToMap && len(rcfg.goToMap) > 0 {
 		// first try mod map by name (only zdoom for now)
 		params = append(params, "+map")
-		params = append(params, rcfg.beamToMap)
+		params = append(params, rcfg.goToMap)
 
 		// add skill
 		params = append(params, "-skill")
