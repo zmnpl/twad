@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"os"
 	"path"
 
 	"github.com/gdamore/tcell/v2"
@@ -23,7 +24,11 @@ func makeModList(g *games.Game) *tview.Flex {
 	modList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
 	// populate list with data
 	for _, mod := range g.Mods {
-		modList.AddItem(path.Base(mod), path.Dir(mod), '|', nil)
+		colorPrefix := ""
+		if _, err := os.Stat(path.Join(config.WadDir, mod)); os.IsNotExist(err) {
+			colorPrefix = "[red]"
+		}
+		modList.AddItem(colorPrefix+path.Base(mod), path.Dir(mod), '*', nil)
 	}
 
 	// edit functionality
