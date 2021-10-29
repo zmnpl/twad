@@ -94,10 +94,10 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 		i, beamToMapDisplayName := mapSelect.GetCurrentOption()
 		if i > 0 {
 			if len(demo) > 0 {
-				game.BeamRecord(maps[beamToMapDisplayName], difficulty, demo)
+				game.GoToMapRecord(maps[beamToMapDisplayName], difficulty, demo)
 				return
 			} else {
-				game.Beam(maps[beamToMapDisplayName], difficulty)
+				game.GoToMap(maps[beamToMapDisplayName], difficulty)
 				return
 			}
 		}
