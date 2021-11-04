@@ -51,6 +51,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	// create basic form items
 	inputName := tview.NewInputField().SetText(g.Name).SetLabel(dict.aeName).SetLabelColor(tview.Styles.SecondaryTextColor)
 	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(dict.aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputNoDeh := tview.NewCheckbox().SetLabel(dict.aeNoDeh).SetLabelColor(tview.Styles.SecondaryTextColor)
 	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig).SetLabel(fmt.Sprintf(dict.aeSharedCfgT, expectedExtension)).SetLabelColor(tview.Styles.SecondaryTextColor)
 	if g.PersonalPortCfg {
 		inputSharedCfg.SetLabel(warnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
@@ -129,6 +130,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	ae.AddFormItem(inputSourcePort)
 	ae.AddFormItem(inputIwad)
 	ae.AddFormItem(inputOwnCfg)
+	ae.AddFormItem(inputNoDeh)
 	ae.AddFormItem(inputSharedCfg)
 	ae.AddFormItem(inputURL)
 	ae.AddFormItem(inputEnvVars)

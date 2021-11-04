@@ -12,6 +12,7 @@ type dictionary struct {
 	aeSourcePort string
 	aeIWAD       string
 	aeOwnCfg     string
+	aeNoDeh      string
 	aeSharedCfgT string
 	aeLink       string
 
@@ -98,6 +99,7 @@ func defaultDict() dictionary {
 		aeSourcePort: "Source Port",
 		aeIWAD:       "IWAD",
 		aeOwnCfg:     "Use Own Config",
+		aeNoDeh:      "nodeh",
 		aeSharedCfgT: "Use Shared Config [%v]",
 		aeLink:       "Mod URL",
 
