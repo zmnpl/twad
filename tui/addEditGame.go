@@ -51,7 +51,8 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	// create basic form items
 	inputName := tview.NewInputField().SetText(g.Name).SetLabel(dict.aeName).SetLabelColor(tview.Styles.SecondaryTextColor)
 	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(dict.aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
-	inputNoDeh := tview.NewCheckbox().SetLabel(dict.aeNoDeh).SetLabelColor(tview.Styles.SecondaryTextColor)
+	// TODO: Add SetChecked()
+	inputNoDeh := tview.NewCheckbox().SetChecked(g.NoDeh).SetLabel(dict.aeNoDeh).SetLabelColor(tview.Styles.SecondaryTextColor)
 	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig).SetLabel(fmt.Sprintf(dict.aeSharedCfgT, expectedExtension)).SetLabelColor(tview.Styles.SecondaryTextColor)
 	if g.PersonalPortCfg {
 		inputSharedCfg.SetLabel(warnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
@@ -141,9 +142,11 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		_, g.Port = inputSourcePort.GetCurrentOption()
 		_, g.Iwad = inputIwad.GetCurrentOption()
 		g.PersonalPortCfg = inputOwnCfg.IsChecked()
+		g.NoDeh = inputNoDeh.IsChecked()
 		g.SharedConfig = inputSharedCfg.GetText()
 		g.Environment = splitParams(inputEnvVars.GetText())
 		g.CustomParameters = splitParams(inputCustomParams.GetText())
+		
 		g.Link = inputURL.GetText()
 
 		if gWasNil {

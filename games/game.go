@@ -35,6 +35,7 @@ type Game struct {
 	AddEdit          time.Time      `json:"added"`
 	Link             string         `json:"link"`
 	PersonalPortCfg  bool           `json:"own_source_port_cfg"`
+	NoDeh            bool           `json:"no_deh"`
 	SharedConfig     string         `json:"shared_config"`
 	Stats            []st.MapStats
 	StatsTotal       st.MapStats
@@ -191,6 +192,10 @@ func (g *Game) getLaunchParams(rcfg runOptionSet) []string {
 	if len(g.Mods) > 0 {
 		params = append(params, "-file") // -file seems to be universal across zdoom, boom and chocolate doom
 		params = append(params, g.Mods...)
+	}
+
+	if g.NoDeh {
+		params = append(params, "-nodeh")
 	}
 
 	// custom game save directory
