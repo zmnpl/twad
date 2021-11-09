@@ -78,7 +78,7 @@ func init() {
 func defaultConfig() Cfg {
 	config := Cfg{
 		WadDir:                filepath.Join(helper.Home(), "/DOOM"),
-		ModExtensions:         ".wad.pk3.ipk3.pke",
+		ModExtensions:         ".wad.pk3.ipk3.pke.deh",
 		Ports:                 []string{"gzdoom", "zandronum", "lzdoom"},
 		IWADs:                 []string{"doom2.wad", "doom.wad", "plutonia.wad", "tnt.wad", "heretic.wad", "boa.ipk3"},
 		GameListRelativeWidth: 40,
@@ -185,6 +185,10 @@ func updateConfig() {
 		// new known mod extension
 		if !strings.Contains(instance.ModExtensions, ".pke") {
 			instance.ModExtensions = instance.ModExtensions + ".pke"
+		}
+
+		if !strings.Contains(instance.ModExtensions, ".deh") {
+			instance.ModExtensions = instance.ModExtensions + ".deh"
 		}
 		// additional known iwads
 		instance.IWADs = append(instance.IWADs, "boa.ipk3", "plutonia.wad", "tnt.wad", "heretic.wad")

@@ -30,6 +30,8 @@ func stylizeCommandList(params []string) string {
 	keywords := map[string]bool{
 		"-iwad":          true,
 		"-file":          true,
+		"-nodeh":         true,
+		"-deh":           true,
 		"-savedir":       true,
 		"-save":          true,
 		"-config":        true,

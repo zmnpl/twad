@@ -66,6 +66,16 @@ func NewGame(name, sourceport, sharedConfig, iwad string) Game {
 	return game
 }
 
+func isDehFile(file string) bool {
+	s := file[len(file)-3:]
+
+	if (s == "deh" || s == "DEH") {
+		return true
+	}
+
+	return false
+}
+
 // Run executes given configuration and launches the mod
 // Just a wrapper for game.run
 func (g *Game) Run() (err error) {
@@ -188,14 +198,32 @@ func (g *Game) getLaunchParams(rcfg runOptionSet) []string {
 		params = append(params, "-iwad", g.Iwad) // -iwad seems to be universal across zdoom, boom and chocolate doom
 	}
 
-	// mods
+	modsWads := []string{}
+	modsDeh  := []string{}
+
 	if len(g.Mods) > 0 {
+		for _, file := range g.Mods {
+			if isDehFile(file) {
+				modsDeh = append(modsDeh, os.Getenv("DOOMWADDIR") + "/" + file)
+			} else {
+				modsWads = append(modsWads, file)
+			}
+		}
+	}
+
+	// mods
+	if len(modsWads) > 0 {
 		params = append(params, "-file") // -file seems to be universal across zdoom, boom and chocolate doom
-		params = append(params, g.Mods...)
+		params = append(params, modsWads...)
 	}
 
 	if g.NoDeh {
 		params = append(params, "-nodeh")
+	}
+
+	if len(modsDeh) > 0 {
+		params = append(params, "-deh")
+		params = append(params, modsDeh...)
 	}
 
 	// custom game save directory
