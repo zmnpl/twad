@@ -66,9 +66,12 @@ func NewGame(name, sourceport, sharedConfig, iwad string) Game {
 	return game
 }
 
+// Checks if FILE is a DeHacked file
+// by comparing its last three letters to "deh" or "DEH"
 func isDehFile(file string) bool {
 	s := file[len(file)-3:]
 
+	// Lowercase or uppercase are both common
 	if (s == "deh" || s == "DEH") {
 		return true
 	}
@@ -198,12 +201,16 @@ func (g *Game) getLaunchParams(rcfg runOptionSet) []string {
 		params = append(params, "-iwad", g.Iwad) // -iwad seems to be universal across zdoom, boom and chocolate doom
 	}
 
+	// some mapsets need both .wad files (wad, pk3, pke, etc.) and DeHacked files (.deh) to work on some ports
+	// but the former needs a -file parameter, while the latter needs a -deh parameter
+	// so we split g.Mods in two by using the isDehFile() function
 	modsWads := []string{}
 	modsDeh  := []string{}
 
 	if len(g.Mods) > 0 {
 		for _, file := range g.Mods {
 			if isDehFile(file) {
+				// some ports (e.g. Woof!) don't auto check for .deh files on DOOMWADDIR
 				modsDeh = append(modsDeh, os.Getenv("DOOMWADDIR") + "/" + file)
 			} else {
 				modsWads = append(modsWads, file)
@@ -211,16 +218,18 @@ func (g *Game) getLaunchParams(rcfg runOptionSet) []string {
 		}
 	}
 
-	// mods
+	// mods 
 	if len(modsWads) > 0 {
 		params = append(params, "-file") // -file seems to be universal across zdoom, boom and chocolate doom
 		params = append(params, modsWads...)
 	}
 
+	// some mods need this
 	if g.NoDeh {
 		params = append(params, "-nodeh")
 	}
 
+	// DeHacked files
 	if len(modsDeh) > 0 {
 		params = append(params, "-deh")
 		params = append(params, modsDeh...)
