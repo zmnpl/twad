@@ -27,7 +27,7 @@ func makeModList(g *games.Game) *tview.Flex {
 		if !base.ModOk(mod) {
 			colorPrefix = "[red]"
 		}
-		modList.AddItem(colorPrefix+path.Base(mod), path.Dir(mod), '*', nil)
+		modList.AddItem(colorPrefix+path.Base(mod), path.Dir(mod), 0, nil)
 	}
 
 	// edit functionality
