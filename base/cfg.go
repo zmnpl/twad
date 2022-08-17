@@ -45,7 +45,7 @@ var (
 )
 
 const (
-	CFG_VERSION      = 1
+	CFG_VERSION      = 2
 	configName       = "twad.json"
 	configPath       = ".config/twad"
 	MAX_SOURCE_PORTS = 6
@@ -78,7 +78,7 @@ func init() {
 func defaultConfig() Cfg {
 	config := Cfg{
 		WadDir:                filepath.Join(helper.Home(), "/DOOM"),
-		ModExtensions:         ".wad.pk3.ipk3.pke",
+		ModExtensions:         ".wad.pk3.ipk3.pke.zip",
 		Ports:                 []string{"gzdoom", "zandronum", "lzdoom"},
 		IWADs:                 []string{"doom2.wad", "doom.wad", "plutonia.wad", "tnt.wad", "heretic.wad", "boa.ipk3"},
 		GameListRelativeWidth: 40,
@@ -188,6 +188,13 @@ func updateConfig() {
 		}
 		// additional known iwads
 		instance.IWADs = append(instance.IWADs, "boa.ipk3", "plutonia.wad", "tnt.wad", "heretic.wad")
+	}
+
+	// v2
+	if instance.CfgVersion < 2 {
+		if !strings.Contains(instance.ModExtensions, ".zip") {
+			instance.ModExtensions = instance.ModExtensions + ".zip"
+		}
 	}
 
 	instance.CfgVersion = CFG_VERSION
