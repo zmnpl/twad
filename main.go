@@ -24,6 +24,7 @@ func main() {
 		}
 
 	}
+	//
 	//cfg.GetInstance().Configured = false
 	tui.Draw()
 }
