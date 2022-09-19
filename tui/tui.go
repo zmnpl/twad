@@ -70,7 +70,7 @@ var (
 	gamesTable     *tview.Table
 	commandPreview *tview.TextView
 
-	zipInput       *zipImportUI
+	zipInput       *zipSelect
 	idgamesBrowser *goidgames.IdgamesBrowser
 )
 

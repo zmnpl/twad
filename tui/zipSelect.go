@@ -2,40 +2,27 @@ package tui
 
 import (
 	"os"
-	"path"
-	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/helper"
 )
 
-type zipImportUI struct {
-	layout                *tview.Flex
-	selectTree            *tview.TreeView
-	modNameInput          *tview.InputField
-	modNameForm           *tview.Form
-	importSecurityWarning *tview.TextView
-
-	zipPath string
-	modName string
+type zipSelect struct {
+	layout     *tview.Flex
+	selectTree *tview.TreeView
 }
 
-func newZipImportUI() *zipImportUI {
-	var zui zipImportUI
+func newZipImportUI() *zipSelect {
+	var zui zipSelect
 	zui.initZipSelect()
-	zui.initZipImportForm("")
-	zui.importSecurityWarning = tview.NewTextView().SetText(dict.zipImportSecurityWarn).SetTextColor(tcell.ColorRed)
 
 	zui.layout = tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(zui.importSecurityWarning, 1, 0, true).
-		AddItem(zui.selectTree, 0, 1, true).
-		AddItem(zui.modNameForm, 7, 0, false)
+		AddItem(zui.selectTree, 0, 1, true)
 	return &zui
 }
 
-func (z *zipImportUI) initZipSelect() {
+func (z *zipSelect) initZipSelect() {
 	//rootDir := helper.Home() // TODO: Start from / but preselect /home/user
 	rootDir := "/"
 	if _, err := os.Stat(rootDir); err != nil {
@@ -76,9 +63,7 @@ func (z *zipImportUI) initZipSelect() {
 			case fi.IsDir():
 				add(node, selPath)
 			default:
-				z.zipPath = selPath
-				z.modNameInput.SetText(strings.TrimSuffix(path.Base(selPath), path.Ext(selPath)))
-				app.SetFocus(z.modNameForm)
+				runZipImport(selPath, z.selectTree)
 			}
 		} else {
 			node.SetExpanded(!node.IsExpanded())
@@ -98,67 +83,6 @@ func (z *zipImportUI) initZipSelect() {
 	})
 }
 
-func (z *zipImportUI) initZipImportForm(archivePath string) {
-	z.modNameInput = tview.NewInputField().SetLabel(dict.zipImportToLabel).SetText(path.Base(archivePath))
-	if archivePath == "" {
-		z.modNameInput.SetText("")
-	}
-
-	modNameDoneCheck := func() {
-		suggestedName := z.modNameInput.GetText()
-		if !helper.IsFileNameValid(suggestedName) {
-			z.modNameInput.SetLabel(dict.zipImportToLabel + warnColor + " " + dict.zipImportToBadNameLabel)
-			return
-		}
-		if _, err := os.Stat(path.Join(base.Config().WadDir, suggestedName)); !os.IsNotExist(err) {
-			z.modNameInput.SetLabel(dict.zipImportToLabel + warnColor + " " + dict.zipImportToExistsLabel)
-			return
-		}
-		z.modNameInput.SetLabel(dict.zipImportToLabel)
-	}
-
-	z.modNameInput.SetDoneFunc(func(key tcell.Key) {
-		modNameDoneCheck()
-	})
-
-	z.modNameForm = tview.NewForm().
-		AddFormItem(z.modNameInput).
-		AddButton(dict.zipImportFormOk, func() {
-			z.modName = z.modNameInput.GetText()
-
-			// test file name again
-			if !helper.IsFileNameValid(z.modName) {
-				showError("Cannot use that name", "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder", z.modNameInput, nil)
-				return
-			}
-
-			// test if provided zip exists
-			if _, err := os.Stat(z.zipPath); os.IsNotExist(err) {
-				showError("Mod archive not found", err.Error(), zipInput.selectTree, nil)
-				zipInput.reset()
-				return
-			}
-
-			// START ACTUAL IMPORT
-			if err := base.ImportArchive(z.zipPath, z.modName); err != nil {
-				showError("Could not import zip", err.Error(), zipInput.selectTree, nil)
-			}
-			z.reset()
-		}).
-		AddButton(dict.zipImportCancel, func() {
-			z.reset()
-		})
-
-	z.modNameForm.
-		SetBorder(true).
-		SetTitle(dict.zipImportFormTitle)
-	z.modNameForm.SetFocus(0)
-}
-
-func (z *zipImportUI) reset() {
-	z.modNameInput.SetText("").SetLabel(dict.zipImportToLabel)
-	z.modNameForm.SetFocus(0)
-	z.modName = ""
-	z.zipPath = ""
+func (z *zipSelect) reset() {
 	app.SetFocus(z.selectTree)
 }
