@@ -20,12 +20,9 @@ func runZipImport(archivePath string, handFocusBackTo tview.Primitive) {
 		contentPages.RemovePage(pageZipImport)
 		if handFocusBackTo != nil {
 			app.SetFocus(handFocusBackTo)
-		} else {
-			appModeNormal()
+			return
 		}
 	}
-
-	importSecurityWarning := tview.NewTextView().SetText(dict.zipImportSecurityWarn).SetTextColor(tcell.ColorRed)
 
 	modNameInput := tview.NewInputField().SetLabel(dict.zipImportToLabel).SetText(path.Base(archivePath))
 	modNameInput.SetText(strings.TrimSuffix(path.Base(archivePath), path.Ext(archivePath)))
@@ -49,30 +46,29 @@ func runZipImport(archivePath string, handFocusBackTo tview.Primitive) {
 
 	modNameForm := tview.NewForm().
 		AddFormItem(modNameInput).
+		AddButton(dict.zipImportCancel, func() {
+			resetFocus()
+		}).
 		AddButton(dict.zipImportFormOk, func() {
 			modName := modNameInput.GetText()
+			resetFocus()
 
 			// test file name again
 			if !helper.IsFileNameValid(modName) {
-				showError("Cannot use that name", "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder", modNameInput, nil)
+				showError(dict.zipImportNameInvalid, dict.zipImportNameInvalidReasons, modNameInput, nil)
 				return
 			}
 
 			// test if provided zip exists
 			if _, err := os.Stat(archivePath); os.IsNotExist(err) {
-				showError("Mod archive not found", err.Error(), zipInput.selectTree, nil)
-				zipInput.reset()
+				showError(dict.zipImportArchiveNotFound, err.Error(), handFocusBackTo, nil)
 				return
 			}
 
 			// START ACTUAL IMPORT
 			if err := base.ImportArchive(archivePath, modName); err != nil {
-				showError("Could not import zip", err.Error(), zipInput.selectTree, nil)
+				showError(dict.zipImportFailed, err.Error(), handFocusBackTo, nil)
 			}
-			resetFocus()
-		}).
-		AddButton(dict.zipImportCancel, func() {
-			resetFocus()
 		})
 
 	modNameForm.
@@ -82,7 +78,7 @@ func runZipImport(archivePath string, handFocusBackTo tview.Primitive) {
 	modNameForm.SetFocus(0)
 
 	layout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(importSecurityWarning, 1, 0, true).
+		AddItem(tview.NewTextView().SetText(dict.zipImportSecurityWarn).SetTextColor(tcell.ColorRed), 1, 0, true).
 		AddItem(modNameForm, 7, 0, false)
 
 	contentPages.AddPage(pageZipImport, layout, true, true)

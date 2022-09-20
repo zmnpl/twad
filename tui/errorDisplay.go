@@ -15,28 +15,25 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 	// sets focus to the given primitive
 	// if nil was given, then the apps default state will be restored
 	resetFocus := func() {
+		contentPages.RemovePage(pageError)
 		if handFocusBackTo != nil {
 			app.SetFocus(handFocusBackTo)
-		} else {
-			appModeNormal()
+			return
 		}
+		appModeNormal()
 	}
 
 	// YOLO lets the user execute and action despite the error
 	if YOLO != nil {
 		errForm.AddButton(dict.errYolo, func() {
 			YOLO()
-			contentPages.RemovePage(pageError)
 			resetFocus()
 		})
-
 		errForm.AddButton(dict.errNotYet, func() {
-			contentPages.RemovePage(pageError)
 			resetFocus()
 		})
 	} else {
 		errForm.AddButton(dict.errAbort, func() {
-			contentPages.RemovePage(pageError)
 			resetFocus()
 		})
 	}

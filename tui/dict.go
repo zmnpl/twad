@@ -75,14 +75,18 @@ type dictionary struct {
 	abortText   string
 
 	// zipselect
-	zipSelectTitle          string
-	zipImportToLabel        string
-	zipImportToExistsLabel  string
-	zipImportToBadNameLabel string
-	zipImportFormTitle      string
-	zipImportFormOk         string
-	zipImportCancel         string
-	zipImportSecurityWarn   string
+	zipSelectTitle              string
+	zipImportToLabel            string
+	zipImportToExistsLabel      string
+	zipImportToBadNameLabel     string
+	zipImportFormTitle          string
+	zipImportFormOk             string
+	zipImportCancel             string
+	zipImportSecurityWarn       string
+	zipImportNameInvalid        string
+	zipImportNameInvalidReasons string
+	zipImportArchiveNotFound    string
+	zipImportFailed             string
 }
 
 func defaultDict() dictionary {
@@ -161,14 +165,18 @@ func defaultDict() dictionary {
 		abortText:   "Hell No!",
 
 		// zipselect
-		zipSelectTitle:          "Select archive",
-		zipImportToLabel:        "Folder name",
-		zipImportToExistsLabel:  "exists already",
-		zipImportToBadNameLabel: "cannot use that name",
-		zipImportFormTitle:      "Import to",
-		zipImportFormOk:         "Import",
-		zipImportCancel:         "Back",
-		zipImportSecurityWarn:   "SECURITY WARNING: Only import archives from trusted sources!",
+		zipSelectTitle:              "Select archive",
+		zipImportToLabel:            "Folder name",
+		zipImportToExistsLabel:      "exists already",
+		zipImportToBadNameLabel:     "cannot use that name",
+		zipImportFormTitle:          "Import to",
+		zipImportFormOk:             "Import",
+		zipImportCancel:             "No thanks!",
+		zipImportSecurityWarn:       "SECURITY WARNING: Only import archives from trusted sources!",
+		zipImportNameInvalid:        "Cannot use that name",
+		zipImportNameInvalidReasons: "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder",
+		zipImportArchiveNotFound:    "Archive not found",
+		zipImportFailed:             "Could not import zip",
 	}
 }
 
