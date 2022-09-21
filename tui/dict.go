@@ -82,6 +82,7 @@ type dictionary struct {
 	zipImportFormTitle          string
 	zipImportFormOk             string
 	zipImportCancel             string
+	zipImportTitle              string
 	zipImportSecurityWarn       string
 	zipImportNameInvalid        string
 	zipImportNameInvalidReasons string
@@ -161,7 +162,7 @@ func defaultDict() dictionary {
 		warpOkButton:      "Rip And Tear!",
 
 		// yousure
-		confirmText: "Delete",
+		confirmText: "Ok",
 		abortText:   "Hell No!",
 
 		// zipselect
@@ -169,9 +170,10 @@ func defaultDict() dictionary {
 		zipImportToLabel:            "Folder name",
 		zipImportToExistsLabel:      "exists already",
 		zipImportToBadNameLabel:     "cannot use that name",
-		zipImportFormTitle:          "Import to",
+		zipImportFormTitle:          "Import archive to",
 		zipImportFormOk:             "Import",
 		zipImportCancel:             "No thanks!",
+		zipImportTitle:              "Import",
 		zipImportSecurityWarn:       "SECURITY WARNING: Only import archives from trusted sources!",
 		zipImportNameInvalid:        "Cannot use that name",
 		zipImportNameInvalidReasons: "Possible reasons:\n- File name contains forbidden characters\n- No permission to write this file/folder",

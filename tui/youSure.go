@@ -15,7 +15,7 @@ func makeYouSureBox(title string, onOk func(), onCancel func(), xOffset int, yOf
 	youSureForm.SetFocus(1)
 
 	height := 5
-	width := 50
+	width := 64
 
 	// surrounding layout
 	_, _, _, containerHeight := container.GetRect()
@@ -35,6 +35,8 @@ func makeYouSureBox(title string, onOk func(), onCancel func(), xOffset int, yOf
 			AddItem(nil, 0, 1, false),
 			height, 1, true).
 		AddItem(nil, 0, 1, false)
+
+	app.SetFocus(youSureForm)
 
 	return youSureLayout
 }

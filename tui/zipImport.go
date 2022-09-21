@@ -3,6 +3,7 @@ package tui
 import (
 	"os"
 	"path"
+	"path/filepath"
 	"strings"
 
 	"github.com/gdamore/tcell/v2"
@@ -11,7 +12,7 @@ import (
 	"github.com/zmnpl/twad/helper"
 )
 
-func runZipImport(archivePath string, handFocusBackTo tview.Primitive) {
+func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOffset int, handFocusBackTo tview.Primitive) {
 	pageZipImport := "zipimport"
 
 	// sets focus to the given primitive
@@ -25,7 +26,11 @@ func runZipImport(archivePath string, handFocusBackTo tview.Primitive) {
 	}
 
 	modNameInput := tview.NewInputField().SetLabel(dict.zipImportToLabel).SetText(path.Base(archivePath))
+
 	modNameInput.SetText(strings.TrimSuffix(path.Base(archivePath), path.Ext(archivePath)))
+	if folderNameSuggest != "" {
+		modNameInput.SetText(folderNameSuggest)
+	}
 
 	modNameDoneCheck := func() {
 		suggestedName := modNameInput.GetText()
@@ -71,16 +76,27 @@ func runZipImport(archivePath string, handFocusBackTo tview.Primitive) {
 			}
 		})
 
-	modNameForm.
-		SetBorder(true).
-		SetTitle(dict.zipImportFormTitle)
-
 	modNameForm.SetFocus(0)
 
 	layout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetText(dict.zipImportSecurityWarn).SetTextColor(tcell.ColorRed), 1, 0, true).
-		AddItem(modNameForm, 7, 0, false)
+		AddItem(tview.NewTextView().SetText(" "+dict.zipImportSecurityWarn).SetTextColor(tcell.ColorRed), 1, 0, true).
+		AddItem(modNameForm, 5, 0, false)
+	layout.SetBorder(true).
+		SetTitle(dict.zipImportTitle + " " + filepath.Base(archivePath))
 
-	contentPages.AddPage(pageZipImport, layout, true, true)
+	// dimensions
+	height := 8
+	width := 64
+
+	frame := tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(nil, yOffset, 0, false).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
+			AddItem(nil, xOffset, 0, false).
+			AddItem(layout, width, 0, true).
+			AddItem(nil, 0, 1, false),
+			height, 0, true).
+		AddItem(nil, 0, 1, false)
+
+	contentPages.AddPage(pageZipImport, frame, true, true)
 	app.SetFocus(modNameForm)
 }

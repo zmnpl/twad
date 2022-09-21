@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/zmnpl/twad/games"
@@ -50,6 +51,7 @@ const (
 	pageHello          = "hello"
 	pageHelpKeymap     = "helpkeymap"
 	pageIdgamesBrowser = "idgamesbrowse"
+	pageDLConfirm      = "downloadConfirm"
 
 	tableBorders = false
 )
@@ -72,6 +74,8 @@ var (
 
 	zipInput       *zipSelect
 	idgamesBrowser *goidgames.IdgamesBrowser
+
+	statusline *tview.TextView
 )
 
 func init() {
@@ -90,10 +94,6 @@ func init() {
 	tview.Styles.TertiaryTextColor = tcell.ColorHotPink
 	tview.Styles.InverseTextColor = tcell.ColorLemonChiffon
 	tview.Styles.ContrastSecondaryTextColor = tcell.ColorPeachPuff
-
-	//fiMain = Bar{tview.NewTextView()}
-	//fiSub1 = Bar{tview.NewTextView()}
-	//fiSub2 = Bar{tview.NewTextView()}
 }
 
 // Draw performs all necessary steps to start the ui
@@ -134,6 +134,11 @@ func initUIElements() {
 	// init basic primitives
 	app = tview.NewApplication()
 
+	statusline = tview.NewTextView()
+	statusline.SetChangedFunc(func() {
+		app.Draw()
+	})
+
 	// build up layout
 	canvas = tview.NewPages()
 	headerPages = tview.NewPages()
@@ -149,7 +154,7 @@ func initUIElements() {
 
 	// set up main grid layout
 	mainGrid := tview.NewGrid()
-	mainGrid.SetRows(headerHeight, -1, helpPaneHeight)
+	mainGrid.SetRows(headerHeight, -1, helpPaneHeight, 1)
 	mainGrid.SetColumns(-1)
 	canvas.AddPage(pageMain, mainGrid, true, true)
 
@@ -161,6 +166,9 @@ func initUIElements() {
 	mainGrid.AddItem(contentPages, 1, 0, 1, 1, headerHeight+20, 0, true)
 	// footer
 	mainGrid.AddItem(footerPages, 2, 0, 1, 1, 0, 0, false)
+
+	// status line
+	mainGrid.AddItem(statusline, 3, 0, 1, 1, 0, 0, false)
 
 	// command preview
 	commandPreview = makeCommandPreview()
@@ -179,16 +187,6 @@ func initUIElements() {
 	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 2, 1, 0, 75, false)
 	detailGrid.AddItem(detailSidePagesSub2, 0, 1, 2, 1, 0, 75, false)
 
-	// idea of focus indicator coloured bars
-	// initial focus
-	//fiMain.setFocus(true)
-	//fiSub1.setFocus(false)
-	//fiSub2.setFocus(false)
-	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub1, 0, 1, true).AddItem(fiSub1, 1, 0, false), 0, 0, 1, 2, 0, 0, false)
-	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub2, 0, 1, true).AddItem(fiSub2, 1, 0, false), 1, 0, 1, 2, 0, 0, false)
-	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub1, 0, 1, true).AddItem(fiSub1, 1, 0, false), 0, 0, 2, 1, 0, 75, false)
-	//detailGrid.AddItem(tview.NewFlex().SetDirection(tview.FlexRow).AddItem(detailSidePagesSub2, 0, 1, true).AddItem(fiSub2, 1, 0, false), 0, 1, 2, 1, 0, 75, false)
-
 	detailPages = tview.NewPages()
 	detailPages.AddPage(pageContentMain, detailGrid, true, true)
 
@@ -202,8 +200,35 @@ func initUIElements() {
 	zipInput = newZipImportUI()
 	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
 
+	dlPath := filepath.Join(base.Config().WadDir, "twad_downloads")
 	idgamesBrowser = goidgames.NewIdgamesBrowser(app)
-	idgamesBrowser.SetDownloadPath(filepath.Join(base.Config().WadDir, "twad_downloads"))
+	idgamesBrowser.SetDownloadPath(dlPath)
+
+	idgamesBrowser.SetConfirmCallback(func(g goidgames.Idgame) {
+		youSure := makeYouSureBox(fmt.Sprintf("Download %v?", g.Title),
+			func() {
+				path, err := DownloadIdGame(g, dlPath)
+				if err != nil {
+					showError("Download Failed", err.Error(), tview.NewInputField(), nil)
+					contentPages.RemovePage(pageDLConfirm)
+					return
+				}
+
+				contentPages.RemovePage(pageDLConfirm)
+				runZipImport(path, g.Title, 0, 5, idgamesBrowser.GetRootLayout())
+				//app.SetFocus(idgamesBrowser.GetRootLayout())
+			},
+			func() {
+				contentPages.RemovePage(pageDLConfirm)
+				app.SetFocus(idgamesBrowser.GetRootLayout())
+			},
+			0,
+			5,
+			idgamesBrowser.GetRootLayout().Box)
+
+		contentPages.AddPage(pageDLConfirm, youSure,
+			true, true)
+	})
 	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.GetRootLayout(), true, true)
 
 	contentPages.AddPage(pageContent, contentFlex, true, true)
@@ -258,8 +283,7 @@ func appModeNormal() {
 	detailSidePagesSub2.SwitchToPage(pageStats)
 	contentPages.SwitchToPage(pageContent)
 
-	// focus indicators
-	//fiMain.setFocus(true)
+	statusline.Clear()
 
 	app.SetFocus(gamesTable)
 }

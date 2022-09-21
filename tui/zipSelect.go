@@ -63,7 +63,7 @@ func (z *zipSelect) initZipSelect() {
 			case fi.IsDir():
 				add(node, selPath)
 			default:
-				runZipImport(selPath, z.selectTree)
+				runZipImport(selPath, "", 0, 1, z.selectTree)
 			}
 		} else {
 			node.SetExpanded(!node.IsExpanded())
