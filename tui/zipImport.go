@@ -13,8 +13,6 @@ import (
 )
 
 func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOffset int, handFocusBackTo tview.Primitive) {
-	pageZipImport := "zipimport"
-
 	// sets focus to the given primitive
 	// if nil was given, then the apps default state will be restored
 	resetFocus := func() {
@@ -86,7 +84,7 @@ func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOf
 
 	// dimensions
 	height := 8
-	width := 64
+	width := len(dict.zipImportSecurityWarn) + 4
 
 	frame := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(nil, yOffset, 0, false).

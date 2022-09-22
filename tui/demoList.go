@@ -118,8 +118,8 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 
 			// start zip import from here
 			case 'i':
-				contentPages.SwitchToPage(pageZipImport)
-				app.SetFocus(zipInput.selectTree)
+				contentPages.SwitchToPage(pageZipSelect)
+				app.SetFocus(zipSelector.selectTree)
 				return nil
 
 			}

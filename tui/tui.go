@@ -2,7 +2,6 @@ package tui
 
 import (
 	"fmt"
-	"path/filepath"
 
 	"github.com/zmnpl/twad/games"
 
@@ -47,7 +46,8 @@ const (
 	pageDemos          = "demos"
 	pageSaves          = "saves"
 	pageError          = "error"
-	pageZipImport      = "zipselect"
+	pageZipSelect      = "zipselect"
+	pageZipImport      = "zipimport"
 	pageHello          = "hello"
 	pageHelpKeymap     = "helpkeymap"
 	pageIdgamesBrowser = "idgamesbrowse"
@@ -72,7 +72,7 @@ var (
 	gamesTable     *tview.Table
 	commandPreview *tview.TextView
 
-	zipInput       *zipSelect
+	zipSelector    *zipSelect
 	idgamesBrowser *goidgames.IdgamesBrowser
 
 	statusline *tview.TextView
@@ -190,33 +190,29 @@ func initUIElements() {
 	detailPages = tview.NewPages()
 	detailPages.AddPage(pageContentMain, detailGrid, true, true)
 
-	contentFlex := tview.NewFlex().SetDirection(tview.FlexRow)
-	contentFlex.
-		AddItem(commandPreview, 4, 0, false).
-		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
-			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
+	zipSelector = newZipImportUI()
+	contentPages.AddPage(pageZipSelect, zipSelector.layout, true, true)
 
-	zipInput = newZipImportUI()
-	contentPages.AddPage(pageZipImport, zipInput.layout, true, true)
-
-	dlPath := filepath.Join(base.Config().WadDir, "twad_downloads")
+	// id games browser
 	idgamesBrowser = goidgames.NewIdgamesBrowser(app)
-	idgamesBrowser.SetDownloadPath(dlPath)
-
+	idgamesBrowser.SetDownloadPath(base.DOWNLOAD_PATH())
 	idgamesBrowser.SetConfirmCallback(func(g goidgames.Idgame) {
 		youSure := makeYouSureBox(fmt.Sprintf("Download %v?", g.Title),
 			func() {
-				path, err := DownloadIdGame(g, dlPath)
-				if err != nil {
-					showError("Download Failed", err.Error(), tview.NewInputField(), nil)
-					contentPages.RemovePage(pageDLConfirm)
-					return
-				}
+				go func() {
+					app.SetFocus(statusline)
 
-				contentPages.RemovePage(pageDLConfirm)
-				runZipImport(path, g.Title, 0, 5, idgamesBrowser.GetRootLayout())
-				//app.SetFocus(idgamesBrowser.GetRootLayout())
+					path, err := DownloadIdGame(g, base.DOWNLOAD_PATH())
+					if err != nil {
+						showError("Download Failed", err.Error(), tview.NewInputField(), nil)
+						contentPages.RemovePage(pageDLConfirm)
+						return
+					}
+					contentPages.RemovePage(pageDLConfirm)
+
+					// suggest import of downloaded archive
+					runZipImport(path, g.Title, 0, 5, idgamesBrowser.GetRootLayout())
+				}()
 			},
 			func() {
 				contentPages.RemovePage(pageDLConfirm)
@@ -231,6 +227,13 @@ func initUIElements() {
 	})
 	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.GetRootLayout(), true, true)
 
+	// add central content page
+	contentFlex := tview.NewFlex().SetDirection(tview.FlexRow)
+	contentFlex.
+		AddItem(commandPreview, 4, 0, false).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
+			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
+			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
 	contentPages.AddPage(pageContent, contentFlex, true, true)
 }
 
@@ -275,7 +278,7 @@ func appModeNormal() {
 	detailSidePagesSub1.RemovePage(pageSaves)
 
 	// reset import
-	zipInput.reset()
+	zipSelector.reset()
 
 	// set ui state
 	detailPages.SwitchToPage(pageContentMain)

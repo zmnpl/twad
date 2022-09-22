@@ -23,8 +23,9 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 }
 
 func (wc WriteCounter) PrintProgress() {
+	progress := fmt.Sprintf(" Downloading... %v complete", wc.Total)
 	statusline.Clear()
-	statusline.Write([]byte(fmt.Sprintf(" Downloading... %v complete", wc.Total)))
+	statusline.Write([]byte(progress))
 }
 
 // DownloadTo tries to download the game to given path and returns the full path of the downloaded file
@@ -56,7 +57,7 @@ func DownloadIdGame(g goidgames.Idgame, path string) (filePath string, err error
 			break
 		}
 	}
-	//statusline.Clear()
+
 	if !success {
 		return "", fmt.Errorf("%s", "Unable to download.")
 	}

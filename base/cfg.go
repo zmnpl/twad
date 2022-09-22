@@ -488,3 +488,7 @@ func GetFileLinesFromPK3(pk3path, filename string) (lines []string, err error) {
 
 	return
 }
+
+func DOWNLOAD_PATH() string {
+	return filepath.Join(instance.WadDir, "twad_downloads")
+}
