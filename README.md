@@ -1,10 +1,12 @@
 # twad - terminal wad launcher
 
-If you love classic __DOOM__ and want to manage modern source ports to play it along with the plethora of maps, skins and gameplay mods then **twad** is for you. At it's core **twad** lets you set up a multitude of WAD file combinations, store and launch them with a couple of key strokes. It is light weight and fast to use. If your are living in the termninal you'll feel right at home. Though, even if you are on Windows, double-click and get an intuitive, simplistic and fast retro style user interface to manage your ripping and tearing.
+## Launch **classic DOOM** with a **classic** retro style terminal user interface
 
-## Start **classic DOOM** with a **classic** retro style terminal user interface
+If you love classic __DOOM__ and want to manage modern source ports to play it along with the plethora of maps, skins and gameplay mods then **twad** is for you. **twad** lets you set up a multitude of WAD file combinations, store and launch them with a couple of key strokes. It is light weight and fast to use. If your are living in the termninal you'll feel right at home. Though, even if you are on Windows, double-click and get an **intuitive**, **simplistic** and **fast retro style** user interface to manage your ripping and tearing.
 
-Twad let's you stay in the terminal and on your keyboard as long as possible until you decide to **rip and tear**. Simple as that. Needless to say that this mostly was designed for *nix systems. However, meanwhile I've added some OS-sensitive behaviour and cross compiled for Windows. Actually it works quite well. So...
+## Compatibility
+
+***twad*** mostly was designed for *nix systems. However, meanwhile I've added some OS-sensitive behaviour and cross compiled for Windows. Actually it works quite well. So...
 
 ## Now with experimental **Windows support**
 
@@ -29,7 +31,7 @@ Twad let's you stay in the terminal and on your keyboard as long as possible unt
 * Import .zip files containing mods
 * Separate savegame / demo folders for games (in **~/.config/twad/...***)
 * Separate configs per game and shared configs per source port
-* IDGames search/browser and download
+* IDGames search/browser and download + import
 * Responsive layout (kind of)
 
 # Installation Options
@@ -40,7 +42,7 @@ https://aur.archlinux.org/packages/twad-git
 
 ## b) Binary Download
 
-I'll add precompiled binaries to the [releases page](https://github.com/zmnpl/twad/releases). It comes without dependencies, just **download and run it**.
+Precompiled binaries are added to the [releases page](https://github.com/zmnpl/twad/releases). ***twad*** comes without dependencies, just **download and run it**.
 
 ## c) Compile yourself
 
@@ -51,7 +53,7 @@ go get -u github.com/zmnpl/twad
 ## d) Windows
 
 * Download the .exe from the [releases page](https://github.com/zmnpl/twad/releases)
-* Doubleclick
+* Doubleclick (you can do that)
 
 # Setup your environment
 
@@ -63,7 +65,7 @@ go get -u github.com/zmnpl/twad
 4) Add mods to your games
 666)   __Rip and Tear__
 
-## An example could look like this
+## An example DOOMWADDIR could look like this
 ```bash
 ~/DOOM ❯❯❯ tree
 .
