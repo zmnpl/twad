@@ -1,7 +1,7 @@
 package main
 
 import (
-	"os"
+	"flag"
 
 	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/rofimode"
@@ -9,22 +9,22 @@ import (
 )
 
 func main() {
-	args := os.Args[1:]
+	rofi := flag.Bool("rofi", false, "Run rofi mode.")
+	dmenu := flag.Bool("dmenu", false, "Run dmenu mode.")
+	flag.Parse()
 
 	base.Config()
 
-	for _, v := range args {
-		switch v {
-		case "--rofi":
-			rofimode.RunRofiMode("rofi")
-			return
-		case "--dmenu":
-			rofimode.RunRofiMode("dmenu")
-			return
-		}
-
+	if *rofi {
+		rofimode.RunRofiMode("rofi")
+		return
 	}
-	//
+
+	if *dmenu {
+		rofimode.RunRofiMode("rofi")
+		return
+	}
+
 	//cfg.GetInstance().Configured = false
 	tui.Draw()
 }
