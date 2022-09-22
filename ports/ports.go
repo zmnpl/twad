@@ -45,6 +45,17 @@ func Family(port string) (t int) {
 	return
 }
 
+// CanonicalName translates the given port name to a canonical version by looking it up
+func CanonicalName(port string) string {
+	sp := strings.ToLower(port)
+	for test, canonical := range PortCanonicalNames {
+		if strings.Contains(sp, test) {
+			return canonical
+		}
+	}
+	return "unknown_port"
+}
+
 // ConfigFileExtension returns the file extension of config files for the give port
 func ConfigFileExtension(port string) string {
 	switch Family(port) {
@@ -107,15 +118,4 @@ func SaveGameName(port, save string) string {
 	default:
 		return save
 	}
-}
-
-// CanonicalName translates the given port name to a canonical version by looking it up
-func CanonicalName(port string) string {
-	sp := strings.ToLower(port)
-	for test, canonical := range PortCanonicalNames {
-		if strings.Contains(sp, test) {
-			return canonical
-		}
-	}
-	return "unknown_port"
 }
