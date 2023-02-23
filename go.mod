@@ -12,10 +12,7 @@ require (
 	github.com/nwaples/rardecode v1.1.3 // indirect
 	github.com/pierrec/lz4/v4 v4.1.16 // indirect
 	github.com/rivo/tview v0.0.0-20220916081518-2e69b7385a37
-	github.com/tidwall/gjson v1.14.3 // indirect
 	github.com/ulikunitz/xz v0.5.10 // indirect
 	github.com/zmnpl/goidgames v0.0.19
-	golang.org/x/sys v0.0.0-20220919091848-fb04ddd9f9c8 // indirect
-	golang.org/x/term v0.0.0-20220919170432-7a66f970e087 // indirect
-	golang.org/x/text v0.3.7 // indirect
+	golang.org/x/text v0.3.8 // indirect
 )
