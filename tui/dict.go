@@ -154,7 +154,7 @@ func defaultDict() dictionary {
 		savesHeader: "Savegames",
 
 		// warprecord
-		warpText:          "Warp ((Episode) Map)",
+		warpText:          "Warp: Episode(optional) Map",
 		mapSelectText:     "Select Map from Mod",
 		skillText:         "Difficulty",
 		demoText:          "Demo Name",
