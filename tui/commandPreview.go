@@ -35,6 +35,7 @@ func stylizeCommandList(params []string) string {
 		"-config":        true,
 		"-statdump":      true,
 		"-levelstat":     true,
+		"-fast":          true,
 		"zdoom":          true,
 		"gzdoom":         true,
 		"lzdoom":         true,
