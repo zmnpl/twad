@@ -1,6 +1,8 @@
 package games
 
 import (
+	"bytes"
+	"encoding/csv"
 	"fmt"
 	"os"
 	"os/exec"
@@ -589,7 +591,13 @@ func (g *Game) EnvironmentString() string {
 	return strings.TrimSpace(strings.Join(g.Environment, " "))
 }
 
-// ParamsString returns a join of all prefix parameters
+// ParamsString returns a join of all custom parameters
 func (g *Game) ParamsString() string {
-	return strings.TrimSpace(strings.Join(g.CustomParameters, " "))
+	buf := bytes.NewBufferString("")
+	w := csv.NewWriter(buf)
+	w.Comma = ' '
+	data := make([][]string, 1)
+	data[0] = g.CustomParameters
+	w.WriteAll(data)
+	return buf.String()
 }

@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"encoding/csv"
 	"fmt"
 	"strings"
 
@@ -12,11 +13,18 @@ import (
 )
 
 func splitParams(params string) []string {
-	result := strings.Split(params, " ")
-	for i := range result {
-		result[i] = strings.TrimSpace(result[i])
+	paramsReader := strings.NewReader(params)
+	c := csv.NewReader(paramsReader)
+	c.Comma = ' '
+
+	p, err := c.ReadAll()
+	if err == nil && len(p) > 0 {
+		for i, v := range p[0] {
+			p[0][i] = strings.TrimSpace(v)
+		}
+		return p[0]
 	}
-	return result
+	return []string{}
 }
 
 func indexOfItemIn(item string, list []string) (int, bool) {
