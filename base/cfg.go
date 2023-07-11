@@ -404,7 +404,7 @@ func GePathIwads(path string) ([]string, error) {
 		iwadName := strings.ToLower(file.Name())
 		_, isIwad := KnownIwads[iwadName]
 		if isIwad {
-			availableIwads = append(availableIwads, iwadName)
+			availableIwads = append(availableIwads, file.Name())
 		}
 	}
 
