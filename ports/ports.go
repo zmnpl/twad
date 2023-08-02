@@ -21,6 +21,8 @@ var (
 		"chocolate":  "chocolatedoom",
 		"prboomplus": "prboomplus",
 		"boom":       "boom",
+		"dsda-doom":  "dsda",
+		"woof":       "woof",
 		"na":         "unknown_port",
 	}
 )
@@ -37,7 +39,7 @@ func Family(port string) (t int) {
 		return
 	}
 
-	if strings.Contains(sp, "boom") {
+	if strings.Contains(sp, "boom") || strings.Contains(sp, "dsda") || strings.Contains(sp, "woof") {
 		t = Boom
 		return
 	}
