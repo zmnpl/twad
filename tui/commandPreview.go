@@ -44,6 +44,8 @@ func stylizeCommandList(params []string) string {
 		"crispy-doom":    true,
 		"prboom":         true,
 		"prboom-plus":    true,
+		"woof":           true,
+		"dsda":           true,
 	}
 
 	optionals := map[string]int{

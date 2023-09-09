@@ -111,9 +111,12 @@ func SaveGameName(port, save string) string {
 	switch Family(port) {
 	case Chocolate, Boom:
 		if save != "" {
-			//tmp := []rune(save)
-			//save = string(tmp[len(tmp)-5 : len(tmp)-4])
-			save = strings.TrimSuffix(strings.TrimPrefix(save, "doomsav"), ".dsg")
+			if strings.HasPrefix(save, "doomsav") {
+				save = strings.TrimSuffix(strings.TrimPrefix(save, "doomsav"), ".dsg")
+			} else if strings.HasPrefix(save, "woofsav") {
+				save = strings.TrimSuffix(strings.TrimPrefix(save, "woofsav"), ".dsg")
+			}
+
 			return save
 		}
 		return save

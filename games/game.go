@@ -448,7 +448,8 @@ func (g *Game) lastSave() (save string, err error) {
 			continue
 		}
 		if fi.Mode().IsRegular() && fi.ModTime().After(newestTime) && extension == portSaveFileExtension {
-			save = filepath.Join(saveDir, file.Name())
+			//save = filepath.Join(saveDir, file.Name())
+			save = file.Name()
 			newestTime = fi.ModTime()
 		}
 	}
