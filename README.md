@@ -47,7 +47,7 @@ Precompiled binaries are added to the [releases page](https://github.com/zmnpl/t
 ## c) Compile yourself
 
 ```golang
-go get -u github.com/zmnpl/twad
+go install github.com/zmnpl/twad@latest
 ```
 
 ## d) Windows
