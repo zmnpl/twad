@@ -8,45 +8,45 @@ import (
 )
 
 const (
-	template = colorTagMoreContrast + "%-6v" + colorTagPrimaryText + "%v"
+	lineTemplate = colorTagMoreContrast + "%-6v" + colorTagPrimaryText + "%v"
 )
 
 var (
 	// general ui
-	keyNavigate      = fmt.Sprintf(template, "Arrows (or hjkl)", "Navigate")
-	keyFormNav       = fmt.Sprintf(template, "TAB", "Switch Focus")
-	keyConfirm       = fmt.Sprintf(template, "ENTER", "Confirm")
-	keyHelp          = fmt.Sprintf(template, "F1", "Help/Keymap")
-	keyIdgames       = fmt.Sprintf(template, "F2", "IDGames Browser")
-	keyImportArchive = fmt.Sprintf(template, "F3", "Import Archive")
+	keyNavigate      = fmt.Sprintf(lineTemplate, "Arrows (or hjkl)", "Navigate")
+	keyFormNav       = fmt.Sprintf(lineTemplate, "TAB", "Switch Focus")
+	keyConfirm       = fmt.Sprintf(lineTemplate, "ENTER", "Confirm")
+	keyHelp          = fmt.Sprintf(lineTemplate, "F1", "Help/Keymap")
+	keyIdgames       = fmt.Sprintf(lineTemplate, "F2", "IDGames Browser")
+	keyImportArchive = fmt.Sprintf(lineTemplate, "F3", "Import Archive")
 	keyInfoNavigate  = []string{keyNavigate, keyFormNav, keyConfirm, keyIdgames, keyImportArchive}
 
 	// general
-	keyResetUI  = fmt.Sprintf(template, "ESC", "Reset UI")
-	keyQuit     = fmt.Sprintf(template, "q", "Quit")
-	keyCredits  = fmt.Sprintf(template, "c", "Credits/License")
-	keyOptions  = fmt.Sprintf(template, "o", "Options")
-	keySortAlph = fmt.Sprintf(template, "s", "Sort Games Alphabetically")
+	keyResetUI  = fmt.Sprintf(lineTemplate, "ESC", "Reset UI")
+	keyQuit     = fmt.Sprintf(lineTemplate, "q", "Quit")
+	keyCredits  = fmt.Sprintf(lineTemplate, "c", "Credits/License")
+	keyOptions  = fmt.Sprintf(lineTemplate, "o", "Options")
+	keySortAlph = fmt.Sprintf(lineTemplate, "s", "Sort Games Alphabetically")
 	keyInfoMain = []string{keyResetUI, keyQuit, keyCredits, keyOptions, keySortAlph}
 
 	// game launching
-	keyRunGame        = fmt.Sprintf(template, "ENTER", "Run Game")
-	keyQuickload      = fmt.Sprintf(template, "F9", "Run Last Savegame")
-	keyWarp           = fmt.Sprintf(template, "w", "Warp (+Record)")
+	keyRunGame        = fmt.Sprintf(lineTemplate, "ENTER", "Run Game")
+	keyQuickload      = fmt.Sprintf(lineTemplate, "F9", "Run Last Savegame")
+	keyWarp           = fmt.Sprintf(lineTemplate, "w", "Warp (+Record)")
 	keyInfoGameLaunch = []string{keyRunGame, keyQuickload, keyWarp}
 
 	// open detail views
-	keyDemos           = fmt.Sprintf(template, "d", "Demos")
-	keySavegameDetails = fmt.Sprintf(template, "z", "Savegames")
-	keyVisitUrl        = fmt.Sprintf(template, "u", "Visit Url")
+	keyDemos           = fmt.Sprintf(lineTemplate, "d", "Demos")
+	keySavegameDetails = fmt.Sprintf(lineTemplate, "z", "Savegames")
+	keyVisitUrl        = fmt.Sprintf(lineTemplate, "u", "Visit Url")
 	keyInfoGameDetails = []string{keyDemos, keySavegameDetails, keyVisitUrl}
 
 	// game crud ops
-	keyEditGame      = fmt.Sprintf(template, "e", "Edit Game")
-	keyAddMod        = fmt.Sprintf(template, "m", "Add Mod To Game")
-	keyNewGame       = fmt.Sprintf(template, "n", "New Game")
-	keyRemoveGame    = fmt.Sprintf(template, "DEL", "Remove Game")
-	keyRate          = fmt.Sprintf(template, "+/-", "Rate Game")
+	keyEditGame      = fmt.Sprintf(lineTemplate, "e", "Edit Game")
+	keyAddMod        = fmt.Sprintf(lineTemplate, "m", "Add Mod To Game")
+	keyNewGame       = fmt.Sprintf(lineTemplate, "n", "New Game")
+	keyRemoveGame    = fmt.Sprintf(lineTemplate, "DEL", "Remove Game")
+	keyRate          = fmt.Sprintf(lineTemplate, "+/-", "Rate Game")
 	keyInfoGameTable = []string{keyEditGame, keyAddMod, keyNewGame, keyRemoveGame, keyRate}
 
 	// pick "most important ones" for always visible footer keymap

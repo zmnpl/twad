@@ -51,13 +51,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.`
 )
 
-//  header
+// header
 func makeHeader() *tview.TextView {
 	header := tview.NewTextView().
 		SetDynamicColors(true).
 		SetRegions(true)
-	fmt.Fprintf(header, "%s", doomLogo)
 	header.SetBorderPadding(0, 0, 1, 1)
+
+	// if config.UseTerminalColors {
+	// 	fmt.Fprintf(header, "%s", doomLogoTermColors)
+	// } else {
+	// 	fmt.Fprintf(header, "%s", doomLogo)
+	// }
+
+	fmt.Fprintf(header, "%s", makeLogo())
 
 	return header
 }
@@ -93,7 +100,7 @@ func makeFirstStartHello() *tview.TextView {
 	return hello
 }
 
-//  license
+// license
 func makeLicense() *tview.TextView {
 	disclaimer := tview.NewTextView().SetDynamicColors(true).SetRegions(true)
 	fmt.Fprintf(disclaimer, "%s\n", doomLogoCreditHeader)

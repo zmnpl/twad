@@ -65,6 +65,7 @@ type Cfg struct {
 	HideHeader             bool     `json:"hide_header"`
 	GameListAbsoluteWidth  int      `json:"game_list_absolute_width"`
 	GameListRelativeWidth  int      `json:"game_list_relative_width"`
+	UseTerminalColors      bool     `json:"use_terminal_colors"`
 	CfgVersion             int      `json:"cfg_version"`
 }
 

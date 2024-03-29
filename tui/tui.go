@@ -82,18 +82,39 @@ func init() {
 	config = base.Config()
 	games.RegisterChangeListener(whenGamesChanged)
 
-	// ui stylepageSettings
-	tview.Styles.PrimitiveBackgroundColor = tcell.ColorBlack
-	tview.Styles.ContrastBackgroundColor = tcell.ColorRoyalBlue
-	tview.Styles.MoreContrastBackgroundColor = tcell.ColorOrange
-	tview.Styles.BorderColor = tcell.ColorRoyalBlue
-	tview.Styles.TitleColor = tcell.ColorRoyalBlue
-	tview.Styles.GraphicsColor = tcell.ColorRoyalBlue
-	tview.Styles.PrimaryTextColor = tcell.ColorWhite
-	tview.Styles.SecondaryTextColor = tcell.ColorOrange
-	tview.Styles.TertiaryTextColor = tcell.ColorHotPink
-	tview.Styles.InverseTextColor = tcell.ColorLemonChiffon
-	tview.Styles.ContrastSecondaryTextColor = tcell.ColorPeachPuff
+	twadTheme := tview.Theme{
+		// ui stylepageSettings
+		PrimitiveBackgroundColor:    tcell.ColorBlack,
+		ContrastBackgroundColor:     tcell.ColorRoyalBlue,
+		MoreContrastBackgroundColor: tcell.ColorOrange,
+		BorderColor:                 tcell.ColorRoyalBlue,
+		TitleColor:                  tcell.ColorRoyalBlue,
+		GraphicsColor:               tcell.ColorRoyalBlue,
+		PrimaryTextColor:            tcell.ColorWhite,
+		SecondaryTextColor:          tcell.ColorOrange,
+		TertiaryTextColor:           tcell.ColorHotPink,
+		InverseTextColor:            tcell.ColorLemonChiffon,
+		ContrastSecondaryTextColor:  tcell.ColorPeachPuff,
+	}
+
+	terminalTheme := tview.Theme{
+		PrimitiveBackgroundColor:    tcell.ColorBlack,
+		ContrastBackgroundColor:     tcell.ColorSilver,
+		MoreContrastBackgroundColor: tcell.ColorDefault,
+		BorderColor:                 tcell.ColorNavy,
+		TitleColor:                  tcell.ColorMaroon,
+		GraphicsColor:               tcell.ColorDefault,
+		PrimaryTextColor:            tcell.ColorWhite,
+		SecondaryTextColor:          tcell.ColorGreen,
+		TertiaryTextColor:           tcell.ColorDefault,
+		InverseTextColor:            tcell.ColorDefault,
+		ContrastSecondaryTextColor:  tcell.ColorDefault,
+	}
+
+	tview.Styles = twadTheme
+	if config.UseTerminalColors {
+		tview.Styles = terminalTheme
+	}
 }
 
 // Draw performs all necessary steps to start the ui
