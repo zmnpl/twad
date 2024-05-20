@@ -18,15 +18,6 @@ type Bar struct {
 }
 
 const (
-	colorTagPrimaryText  = "[white]"
-	colorTagContrast     = "[royalblue]"
-	colorTagMoreContrast = "[orange]"
-
-	warnColor  = "[red]"
-	warnColorO = tcell.ColorRed
-	goodColor  = "[green]"
-	goodColorO = tcell.ColorGreen
-
 	pageOptions        = "options"
 	pageStats          = "stats"
 	pageAddEdit        = "addEdit"
@@ -76,12 +67,25 @@ var (
 	idgamesBrowser *goidgames.IdgamesBrowser
 
 	statusline *tview.TextView
+
+	colorTagPrimaryText  = "[white]"
+	colorTagContrast     = "[royalblue]"
+	colorTagMoreContrast = "[orange]"
+
+	colorTagWarnColor = "[red]"
+	warnColor         = tcell.ColorRed
+	colorTagGoodColor = "[green]"
+	goodColor         = tcell.ColorGreen
 )
 
 func init() {
 	config = base.Config()
+	selectTheme()
 	games.RegisterChangeListener(whenGamesChanged)
+}
 
+func selectTheme() {
+	// "Hard coded" theme
 	twadTheme := tview.Theme{
 		// ui stylepageSettings
 		PrimitiveBackgroundColor:    tcell.ColorBlack,
@@ -97,6 +101,7 @@ func init() {
 		ContrastSecondaryTextColor:  tcell.ColorPeachPuff,
 	}
 
+	// Theme based on terminal colors
 	terminalTheme := tview.Theme{
 		PrimitiveBackgroundColor:    tcell.ColorBlack,
 		ContrastBackgroundColor:     tcell.ColorSilver,
@@ -111,10 +116,16 @@ func init() {
 		ContrastSecondaryTextColor:  tcell.ColorDefault,
 	}
 
+	// Select theme
 	tview.Styles = twadTheme
 	if config.UseTerminalColors {
 		tview.Styles = terminalTheme
 	}
+
+	// Set color tags based on theme
+	colorTagPrimaryText = "[" + tview.Styles.PrimaryTextColor.Name() + "]"
+	colorTagContrast = "[" + tview.Styles.TitleColor.Name() + "]"
+	colorTagMoreContrast = "[" + tview.Styles.SecondaryTextColor.Name() + "]"
 }
 
 // Draw performs all necessary steps to start the ui

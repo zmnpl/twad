@@ -39,7 +39,7 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 	}
 
 	// style
-	errForm.SetButtonBackgroundColor(warnColorO)
+	errForm.SetButtonBackgroundColor(warnColor)
 	errForm.SetButtonTextColor(tcell.ColorWhite)
 
 	errorText := tview.NewTextView()
@@ -53,8 +53,8 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 	foo.
 		SetBorder(true).
 		SetTitle(dict.errTitleStart + " - " + errTitle).
-		SetBorderColor(warnColorO).
-		SetTitleColor(warnColorO)
+		SetBorderColor(warnColor).
+		SetTitleColor(warnColor)
 
 	errForm.SetFocus(0)
 	height := 10

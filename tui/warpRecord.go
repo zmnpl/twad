@@ -78,7 +78,7 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	demoName.SetChangedFunc(func(text string) {
 		demoName.SetLabel(dict.demoText)
 		if game.DemoExists(demoName.GetText()) {
-			demoName.SetLabel(warnColor + dict.demoTextOverwrite)
+			demoName.SetLabel(colorTagWarnColor + dict.demoTextOverwrite)
 		}
 	})
 	warpRecordForm.AddFormItem(demoName)

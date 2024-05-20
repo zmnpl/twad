@@ -19,14 +19,14 @@ var sourcePortCheck = func(input *tview.InputField) {
 	// does this path exist?
 	if _, err := os.Stat(input.GetText()); os.IsNotExist(err) {
 		if commandExists(strings.TrimSpace(input.GetText())) {
-			input.SetLabel(dict.optsSourcePortLabel + goodColor + " " + dict.optsLooksGood)
+			input.SetLabel(dict.optsSourcePortLabel + colorTagGoodColor + " " + dict.optsLooksGood)
 			return
 		}
-		input.SetLabel(dict.optsSourcePortLabel + warnColor + " " + dict.optsErrPathDoesntExist)
+		input.SetLabel(dict.optsSourcePortLabel + colorTagWarnColor + " " + dict.optsErrPathDoesntExist)
 		return
 	}
 
-	input.SetLabel(dict.optsSourcePortLabel + goodColor + " " + dict.optsLooksGood)
+	input.SetLabel(dict.optsSourcePortLabel + colorTagGoodColor + " " + dict.optsLooksGood)
 }
 
 // builder function that creates a function which autocompletes input fields
@@ -123,23 +123,23 @@ func makeOptions() *tview.Flex {
 	doomwaddirPathCheck := func() {
 		// does this path exist?
 		if _, err := os.Stat(doomwaddirPath.GetText()); os.IsNotExist(err) {
-			doomwaddirPath.SetLabel(dict.optsPathLabel + warnColor + " " + dict.optsErrPathDoesntExist)
+			doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagWarnColor + " " + dict.optsErrPathDoesntExist)
 			return
 		}
 
 		// check if selected path contains any iwads
 		if hasIwad, err := base.PathHasIwads(doomwaddirPath.GetText()); !hasIwad {
 			if err != nil {
-				doomwaddirPath.SetLabel(dict.optsPathLabel + warnColor + " (" + err.Error() + ")")
+				doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagWarnColor + " (" + err.Error() + ")")
 			}
-			doomwaddirPath.SetLabel(dict.optsPathLabel + warnColor + " " + dict.optsErrPathNoIWads)
+			doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagWarnColor + " " + dict.optsErrPathNoIWads)
 			return
 		}
 
 		availableIwads, _ := base.GePathIwads(doomwaddirPath.GetText())
 		iwads.SetText(strings.Join(availableIwads, ","))
 
-		doomwaddirPath.SetLabel(dict.optsPathLabel + goodColor + " " + dict.optsLooksGood)
+		doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagGoodColor + " " + dict.optsLooksGood)
 	}
 	// initial check of configured path
 	doomwaddirPathCheck()

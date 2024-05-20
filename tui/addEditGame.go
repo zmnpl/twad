@@ -61,7 +61,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(dict.aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
 	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig).SetLabel(fmt.Sprintf(dict.aeSharedCfgT, expectedExtension)).SetLabelColor(tview.Styles.SecondaryTextColor)
 	if g.PersonalPortCfg {
-		inputSharedCfg.SetLabel(warnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
+		inputSharedCfg.SetLabel(colorTagWarnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
 	}
 	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(dict.aeSourcePort).SetLabelColor(tview.Styles.SecondaryTextColor)
 	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(dict.aeIWAD).SetLabelColor(tview.Styles.SecondaryTextColor)
@@ -90,7 +90,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 		inputSharedCfg.SetLabel(fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
 		if inputOwnCfg.IsChecked() {
-			inputSharedCfg.SetLabel(warnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
+			inputSharedCfg.SetLabel(colorTagWarnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
 		}
 	})
 
@@ -107,7 +107,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	// own configs
 	inputOwnCfg.SetDoneFunc(func(key tcell.Key) {
 		if inputOwnCfg.IsChecked() {
-			inputSharedCfg.SetLabel(warnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
+			inputSharedCfg.SetLabel(colorTagWarnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
 			return
 		}
 		inputSharedCfg.SetLabel(fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))

@@ -7,46 +7,44 @@ import (
 	"github.com/rivo/tview"
 )
 
-const (
-	lineTemplate = colorTagMoreContrast + "%-6v" + colorTagPrimaryText + "%v"
-)
-
 var (
+	lineTemplate string
+
 	// general ui
-	keyNavigate      = fmt.Sprintf(lineTemplate, "Arrows (or hjkl)", "Navigate")
-	keyFormNav       = fmt.Sprintf(lineTemplate, "TAB", "Switch Focus")
-	keyConfirm       = fmt.Sprintf(lineTemplate, "ENTER", "Confirm")
-	keyHelp          = fmt.Sprintf(lineTemplate, "F1", "Help/Keymap")
-	keyIdgames       = fmt.Sprintf(lineTemplate, "F2", "IDGames Browser")
-	keyImportArchive = fmt.Sprintf(lineTemplate, "F3", "Import Archive")
+	keyNavigate      string
+	keyFormNav       string
+	keyConfirm       string
+	keyHelp          string
+	keyIdgames       string
+	keyImportArchive string
 	keyInfoNavigate  = []string{keyNavigate, keyFormNav, keyConfirm, keyIdgames, keyImportArchive}
 
 	// general
-	keyResetUI  = fmt.Sprintf(lineTemplate, "ESC", "Reset UI")
-	keyQuit     = fmt.Sprintf(lineTemplate, "q", "Quit")
-	keyCredits  = fmt.Sprintf(lineTemplate, "c", "Credits/License")
-	keyOptions  = fmt.Sprintf(lineTemplate, "o", "Options")
-	keySortAlph = fmt.Sprintf(lineTemplate, "s", "Sort Games Alphabetically")
+	keyResetUI  string
+	keyQuit     string
+	keyCredits  string
+	keyOptions  string
+	keySortAlph string
 	keyInfoMain = []string{keyResetUI, keyQuit, keyCredits, keyOptions, keySortAlph}
 
 	// game launching
-	keyRunGame        = fmt.Sprintf(lineTemplate, "ENTER", "Run Game")
-	keyQuickload      = fmt.Sprintf(lineTemplate, "F9", "Run Last Savegame")
-	keyWarp           = fmt.Sprintf(lineTemplate, "w", "Warp (+Record)")
+	keyRunGame        string
+	keyQuickload      string
+	keyWarp           string
 	keyInfoGameLaunch = []string{keyRunGame, keyQuickload, keyWarp}
 
 	// open detail views
-	keyDemos           = fmt.Sprintf(lineTemplate, "d", "Demos")
-	keySavegameDetails = fmt.Sprintf(lineTemplate, "z", "Savegames")
-	keyVisitUrl        = fmt.Sprintf(lineTemplate, "u", "Visit Url")
+	keyDemos           string
+	keySavegameDetails string
+	keyVisitUrl        string
 	keyInfoGameDetails = []string{keyDemos, keySavegameDetails, keyVisitUrl}
 
 	// game crud ops
-	keyEditGame      = fmt.Sprintf(lineTemplate, "e", "Edit Game")
-	keyAddMod        = fmt.Sprintf(lineTemplate, "m", "Add Mod To Game")
-	keyNewGame       = fmt.Sprintf(lineTemplate, "n", "New Game")
-	keyRemoveGame    = fmt.Sprintf(lineTemplate, "DEL", "Remove Game")
-	keyRate          = fmt.Sprintf(lineTemplate, "+/-", "Rate Game")
+	keyEditGame      string
+	keyAddMod        string
+	keyNewGame       string
+	keyRemoveGame    string
+	keyRate          string
 	keyInfoGameTable = []string{keyEditGame, keyAddMod, keyNewGame, keyRemoveGame, keyRate}
 
 	// pick "most important ones" for always visible footer keymap
@@ -59,7 +57,59 @@ var (
 	}
 )
 
+func initKeyMapEntries() {
+	lineTemplate = colorTagMoreContrast + "%-6v" + colorTagPrimaryText + "%v"
+
+	// general ui
+	keyNavigate = fmt.Sprintf(lineTemplate, "Arrows (or hjkl)", "Navigate")
+	keyFormNav = fmt.Sprintf(lineTemplate, "TAB", "Switch Focus")
+	keyConfirm = fmt.Sprintf(lineTemplate, "ENTER", "Confirm")
+	keyHelp = fmt.Sprintf(lineTemplate, "F1", "Help/Keymap")
+	keyIdgames = fmt.Sprintf(lineTemplate, "F2", "IDGames Browser")
+	keyImportArchive = fmt.Sprintf(lineTemplate, "F3", "Import Archive")
+	keyInfoNavigate = []string{keyNavigate, keyFormNav, keyConfirm, keyIdgames, keyImportArchive}
+
+	// general
+	keyResetUI = fmt.Sprintf(lineTemplate, "ESC", "Reset UI")
+	keyQuit = fmt.Sprintf(lineTemplate, "q", "Quit")
+	keyCredits = fmt.Sprintf(lineTemplate, "c", "Credits/License")
+	keyOptions = fmt.Sprintf(lineTemplate, "o", "Options")
+	keySortAlph = fmt.Sprintf(lineTemplate, "s", "Sort Games Alphabetically")
+	keyInfoMain = []string{keyResetUI, keyQuit, keyCredits, keyOptions, keySortAlph}
+
+	// game launching
+	keyRunGame = fmt.Sprintf(lineTemplate, "ENTER", "Run Game")
+	keyQuickload = fmt.Sprintf(lineTemplate, "F9", "Run Last Savegame")
+	keyWarp = fmt.Sprintf(lineTemplate, "w", "Warp (+Record)")
+	keyInfoGameLaunch = []string{keyRunGame, keyQuickload, keyWarp}
+
+	// open detail views
+	keyDemos = fmt.Sprintf(lineTemplate, "d", "Demos")
+	keySavegameDetails = fmt.Sprintf(lineTemplate, "z", "Savegames")
+	keyVisitUrl = fmt.Sprintf(lineTemplate, "u", "Visit Url")
+	keyInfoGameDetails = []string{keyDemos, keySavegameDetails, keyVisitUrl}
+
+	// game crud ops
+	keyEditGame = fmt.Sprintf(lineTemplate, "e", "Edit Game")
+	keyAddMod = fmt.Sprintf(lineTemplate, "m", "Add Mod To Game")
+	keyNewGame = fmt.Sprintf(lineTemplate, "n", "New Game")
+	keyRemoveGame = fmt.Sprintf(lineTemplate, "DEL", "Remove Game")
+	keyRate = fmt.Sprintf(lineTemplate, "+/-", "Rate Game")
+	keyInfoGameTable = []string{keyEditGame, keyAddMod, keyNewGame, keyRemoveGame, keyRate}
+
+	// pick "most important ones" for always visible footer keymap
+	keyInfoQuickMapSelectino = []string{
+		keyResetUI, keyQuit, keyOptions,
+		keyRunGame, keyQuickload, keyWarp,
+		keyDemos, keySavegameDetails,
+		keyNewGame, keyAddMod, keyRemoveGame,
+		keyHelp,
+	}
+}
+
 func makeKeyMap() (helpPane *tview.Grid, height int) {
+	initKeyMapEntries()
+
 	// could be easier / more static, but like this the layout can maybe be made more dynamic in the future
 	rows := 3
 	rowDimens := make([]int, rows)

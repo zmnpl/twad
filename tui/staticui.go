@@ -10,8 +10,7 @@ import (
 const (
 	helloText = "Hi, it looks like you are starting [orange]twad[white] for the first time. Hit [red]o[white] to bring up the options menu and set your DOOM directory ($DOOMWADDIR)"
 
-	subtitle  = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] launcher[orange]"
-	subtitle2 = "twad - terminal wad manager and launcher"
+	subtitle = "[orange]twad[white] - [orange]t[white]erminal [orange]wad[white] launcher[orange]"
 
 	tviewHeader = "[orange]tview"
 	creditTview = `The terminal user interface is build with tview:

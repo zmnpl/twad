@@ -33,11 +33,11 @@ func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOf
 	modNameDoneCheck := func() {
 		suggestedName := modNameInput.GetText()
 		if !helper.IsFileNameValid(suggestedName) {
-			modNameInput.SetLabel(dict.zipImportToLabel + warnColor + " " + dict.zipImportToBadNameLabel)
+			modNameInput.SetLabel(dict.zipImportToLabel + colorTagWarnColor + " " + dict.zipImportToBadNameLabel)
 			return
 		}
 		if _, err := os.Stat(path.Join(base.Config().WadDir, suggestedName)); !os.IsNotExist(err) {
-			modNameInput.SetLabel(dict.zipImportToLabel + warnColor + " " + dict.zipImportToExistsLabel)
+			modNameInput.SetLabel(dict.zipImportToLabel + colorTagWarnColor + " " + dict.zipImportToExistsLabel)
 			return
 		}
 		modNameInput.SetLabel(dict.zipImportToLabel)
