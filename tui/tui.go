@@ -212,12 +212,9 @@ func initUIElements() {
 	detailGrid.SetColumns(-4, -6)
 	detailSidePagesSub1 = tview.NewPages()
 	detailSidePagesSub2 = tview.NewPages()
-	// not so wide screens
-	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 1, 2, 0, 0, false)
-	detailGrid.AddItem(detailSidePagesSub2, 1, 0, 1, 2, 0, 0, false)
-	// wide screens
-	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 2, 1, 0, 75, false)
-	detailGrid.AddItem(detailSidePagesSub2, 0, 1, 2, 1, 0, 75, false)
+	// first not so wide screens, then add wide screen layouts
+	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 1, 2, 0, 0, false).AddItem(detailSidePagesSub1, 0, 0, 2, 1, 0, 75, false)
+	detailGrid.AddItem(detailSidePagesSub2, 1, 0, 1, 2, 0, 0, false).AddItem(detailSidePagesSub2, 0, 1, 2, 1, 0, 75, false)
 
 	detailPages = tview.NewPages()
 	detailPages.AddPage(pageContentMain, detailGrid, true, true)
