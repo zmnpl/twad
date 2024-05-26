@@ -107,6 +107,7 @@ func makeOptions() *tview.Flex {
 
 	// added to form later
 	iwads := tview.NewInputField().SetLabel(dict.optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(base.Config().IWADs, ","))
+
 	// path for doomwaddir
 	doomwaddirPath := tview.NewInputField().SetLabel(dict.optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(base.Config().WadDir)
 

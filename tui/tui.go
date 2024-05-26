@@ -110,10 +110,10 @@ func selectTheme() {
 		TitleColor:                  tcell.ColorMaroon,
 		GraphicsColor:               tcell.ColorDefault,
 		PrimaryTextColor:            tcell.ColorWhite,
-		SecondaryTextColor:          tcell.ColorGreen,
-		TertiaryTextColor:           tcell.ColorDefault,
-		InverseTextColor:            tcell.ColorDefault,
-		ContrastSecondaryTextColor:  tcell.ColorDefault,
+		SecondaryTextColor:          tcell.ColorPurple,
+		TertiaryTextColor:           tcell.ColorTeal,
+		InverseTextColor:            tcell.ColorBlack,
+		ContrastSecondaryTextColor:  tcell.ColorBlack,
 	}
 
 	// Select theme
