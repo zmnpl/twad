@@ -101,11 +101,29 @@ func selectTheme() {
 		ContrastSecondaryTextColor:  tcell.ColorPeachPuff,
 	}
 
+	// first 16 tcell colors
+	// ColorBlack
+	// ColorMaroon
+	// ColorGreen
+	// ColorOlive
+	// ColorNavy
+	// ColorPurple
+	// ColorTeal
+	// ColorSilver
+	// ColorGray
+	// ColorRed
+	// ColorLime
+	// ColorYellow
+	// ColorBlue
+	// ColorFuchsia
+	// ColorAqua
+	// ColorWhite
+
 	// Theme based on terminal colors
 	terminalTheme := tview.Theme{
 		PrimitiveBackgroundColor:    tcell.ColorBlack,
-		ContrastBackgroundColor:     tcell.ColorSilver,
-		MoreContrastBackgroundColor: tcell.ColorDefault,
+		ContrastBackgroundColor:     tcell.ColorGray,
+		MoreContrastBackgroundColor: tcell.ColorMaroon,
 		BorderColor:                 tcell.ColorNavy,
 		TitleColor:                  tcell.ColorMaroon,
 		GraphicsColor:               tcell.ColorDefault,
