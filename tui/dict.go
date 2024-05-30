@@ -58,6 +58,7 @@ type dictionary struct {
 	optsIwadsLabel               string
 	optsHideHeader               string
 	optsGamesListRelativeWitdh   string
+	optsUseTerminalColors        string
 
 	// samegamelist
 	savesHeader string
@@ -149,6 +150,7 @@ func defaultDict() dictionary {
 		optsIwadsLabel:               "IWADs",
 		optsHideHeader:               "UI - Hide big DOOM logo",
 		optsGamesListRelativeWitdh:   "UI - Game list relative width (1-100%)",
+		optsUseTerminalColors:        "UI - Use terminal color theme",
 
 		// samegamelist
 		savesHeader: "Savegames",

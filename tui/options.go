@@ -182,6 +182,9 @@ func makeOptions() *tview.Flex {
 
 	// ui options
 	//#######################################################################
+	termColors := tview.NewCheckbox().SetLabel(dict.optsUseTerminalColors).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(base.Config().UseTerminalColors)
+	o.AddFormItem(termColors)
+
 	dontWarn := tview.NewCheckbox().SetLabel(dict.optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(base.Config().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
@@ -220,6 +223,7 @@ func makeOptions() *tview.Flex {
 		c.HideHeader = printHeader.IsChecked()
 		c.DeleteWithoutWarning = dontWarn.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
+		c.UseTerminalColors = termColors.IsChecked()
 
 		base.Persist()
 		base.EnableBasePath()
