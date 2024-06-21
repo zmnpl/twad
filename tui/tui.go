@@ -67,83 +67,12 @@ var (
 	idgamesBrowser *goidgames.IdgamesBrowser
 
 	statusline *tview.TextView
-
-	colorTagPrimaryText  = "[white]"
-	colorTagContrast     = "[royalblue]"
-	colorTagMoreContrast = "[orange]"
-
-	colorTagWarnColor = "[red]"
-	warnColor         = tcell.ColorRed
-	colorTagGoodColor = "[green]"
-	goodColor         = tcell.ColorGreen
 )
 
 func init() {
 	config = base.Config()
-	selectTheme()
 	games.RegisterChangeListener(whenGamesChanged)
-}
-
-func selectTheme() {
-	// "Hard coded" theme
-	twadTheme := tview.Theme{
-		// ui stylepageSettings
-		PrimitiveBackgroundColor:    tcell.ColorBlack,
-		ContrastBackgroundColor:     tcell.ColorRoyalBlue,
-		MoreContrastBackgroundColor: tcell.ColorOrange,
-		BorderColor:                 tcell.ColorRoyalBlue,
-		TitleColor:                  tcell.ColorRoyalBlue,
-		GraphicsColor:               tcell.ColorRoyalBlue,
-		PrimaryTextColor:            tcell.ColorWhite,
-		SecondaryTextColor:          tcell.ColorOrange,
-		TertiaryTextColor:           tcell.ColorHotPink,
-		InverseTextColor:            tcell.ColorLemonChiffon,
-		ContrastSecondaryTextColor:  tcell.ColorPeachPuff,
-	}
-
-	// first 16 tcell colors
-	// ColorBlack
-	// ColorMaroon
-	// ColorGreen
-	// ColorOlive
-	// ColorNavy
-	// ColorPurple
-	// ColorTeal
-	// ColorSilver
-	// ColorGray
-	// ColorRed
-	// ColorLime
-	// ColorYellow
-	// ColorBlue
-	// ColorFuchsia
-	// ColorAqua
-	// ColorWhite
-
-	// Theme based on terminal colors
-	terminalTheme := tview.Theme{
-		PrimitiveBackgroundColor:    tcell.ColorBlack,
-		ContrastBackgroundColor:     tcell.ColorGray,
-		MoreContrastBackgroundColor: tcell.ColorMaroon,
-		BorderColor:                 tcell.ColorNavy,
-		TitleColor:                  tcell.ColorMaroon,
-		GraphicsColor:               tcell.ColorDefault,
-		PrimaryTextColor:            tcell.ColorWhite,
-		SecondaryTextColor:          tcell.ColorPurple,
-		TertiaryTextColor:           tcell.ColorTeal,
-		InverseTextColor:            tcell.ColorBlack,
-		ContrastSecondaryTextColor:  tcell.ColorBlack,
-	}
-
-	// Select theme
-	tview.Styles = twadTheme
-	if config.UseTerminalColors {
-		tview.Styles = terminalTheme
-	}
-
-	// Set color tags based on theme
-	colorTagPrimaryText = "[" + tview.Styles.PrimaryTextColor.Name() + "]"
-	colorTagContrast = "[" + tview.Styles.TitleColor.Name() + "]"
-	colorTagMoreContrast = "[" + tview.Styles.SecondaryTextColor.Name() + "]"
+	selectTheme()
 }
 
 // Draw performs all necessary steps to start the ui
