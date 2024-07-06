@@ -24,11 +24,11 @@ import (
 // ColorWhite
 
 var (
-	colorTagWarnColor = "[red]"
-	warnColor         = tcell.ColorRed
+	colorTagWarnColor = "[#FF0000]"
+	warnColor         = tcell.NewHexColor(0xFF0000) // colorred
 
-	colorTagGoodColor = "[green]"
-	goodColor         = tcell.ColorGreen
+	colorTagGoodColor = "[#008000]"
+	goodColor         = tcell.NewHexColor(0x008000) // colorgreen
 
 	// these get changed/set up with the seme selection
 	colorTagPrimaryText  = "[white]"
@@ -85,6 +85,9 @@ func selectTheme() {
 		colorTagPrimaryText = "[" + tview.Styles.PrimaryTextColor.Name() + "]"
 		colorTagContrast = "[" + tview.Styles.TitleColor.Name() + "]"
 		colorTagMoreContrast = "[" + tview.Styles.SecondaryTextColor.Name() + "]"
+
+		colorTagGoodColor = "[green]"
+		colorTagWarnColor = "[red]"
 	}
 
 }
