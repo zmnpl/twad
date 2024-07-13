@@ -1,8 +1,0 @@
-/usr/share/zandronum/zandronum: error while loading shared libraries: libgtk-x11-2.0.so.0: cannot open shared object file: No such file or directory
-
-
-exit status 127
-
-[-iwad doom2.wad -file AeonDM/aeondm.pk3 -savedir /home/simon/.config/twad/savegames/AeonDM -config /home/simon/.config/twad/configs_shared/zandronum/zandronum_sp_base.ini ]
-
-/usr/bin/zandronum -iwad doom2.wad -file AeonDM/aeondm.pk3 -savedir /home/simon/.config/twad/savegames/AeonDM -config /home/simon/.config/twad/configs_shared/zandronum/zandronum_sp_base.ini 
