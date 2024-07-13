@@ -16,16 +16,15 @@ If you love classic __DOOM__ and want to manage modern source ports to play it a
 
 ![demo on windows](readme_assets/twad_windows.png)
 
+
 # Features
 
 * Configure *games* you want to play (basically a combination of IWAD, Source Port and Mod Files)
 * Run games
 * Quickload (start from latest savegame)
 * Warp to specific episodes / levels
-* Record demos
-* Watch demos
-* Delete demos
-* Collect some stats from the cames console output as well as playtime and so on (not sending it anywhere)
+* Record/Watch/Delete demos
+* Collect some stats from the games console output as well as playtime and so on (not sending it anywhere)
 * Collect stats from savegames
 * Run games from rofi or dmenu
 * Import .zip files containing mods
@@ -33,6 +32,14 @@ If you love classic __DOOM__ and want to manage modern source ports to play it a
 * Separate configs per game and shared configs per source port
 * IDGames search/browser and download + import
 * Responsive layout (kind of)
+
+## Using terminal colors
+![demo](readme_assets/col1.png)
+![demo](readme_assets/col2.png)
+![demo](readme_assets/col3.png)
+![demo](readme_assets/col4.png)
+![demo](readme_assets/col5.png)
+
 
 # Installation Options
 
