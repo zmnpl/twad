@@ -137,8 +137,7 @@ func makeOptions() *tview.Flex {
 			return
 		}
 
-		availableIwads, _ := base.GePathIwads(doomwaddirPath.GetText())
-		iwads.SetText(strings.Join(availableIwads, ","))
+		//iwads.SetText(strings.Join(base.GePathIwads(doomwaddirPath.GetText()), ","))
 
 		doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagGoodColor + " " + dict.optsLooksGood)
 	}

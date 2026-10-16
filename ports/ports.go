@@ -16,6 +16,7 @@ var (
 	PortCanonicalNames = map[string]string{
 		"gzdoom":     "gzdoom",
 		"zandronum":  "zandronum",
+		"uzdoom":     "uzdoom",
 		"lzdoom":     "lzdoom",
 		"crispy":     "crispydoom",
 		"chocolate":  "chocolatedoom",

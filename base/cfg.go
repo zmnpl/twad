@@ -80,7 +80,7 @@ func defaultConfig() Cfg {
 	config := Cfg{
 		WadDir:                filepath.Join(helper.Home(), "/DOOM"),
 		ModExtensions:         ".wad.pk3.ipk3.pke.zip",
-		Ports:                 []string{"gzdoom", "zandronum", "lzdoom"},
+		Ports:                 []string{"uzdoom", "gzdoom", "zandronum", "lzdoom"},
 		IWADs:                 []string{"doom2.wad", "doom.wad", "plutonia.wad", "tnt.wad", "heretic.wad", "boa.ipk3"},
 		GameListRelativeWidth: 40,
 		GameListAbsoluteWidth: 0,
