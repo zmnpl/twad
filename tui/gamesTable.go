@@ -21,6 +21,14 @@ func makeGamesTable() *tview.Table {
 	return gamesTable
 }
 
+// selectedRowY returns the screen row right below the selected game within contentPages
+func selectedRowY() int {
+	r, _ := gamesTable.GetSelection()
+	rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
+	_, _, _, commandPreviewHeight := commandPreview.GetRect()
+	return commandPreviewHeight + (r + 1) - rowOffset
+}
+
 func populateGamesTable() {
 	gamesTable.Clear()
 	allGames := games.Games()
@@ -88,7 +96,6 @@ func populateGamesTable() {
 	gamesTable.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 		r, _ := gamesTable.GetSelection()
-		dialogXOffset := 7
 
 		if k == tcell.KeyRune {
 			switch event.Rune() {
@@ -144,9 +151,7 @@ func populateGamesTable() {
 			// warp
 			case 'w':
 				if r > 0 {
-					_, _, _, commandPreviewHeight := commandPreview.GetRect()
-					rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
-					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, dialogXOffset, commandPreviewHeight+(r+1)-rowOffset, contentPages.Box)
+					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, dialogXOffset, selectedRowY(), contentPages.Box)
 					contentPages.AddPage(pageWarp, warp, true, true)
 					app.SetFocus(warp)
 					return nil
@@ -286,9 +291,7 @@ Capitalize on low hanging fruit to identify a ballpark value added activity to b
 				return nil
 			}
 
-			rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
-			_, _, _, commandPreviewHeight := commandPreview.GetRect()
-			youSure := makeYouSureBox(allGames[r-fixRows].Name, remove, appModeNormal, dialogXOffset, commandPreviewHeight+(r+1)-rowOffset, contentPages.Box)
+			youSure := makeYouSureBox(allGames[r-fixRows].Name, remove, appModeNormal, dialogXOffset, selectedRowY(), contentPages.Box)
 			contentPages.AddPage(pageYouSure, youSure, true, true)
 			return nil
 		}

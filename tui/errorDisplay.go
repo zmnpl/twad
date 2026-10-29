@@ -57,13 +57,7 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 		SetTitleColor(warnColor)
 
 	errForm.SetFocus(0)
-	height := 10
-	errLayout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, 0, 1, false).
-		AddItem(foo, height, 0, true).
-		AddItem(nil, 0, 1, false)
-
-	contentPages.AddPage(pageError, errLayout, true, true)
+	contentPages.AddPage(pageError, modalCentered(foo, 10), true, true)
 	app.SetFocus(errForm)
 
 	// very dirty hack to retrieve focus...

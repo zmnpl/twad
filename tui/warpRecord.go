@@ -111,24 +111,7 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 	})
 
 	// surrounding layout
-	helpHeight := 5
+	height := 13
 	width := 50
-	_, _, _, height := warpRecordForm.GetRect()
-	_, _, _, containerHeight := container.GetRect()
-
-	// though, if it flows out of the screen, then on top of the game
-	if yOffset+height > containerHeight+helpHeight {
-		yOffset = yOffset - height - 1
-	}
-
-	warpWindowLayout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, yOffset, 0, false).
-		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(nil, xOffset, 1, false).
-			AddItem(warpRecordForm, width, 0, true).
-			AddItem(nil, 0, 1, false),
-			height+3, 0, true). // + 3 because default box size in tview is 15x10 (width x height)
-		AddItem(nil, 0, 1, false)
-
-	return warpWindowLayout
+	return modalAt(warpRecordForm, xOffset, anchoredY(yOffset, height, container), width, height)
 }

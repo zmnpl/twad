@@ -16,25 +16,7 @@ func makeYouSureBox(title string, onOk func(), onCancel func(), xOffset int, yOf
 
 	height := 5
 	width := 64
-
-	// surrounding layout
-	_, _, _, containerHeight := container.GetRect()
-	helpHeight := 5
-
-	// default: right below the selected game
-	// though, if it flows out of the screen, then on top of the game
-	if yOffset+height > containerHeight+helpHeight {
-		yOffset = yOffset - height - 1
-	}
-
-	youSureLayout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, yOffset, 0, false).
-		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(nil, xOffset, 0, false).
-			AddItem(youSureForm, width, 0, true).
-			AddItem(nil, 0, 1, false),
-			height, 1, true).
-		AddItem(nil, 0, 1, false)
+	youSureLayout := modalAt(youSureForm, xOffset, anchoredY(yOffset, height, container), width, height)
 
 	app.SetFocus(youSureForm)
 

@@ -86,15 +86,6 @@ func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOf
 	height := 8
 	width := len(dict.zipImportSecurityWarn) + 4
 
-	frame := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(nil, yOffset, 0, false).
-		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(nil, xOffset, 0, false).
-			AddItem(layout, width, 0, true).
-			AddItem(nil, 0, 1, false),
-			height, 0, true).
-		AddItem(nil, 0, 1, false)
-
-	contentPages.AddPage(pageZipImport, frame, true, true)
+	contentPages.AddPage(pageZipImport, modalAt(layout, xOffset, yOffset, width, height), true, true)
 	app.SetFocus(modNameForm)
 }
