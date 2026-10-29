@@ -46,14 +46,13 @@ const (
 	tableBorders = false
 )
 
-var (
+// ui holds the state of the terminal user interface
+type ui struct {
 	config *base.Cfg
 	app    *tview.Application
 
 	canvas       *tview.Pages
-	headerPages  *tview.Pages
 	contentPages *layer
-	footerPages  *tview.Pages
 
 	detailPages         *layer
 	detailSidePagesSub1 *layer
@@ -66,141 +65,146 @@ var (
 	idgamesBrowser *goidgames.IdgamesBrowser
 
 	statusline *tview.TextView
-)
 
-func init() {
-	config = base.Config()
-	games.RegisterChangeListener(whenGamesChanged)
-	selectTheme()
+	keyGroups []keyGroup
 }
 
 // Draw performs all necessary steps to start the ui
 func Draw() {
-	initUIElements()
+	u := &ui{config: base.Config()}
+	u.selectTheme()
+	u.buildKeyGroups()
+	games.RegisterChangeListener(u.whenGamesChanged)
+	u.run()
+}
+
+// run performs all necessary steps to start the ui
+func (u *ui) run() {
+	u.initUIElements()
 
 	// settings - only when first start of app
-	if !config.Configured {
-		contentPages.switchTo(pageHello, makeFirstStartHello())
-		config.Configured = true
+	if !u.config.Configured {
+		u.contentPages.switchTo(pageHello, u.makeFirstStartHello())
+		u.config.Configured = true
 	}
 
 	// populate
-	selectedGameChanged(&games.Game{})
-	populateGamesTable()
+	u.selectedGameChanged(&games.Game{})
+	u.populateGamesTable()
 
 	// capture input
-	app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	u.app.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 		// switch back to nowmal mode
 		if k == tcell.KeyESC {
-			appModeNormal()
+			u.appModeNormal()
 			return nil
 		}
 		return event
 	})
 
 	// run app
-	if err := app.SetRoot(canvas, true).SetFocus(contentPages).Run(); err != nil {
+	if err := u.app.SetRoot(u.canvas, true).SetFocus(u.contentPages).Run(); err != nil {
 		panic(err)
 	}
 }
 
-func initUIElements() {
+func (u *ui) initUIElements() {
 	// init basic primitives
-	app = tview.NewApplication()
+	u.app = tview.NewApplication()
 
-	statusline = tview.NewTextView()
-	statusline.SetChangedFunc(func() {
-		app.Draw()
+	u.statusline = tview.NewTextView()
+	u.statusline.SetChangedFunc(func() {
+		u.app.Draw()
 	})
 
 	// build up layout
-	canvas = tview.NewPages()
-	headerPages = tview.NewPages()
-	contentPages = newLayer(pageContent)
-	footerPages = tview.NewPages()
+	u.canvas = tview.NewPages()
+	headerPages := tview.NewPages()
+	u.contentPages = newLayer(u, pageContent)
+	footerPages := tview.NewPages()
 
 	// create header
-	header, headerHeight := getHeader()
+	header, headerHeight := u.getHeader()
 	headerPages.AddPage(pageHeader, header, true, true)
 	// create footer
-	helpPane, helpPaneHeight := makeKeyMap()
+	helpPane, helpPaneHeight := u.makeKeyMap()
 	footerPages.AddPage(pageHelp, helpPane, true, true)
 
 	// set up main grid layout
 	mainGrid := tview.NewGrid()
 	mainGrid.SetRows(headerHeight, -1, helpPaneHeight, 1)
 	mainGrid.SetColumns(-1)
-	canvas.AddPage(pageMain, mainGrid, true, true)
+	u.canvas.AddPage(pageMain, mainGrid, true, true)
 
 	// add to main grid
 	// header
 	mainGrid.AddItem(headerPages, 0, 0, 1, 1, headerHeight+20, 0, false)
 	// content
-	mainGrid.AddItem(contentPages, 0, 0, 2, 1, 0, 0, true)
-	mainGrid.AddItem(contentPages, 1, 0, 1, 1, headerHeight+20, 0, true)
+	mainGrid.AddItem(u.contentPages, 0, 0, 2, 1, 0, 0, true)
+	mainGrid.AddItem(u.contentPages, 1, 0, 1, 1, headerHeight+20, 0, true)
 	// footer
 	mainGrid.AddItem(footerPages, 2, 0, 1, 1, 0, 0, false)
 
 	// status line
-	mainGrid.AddItem(statusline, 3, 0, 1, 1, 0, 0, false)
+	mainGrid.AddItem(u.statusline, 3, 0, 1, 1, 0, 0, false)
 
 	// command preview
-	commandPreview = makeCommandPreview()
+	u.commandPreview = u.makeCommandPreview()
 	// main view to select games
-	gamesTable = makeGamesTable()
+	u.gamesTable = u.makeGamesTable()
 	// responsive detail grid
 	detailGrid := tview.NewGrid()
 	detailGrid.SetRows(-1, -1)
 	detailGrid.SetColumns(-4, -6)
-	detailSidePagesSub1 = newLayer(pageMods)
-	detailSidePagesSub2 = newLayer(pageStats)
+	u.detailSidePagesSub1 = newLayer(u, pageMods)
+	u.detailSidePagesSub2 = newLayer(u, pageStats)
 	// first not so wide screens, then add wide screen layouts
-	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 1, 2, 0, 0, false).AddItem(detailSidePagesSub1, 0, 0, 2, 1, 0, 75, false)
-	detailGrid.AddItem(detailSidePagesSub2, 1, 0, 1, 2, 0, 0, false).AddItem(detailSidePagesSub2, 0, 1, 2, 1, 0, 75, false)
+	detailGrid.AddItem(u.detailSidePagesSub1, 0, 0, 1, 2, 0, 0, false).AddItem(u.detailSidePagesSub1, 0, 0, 2, 1, 0, 75, false)
+	detailGrid.AddItem(u.detailSidePagesSub2, 1, 0, 1, 2, 0, 0, false).AddItem(u.detailSidePagesSub2, 0, 1, 2, 1, 0, 75, false)
 
-	detailPages = newLayer(pageContentMain)
-	detailPages.setBase(detailGrid)
+	u.detailPages = newLayer(u, pageContentMain)
+	u.detailPages.setBase(detailGrid)
 
-	zipSelector = newZipImportUI()
-	contentPages.AddPage(pageZipSelect, zipSelector.layout, true, false)
+	u.zipSelector = newZipImportUI(u)
+	u.contentPages.AddPage(pageZipSelect, u.zipSelector.layout, true, false)
 
 	// id games browser
-	idgamesBrowser = goidgames.NewIdgamesBrowser(app)
-	idgamesBrowser.SetDownloadPath(base.DOWNLOAD_PATH())
-	idgamesBrowser.SetConfirmCallback(func(g goidgames.Idgame) {
-		confirm(contentPages, fmt.Sprintf("Download %v?", g.Title), 0, 5, idgamesBrowser.GetRootLayout(), func() {
+	u.idgamesBrowser = goidgames.NewIdgamesBrowser(u.app)
+	u.idgamesBrowser.SetDownloadPath(base.DOWNLOAD_PATH())
+	u.idgamesBrowser.SetConfirmCallback(func(g goidgames.Idgame) {
+		confirm(u.contentPages, fmt.Sprintf("Download %v?", g.Title), 0, 5, u.idgamesBrowser.GetRootLayout(), func() {
 			go func() {
-				app.SetFocus(statusline)
+				u.app.SetFocus(u.statusline)
 
-				path, err := DownloadIdGame(g, base.DOWNLOAD_PATH())
+				path, err := DownloadIdGame(g, base.DOWNLOAD_PATH(), u.statusline)
 				if err != nil {
-					showError("Download Failed", err.Error(), tview.NewInputField(), nil)
+					u.showError("Download Failed", err.Error(), tview.NewInputField(), nil)
 					return
 				}
 
 				// suggest import of downloaded archive
-				runZipImport(path, g.Title, 0, 5, idgamesBrowser.GetRootLayout())
+				u.runZipImport(path, g.Title, 0, 5, u.idgamesBrowser.GetRootLayout())
 			}()
 		})
 	})
-	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.GetRootLayout(), true, false)
+	u.contentPages.AddPage(pageIdgamesBrowser, u.idgamesBrowser.GetRootLayout(), true, false)
 
 	// add central content page
 	contentFlex := tview.NewFlex().SetDirection(tview.FlexRow)
 	contentFlex.
-		AddItem(commandPreview, 4, 0, false).
+		AddItem(u.commandPreview, 4, 0, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
-			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
-			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
-	contentPages.setBase(contentFlex)
+			AddItem(u.gamesTable, 0, u.config.GameListRelativeWidth, true).
+			AddItem(u.detailPages, 0, 100-u.config.GameListRelativeWidth, true), 0, 1, true)
+	u.contentPages.setBase(contentFlex)
 }
 
 // small or big header
-func getHeader() (tview.Primitive, int) {
+func (u *ui) getHeader() (tview.Primitive, int) {
 	headerHeight := 19
 	var header tview.Primitive
-	header = makeHeader()
+	header = u.makeHeader()
 	if base.Config().HideHeader {
 		headerHeight = 1
 		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
@@ -209,28 +213,28 @@ func getHeader() (tview.Primitive, int) {
 }
 
 // update functions
-func selectedGameChanged(g *games.Game) {
-	populateCommandPreview(g)
-	detailSidePagesSub1.setBase(makeModList(g))
-	detailSidePagesSub2.setBase(makeStatsTable(g))
+func (u *ui) selectedGameChanged(g *games.Game) {
+	u.populateCommandPreview(g)
+	u.detailSidePagesSub1.setBase(u.makeModList(g))
+	u.detailSidePagesSub2.setBase(makeStatsTable(g))
 }
 
 // redraw whole table
-func whenGamesChanged() {
-	populateGamesTable()
+func (u *ui) whenGamesChanged() {
+	u.populateGamesTable()
 }
 
 // reset ui
-func appModeNormal() {
-	contentPages.reset()
-	detailPages.reset()
-	detailSidePagesSub1.reset()
-	detailSidePagesSub2.reset()
+func (u *ui) appModeNormal() {
+	u.contentPages.reset()
+	u.detailPages.reset()
+	u.detailSidePagesSub1.reset()
+	u.detailSidePagesSub2.reset()
 
 	// reset import
-	zipSelector.reset()
+	u.zipSelector.reset()
 
-	statusline.Clear()
+	u.statusline.Clear()
 
-	app.SetFocus(gamesTable)
+	u.app.SetFocus(u.gamesTable)
 }

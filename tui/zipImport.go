@@ -12,11 +12,11 @@ import (
 	"github.com/zmnpl/twad/helper"
 )
 
-func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOffset int, handFocusBackTo tview.Primitive) {
+func (u *ui) runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOffset int, handFocusBackTo tview.Primitive) {
 	// sets focus to the given primitive
 	// if nil was given, then the apps default state will be restored
 	resetFocus := func() {
-		contentPages.close(pageZipImport, handFocusBackTo)
+		u.contentPages.close(pageZipImport, handFocusBackTo)
 	}
 
 	modNameInput := tview.NewInputField().SetLabel(dict.zipImportToLabel).SetText(path.Base(archivePath))
@@ -54,19 +54,19 @@ func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOf
 
 			// test file name again
 			if !helper.IsFileNameValid(modName) {
-				showError(dict.zipImportNameInvalid, dict.zipImportNameInvalidReasons, modNameInput, nil)
+				u.showError(dict.zipImportNameInvalid, dict.zipImportNameInvalidReasons, modNameInput, nil)
 				return
 			}
 
 			// test if provided zip exists
 			if _, err := os.Stat(archivePath); os.IsNotExist(err) {
-				showError(dict.zipImportArchiveNotFound, err.Error(), handFocusBackTo, nil)
+				u.showError(dict.zipImportArchiveNotFound, err.Error(), handFocusBackTo, nil)
 				return
 			}
 
 			// START ACTUAL IMPORT
 			if err := base.ImportArchive(archivePath, modName); err != nil {
-				showError(dict.zipImportFailed, err.Error(), handFocusBackTo, nil)
+				u.showError(dict.zipImportFailed, err.Error(), handFocusBackTo, nil)
 			}
 		})
 
@@ -82,6 +82,6 @@ func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOf
 	height := 8
 	width := len(dict.zipImportSecurityWarn) + 4
 
-	contentPages.showAt(pageZipImport, layout, xOffset, yOffset, width, height)
-	app.SetFocus(modNameForm)
+	u.contentPages.showAt(pageZipImport, layout, xOffset, yOffset, width, height)
+	u.app.SetFocus(modNameForm)
 }

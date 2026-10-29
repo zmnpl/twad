@@ -28,42 +28,40 @@ type keyGroup struct {
 	bindings []keyBinding
 }
 
-var keyGroups []keyGroup
-
-func init() {
-	keyGroups = []keyGroup{
+func (u *ui) buildKeyGroups() {
+	u.keyGroups = []keyGroup{
 		{"Basic Navigation", []keyBinding{
 			{label: "Arrows (or hjkl)", desc: "Navigate"},
-			{label: "TAB", desc: "Switch Focus", key: tcell.KeyTab, game: focusMods},
+			{label: "TAB", desc: "Switch Focus", key: tcell.KeyTab, game: u.focusMods},
 			{label: "ENTER", desc: "Confirm"},
-			{label: "F1", desc: "Help/Keymap", footer: true, key: tcell.KeyF1, run: showHelp},
-			{label: "F2", desc: "IDGames Browser", key: tcell.KeyF2, run: showIdgamesBrowser},
-			{label: "F3", desc: "Import Archive", key: tcell.KeyF3, run: showZipSelect},
+			{label: "F1", desc: "Help/Keymap", footer: true, key: tcell.KeyF1, run: u.showHelp},
+			{label: "F2", desc: "IDGames Browser", key: tcell.KeyF2, run: u.showIdgamesBrowser},
+			{label: "F3", desc: "Import Archive", key: tcell.KeyF3, run: u.showZipSelect},
 		}},
 		{"General Functions", []keyBinding{
 			{label: "ESC", desc: "Reset UI", footer: true},
 			{label: "q", desc: "Quit", footer: true},
-			{label: "c", desc: "Credits/License", ch: 'c', run: toggleLicense},
-			{label: "o", desc: "Options", footer: true, ch: 'o', run: showOptions},
-			{label: "s", desc: "Sort Games Alphabetically", ch: 's', run: sortGames},
+			{label: "c", desc: "Credits/License", ch: 'c', run: u.toggleLicense},
+			{label: "o", desc: "Options", footer: true, ch: 'o', run: u.showOptions},
+			{label: "s", desc: "Sort Games Alphabetically", ch: 's', run: u.sortGames},
 		}},
 		{"Launch Selected Game", []keyBinding{
 			{label: "ENTER", desc: "Run Game", footer: true},
 			{label: "F9", desc: "Run Last Savegame", footer: true, key: tcell.KeyF9, game: quickload},
-			{label: "w", desc: "Warp (+Record)", footer: true, ch: 'w', game: warpGame},
+			{label: "w", desc: "Warp (+Record)", footer: true, ch: 'w', game: u.warpGame},
 		}},
 		{"Selected Game Details", []keyBinding{
-			{label: "d", desc: "Demos", footer: true, ch: 'd', game: showDemos},
-			{label: "z", desc: "Savegames", footer: true, ch: 'z', game: showSavegames},
+			{label: "d", desc: "Demos", footer: true, ch: 'd', game: u.showDemos},
+			{label: "z", desc: "Savegames", footer: true, ch: 'z', game: u.showSavegames},
 			{label: "u", desc: "Visit Url", ch: 'u', game: visitUrl},
 		}},
 		{"Add/Edit Game", []keyBinding{
-			{label: "e", desc: "Edit Game", ch: 'e', game: editGame},
-			{label: "m", desc: "Add Mod To Game", footer: true, ch: 'm', game: showModTree},
-			{label: "n", desc: "New Game", footer: true, ch: 'n', run: newGame},
-			{label: "DEL", desc: "Remove Game", footer: true, key: tcell.KeyDelete, game: removeGame},
-			{label: "+/-", desc: "Rate Game", ch: '+', game: rateGame(1)},
-			{ch: '-', game: rateGame(-1)},
+			{label: "e", desc: "Edit Game", ch: 'e', game: u.editGame},
+			{label: "m", desc: "Add Mod To Game", footer: true, ch: 'm', game: u.showModTree},
+			{label: "n", desc: "New Game", footer: true, ch: 'n', run: u.newGame},
+			{label: "DEL", desc: "Remove Game", footer: true, key: tcell.KeyDelete, game: u.removeGame},
+			{label: "+/-", desc: "Rate Game", ch: '+', game: u.rateGame(1)},
+			{ch: '-', game: u.rateGame(-1)},
 		}},
 	}
 }
@@ -80,8 +78,8 @@ func (b keyBinding) matches(event *tcell.EventKey) bool {
 }
 
 // handleKeyBindings runs the action bound to the given key
-func handleKeyBindings(event *tcell.EventKey) *tcell.EventKey {
-	for _, group := range keyGroups {
+func (u *ui) handleKeyBindings(event *tcell.EventKey) *tcell.EventKey {
+	for _, group := range u.keyGroups {
 		for _, b := range group.bindings {
 			if !b.matches(event) {
 				continue
@@ -91,7 +89,7 @@ func handleKeyBindings(event *tcell.EventKey) *tcell.EventKey {
 				return nil
 			}
 			if b.game != nil {
-				if g, ok := selectedGame(); ok {
+				if g, ok := u.selectedGame(); ok {
 					b.game(g)
 				}
 				return nil
@@ -102,10 +100,10 @@ func handleKeyBindings(event *tcell.EventKey) *tcell.EventKey {
 }
 
 // withQuit makes q quit the app, before handing other keys to the given input capture
-func withQuit(capture func(event *tcell.EventKey) *tcell.EventKey) func(event *tcell.EventKey) *tcell.EventKey {
+func (u *ui) withQuit(capture func(event *tcell.EventKey) *tcell.EventKey) func(event *tcell.EventKey) *tcell.EventKey {
 	return func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyRune && event.Rune() == 'q' {
-			app.Stop()
+			u.app.Stop()
 			return nil
 		}
 		if capture == nil {
@@ -115,9 +113,9 @@ func withQuit(capture func(event *tcell.EventKey) *tcell.EventKey) func(event *t
 	}
 }
 
-func makeKeyMap() (helpPane *tview.Grid, height int) {
+func (u *ui) makeKeyMap() (helpPane *tview.Grid, height int) {
 	var footerBindings []keyBinding
-	for _, group := range keyGroups {
+	for _, group := range u.keyGroups {
 		for _, b := range group.bindings {
 			if b.footer {
 				footerBindings = append(footerBindings, b)
@@ -157,22 +155,22 @@ ADDITEMS:
 	return
 }
 
-func makeHelp() *tview.TextView {
+func (u *ui) makeHelp() *tview.TextView {
 	explanation := tview.NewTextView().SetRegions(true).SetWrap(true).SetWordWrap(true).SetDynamicColors(true)
 	explanation.SetBorder(true)
 	explanation.SetTitle("Help")
 	explanation.Clear()
 
-	explanation.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+	explanation.SetInputCapture(u.withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		// switch back to nowmal mode
 		if event.Key() == tcell.KeyF1 {
-			appModeNormal()
+			u.appModeNormal()
 			return nil
 		}
 		return event
 	}))
 
-	for _, group := range keyGroups {
+	for _, group := range u.keyGroups {
 		fmt.Fprintf(explanation, "%s%s\n", colorTagContrast, group.title)
 		for _, b := range group.bindings {
 			if b.label != "" {
@@ -188,43 +186,43 @@ func makeHelp() *tview.TextView {
 // key actions
 //#######################################################################
 
-func showHelp() {
-	appModeNormal()
-	contentPages.switchTo(pageHelpKeymap, makeHelp())
+func (u *ui) showHelp() {
+	u.appModeNormal()
+	u.contentPages.switchTo(pageHelpKeymap, u.makeHelp())
 }
 
-func showIdgamesBrowser() {
-	contentPages.open(pageIdgamesBrowser, idgamesBrowser.GetRootLayout())
+func (u *ui) showIdgamesBrowser() {
+	u.contentPages.open(pageIdgamesBrowser, u.idgamesBrowser.GetRootLayout())
 }
 
-func showZipSelect() {
-	contentPages.open(pageZipSelect, zipSelector.selectTree)
+func (u *ui) showZipSelect() {
+	u.contentPages.open(pageZipSelect, u.zipSelector.selectTree)
 }
 
 // c again toggles back
-func toggleLicense() {
-	if front, _ := detailSidePagesSub2.GetFrontPage(); front == pageLicense {
-		appModeNormal()
+func (u *ui) toggleLicense() {
+	if front, _ := u.detailSidePagesSub2.GetFrontPage(); front == pageLicense {
+		u.appModeNormal()
 		return
 	}
-	detailSidePagesSub2.switchTo(pageLicense, makeLicense())
+	u.detailSidePagesSub2.switchTo(pageLicense, u.makeLicense())
 }
 
-func showOptions() {
-	contentPages.switchTo(pageOptions, makeOptions())
+func (u *ui) showOptions() {
+	u.contentPages.switchTo(pageOptions, u.makeOptions())
 }
 
-func sortGames() {
+func (u *ui) sortGames() {
 	games.SortAlph()
-	populateGamesTable()
+	u.populateGamesTable()
 }
 
-func newGame() {
-	detailPages.switchTo(pageAddEdit, makeAddEditGame(nil))
+func (u *ui) newGame() {
+	u.detailPages.switchTo(pageAddEdit, u.makeAddEditGame(nil))
 }
 
-func editGame(g *games.Game) {
-	detailPages.switchTo(pageAddEdit, makeAddEditGame(g))
+func (u *ui) editGame(g *games.Game) {
+	u.detailPages.switchTo(pageAddEdit, u.makeAddEditGame(g))
 }
 
 // "quickload" tries to load the latest savegame
@@ -232,62 +230,62 @@ func quickload(g *games.Game) {
 	g.Quickload()
 }
 
-func warpGame(g *games.Game) {
-	contentPages.showAt(pageWarp, makeWarpRecord(*g), dialogXOffset, selectedRowY(), warpDialogWidth, warpDialogHeight)
+func (u *ui) warpGame(g *games.Game) {
+	u.contentPages.showAt(pageWarp, u.makeWarpRecord(*g), dialogXOffset, u.selectedRowY(), warpDialogWidth, warpDialogHeight)
 }
 
-func showDemos(g *games.Game) {
-	demoList, err := makeDemoList(g)
+func (u *ui) showDemos(g *games.Game) {
+	demoList, err := u.makeDemoList(g)
 	if err != nil {
 		return
 	}
-	detailSidePagesSub1.show(pageDemos, demoList)
+	u.detailSidePagesSub1.show(pageDemos, demoList)
 }
 
-func showSavegames(g *games.Game) {
-	savegameList, err := makeSavegameList(g)
+func (u *ui) showSavegames(g *games.Game) {
+	savegameList, err := u.makeSavegameList(g)
 	if err != nil {
 		return
 	}
-	detailSidePagesSub1.show(pageSaves, savegameList)
+	u.detailSidePagesSub1.show(pageSaves, savegameList)
 }
 
 func visitUrl(g *games.Game) {
 	helper.Openbrowser(g.Link)
 }
 
-func showModTree(g *games.Game) {
-	detailSidePagesSub2.switchTo(pageModSelector, makeModTree(g))
+func (u *ui) showModTree(g *games.Game) {
+	u.detailSidePagesSub2.switchTo(pageModSelector, u.makeModTree(g))
 }
 
 // switch focus to mod list; only if game has mods
-func focusMods(g *games.Game) {
+func (u *ui) focusMods(g *games.Game) {
 	if len(g.Mods) > 0 {
-		app.SetFocus(detailSidePagesSub1)
+		u.app.SetFocus(u.detailSidePagesSub1)
 	}
 }
 
-func rateGame(increment int) func(*games.Game) {
+func (u *ui) rateGame(increment int) func(*games.Game) {
 	return func(g *games.Game) {
 		g.Rate(increment)
-		r, _ := gamesTable.GetSelection()
-		setGameRow(r, g)
+		r, _ := u.gamesTable.GetSelection()
+		u.setGameRow(r, g)
 		games.Persist()
 	}
 }
 
-func removeGame(g *games.Game) {
-	r, _ := gamesTable.GetSelection()
+func (u *ui) removeGame(g *games.Game) {
+	r, _ := u.gamesTable.GetSelection()
 	remove := func() {
-		if r == gamesTable.GetRowCount()-1 {
-			gamesTable.Select(r-1, 0)
+		if r == u.gamesTable.GetRowCount()-1 {
+			u.gamesTable.Select(r-1, 0)
 		}
 		games.RemoveGameAt(r - gamesTableHeaderRows)
 	}
 
-	if config.DeleteWithoutWarning {
+	if u.config.DeleteWithoutWarning {
 		remove()
 		return
 	}
-	confirm(contentPages, g.Name, dialogXOffset, selectedRowY(), gamesTable, remove)
+	confirm(u.contentPages, g.Name, dialogXOffset, u.selectedRowY(), u.gamesTable, remove)
 }

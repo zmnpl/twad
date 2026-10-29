@@ -8,7 +8,7 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-func makeSavegameList(g *games.Game) (*tview.Flex, error) {
+func (u *ui) makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	frameFlex, savegameList := newTitledList(dict.savesHeader)
 
 	// get savegames
@@ -27,8 +27,8 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 			savegameList.AddItem(savegame.Meta.Title, fmt.Sprintf("%v (%v)", savegame.FI.Name(), savegame.FI.ModTime().Format("2006-01-02 15:04:05")), '|', nil)
 
 			if i == 0 {
-				statsTable = makeLevelStatsTable(*savegames[i], savegameList)
-				detailSidePagesSub2.add(pageSaveStats, statsTable)
+				statsTable = u.makeLevelStatsTable(*savegames[i], savegameList)
+				u.detailSidePagesSub2.add(pageSaveStats, statsTable)
 			}
 		}
 	}
@@ -41,14 +41,14 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	})
 
 	savegameList.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
-		statsTable = makeLevelStatsTable(*savegames[index], savegameList)
-		detailSidePagesSub2.add(pageSaveStats, statsTable)
+		statsTable = u.makeLevelStatsTable(*savegames[index], savegameList)
+		u.detailSidePagesSub2.add(pageSaveStats, statsTable)
 	})
 
 	// tab navigates back to games table; tab navigation on list is redundant
-	savegameList.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+	savegameList.SetInputCapture(u.withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyTAB && statsTable != nil {
-			app.SetFocus(detailSidePagesSub2)
+			u.app.SetFocus(u.detailSidePagesSub2)
 		}
 		return event
 	}))

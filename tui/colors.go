@@ -40,7 +40,7 @@ func init() {
 	//selectTheme()
 }
 
-func selectTheme() {
+func (u *ui) selectTheme() {
 	// "Hard coded" theme
 	twadTheme := tview.Theme{
 		// ui stylepageSettings
@@ -79,7 +79,7 @@ func selectTheme() {
 	colorTagContrast = "[" + "#4169E1" + "]"     // like title
 	colorTagMoreContrast = "[" + "#FFA500" + "]" // like secondary text
 
-	if config.UseTerminalColors {
+	if u.config.UseTerminalColors {
 		tview.Styles = terminalTheme
 
 		colorTagPrimaryText = "[" + tview.Styles.PrimaryTextColor.Name() + "]"

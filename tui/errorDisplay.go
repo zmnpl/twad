@@ -8,14 +8,14 @@ import (
 // can show errors prominently on the screen
 // if a function is supplied, the user gets the choice to proceed
 // without fixing what might have cause this on his/her own risk
-func showError(errTitle string, errString string, handFocusBackTo tview.Primitive, YOLO func()) {
+func (u *ui) showError(errTitle string, errString string, handFocusBackTo tview.Primitive, YOLO func()) {
 	// form with buttons
 	errForm := tview.NewForm()
 
 	// sets focus to the given primitive
 	// if nil was given, then the apps default state will be restored
 	resetFocus := func() {
-		contentPages.close(pageError, handFocusBackTo)
+		u.contentPages.close(pageError, handFocusBackTo)
 	}
 
 	// YOLO lets the user execute and action despite the error
@@ -52,7 +52,7 @@ func showError(errTitle string, errString string, handFocusBackTo tview.Primitiv
 		SetTitleColor(warnColor)
 
 	errForm.SetFocus(0)
-	contentPages.show(pageError, modalCentered(foo, 10))
+	u.contentPages.show(pageError, modalCentered(foo, 10))
 
 	// very dirty hack to retrieve focus...
 	// TODO: how to do better when produced by form item done funcs

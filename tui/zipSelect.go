@@ -8,12 +8,13 @@ import (
 )
 
 type zipSelect struct {
+	u          *ui
 	layout     *tview.Flex
 	selectTree *tview.TreeView
 }
 
-func newZipImportUI() *zipSelect {
-	var zui zipSelect
+func newZipImportUI(u *ui) *zipSelect {
+	zui := zipSelect{u: u}
 	zui.initZipSelect()
 
 	zui.layout = tview.NewFlex().SetDirection(tview.FlexRow).
@@ -62,16 +63,16 @@ func (z *zipSelect) initZipSelect() {
 			case fi.IsDir():
 				add(node, selPath)
 			default:
-				runZipImport(selPath, "", 0, 1, z.selectTree)
+				z.u.runZipImport(selPath, "", 0, 1, z.selectTree)
 			}
 		} else {
 			node.SetExpanded(!node.IsExpanded())
 		}
 	})
 
-	z.selectTree.SetInputCapture(withQuit(nil))
+	z.selectTree.SetInputCapture(z.u.withQuit(nil))
 }
 
 func (z *zipSelect) reset() {
-	app.SetFocus(z.selectTree)
+	z.u.app.SetFocus(z.selectTree)
 }

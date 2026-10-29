@@ -15,7 +15,7 @@ import (
 )
 
 // function to check source port entry
-var sourcePortCheck = func(input *tview.InputField) {
+func sourcePortCheck(input *tview.InputField) {
 	// does this path exist?
 	if _, err := os.Stat(input.GetText()); os.IsNotExist(err) {
 		if commandExists(strings.TrimSpace(input.GetText())) {
@@ -30,7 +30,7 @@ var sourcePortCheck = func(input *tview.InputField) {
 }
 
 // builder function that creates a function which autocompletes input fields
-var autocompletePathMaker = func(path *tview.InputField, dirsOnly bool, extensionFilter map[string]bool) func(pathText string) (entries []string) {
+func (u *ui) autocompletePathMaker(path *tview.InputField, dirsOnly bool, extensionFilter map[string]bool) func(pathText string) (entries []string) {
 	var mutex sync.Mutex
 	prefixMap := make(map[string][]string)
 	firstStart := true
@@ -90,7 +90,7 @@ var autocompletePathMaker = func(path *tview.InputField, dirsOnly bool, extensio
 
 			path.Autocomplete()
 
-			app.Draw()
+			u.app.Draw()
 
 		}()
 		return nil
@@ -99,7 +99,7 @@ var autocompletePathMaker = func(path *tview.InputField, dirsOnly bool, extensio
 	return foo
 }
 
-func makeOptions() *tview.Flex {
+func (u *ui) makeOptions() *tview.Flex {
 	o := tview.NewForm()
 
 	// doomwaddir
@@ -117,7 +117,7 @@ func makeOptions() *tview.Flex {
 	o.AddFormItem(iwads)
 
 	// autocompletion for path
-	autocompleteDoomwaddir := autocompletePathMaker(doomwaddirPath, true, nil)
+	autocompleteDoomwaddir := u.autocompletePathMaker(doomwaddirPath, true, nil)
 	doomwaddirPath.SetAutocompleteFunc(autocompleteDoomwaddir)
 
 	// check iwad path
@@ -163,7 +163,7 @@ func makeOptions() *tview.Flex {
 	spInputs := make([]*tview.InputField, base.MAX_SOURCE_PORTS)
 	for i := 0; i < base.MAX_SOURCE_PORTS; i++ {
 		sourcePort := tview.NewInputField().SetLabel(dict.optsSourcePortLabel)
-		autocompleteSourcePort := autocompletePathMaker(sourcePort, false, spExtensionFilter)
+		autocompleteSourcePort := u.autocompletePathMaker(sourcePort, false, spExtensionFilter)
 
 		// only autocomplete source ports on windows
 		// on linux the simple executable name is usually enough when it is in path
@@ -227,7 +227,7 @@ func makeOptions() *tview.Flex {
 
 		base.Persist()
 		base.EnableBasePath()
-		appModeNormal()
+		u.appModeNormal()
 	})
 
 	// layout

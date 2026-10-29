@@ -48,7 +48,7 @@ func splitWarpString(warp string) (episode, level int) {
 }
 
 // warp dialog
-func makeWarpRecord(game games.Game) *tview.Form {
+func (u *ui) makeWarpRecord(game games.Game) *tview.Form {
 	episode := 0
 	level := 0
 
@@ -94,7 +94,7 @@ func makeWarpRecord(game games.Game) *tview.Form {
 		difficulty, _ := skl.GetCurrentOption()
 		demo := demoName.GetText()
 
-		appModeNormal() // TODO: looks like this is only executed after the game closed; not sure why
+		u.appModeNormal() // TODO: looks like this is only executed after the game closed; not sure why
 
 		i, beamToMapDisplayName := mapSelect.GetCurrentOption()
 		if i > 0 {

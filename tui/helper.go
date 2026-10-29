@@ -8,11 +8,13 @@ import (
 	"path/filepath"
 
 	"github.com/gdamore/tcell/v2"
+	"github.com/rivo/tview"
 	"github.com/zmnpl/goidgames"
 )
 
 type WriteCounter struct {
-	Total uint64
+	Total  uint64
+	status *tview.TextView
 }
 
 func (wc *WriteCounter) Write(p []byte) (int, error) {
@@ -24,12 +26,12 @@ func (wc *WriteCounter) Write(p []byte) (int, error) {
 
 func (wc WriteCounter) PrintProgress() {
 	progress := fmt.Sprintf(" Downloading... %v complete", wc.Total)
-	statusline.Clear()
-	statusline.Write([]byte(progress))
+	wc.status.Clear()
+	wc.status.Write([]byte(progress))
 }
 
 // DownloadTo tries to download the game to given path and returns the full path of the downloaded file
-func DownloadIdGame(g goidgames.Idgame, path string) (filePath string, err error) {
+func DownloadIdGame(g goidgames.Idgame, path string, status *tview.TextView) (filePath string, err error) {
 	success := false
 	if err = os.MkdirAll(path, 0755); err != nil {
 		return "", err
@@ -50,7 +52,7 @@ func DownloadIdGame(g goidgames.Idgame, path string) (filePath string, err error
 		}
 		defer out.Close()
 
-		counter := &WriteCounter{}
+		counter := &WriteCounter{status: status}
 		_, err = io.Copy(out, io.TeeReader(resp.Body, counter))
 		if err == nil {
 			success = true

@@ -36,16 +36,16 @@ func indexOfItemIn(item string, list []string) (int, bool) {
 	return -1, false
 }
 
-func makeAddEditGame(g *games.Game) *tview.Flex {
+func (u *ui) makeAddEditGame(g *games.Game) *tview.Flex {
 	gWasNil := false
 	title := dict.editGame
 
 	port, iwad := "", ""
-	if len(config.Ports) > 0 {
-		port = config.Ports[0]
+	if len(u.config.Ports) > 0 {
+		port = u.config.Ports[0]
 	}
-	if len(config.IWADs) > 0 {
-		iwad = config.IWADs[0]
+	if len(u.config.IWADs) > 0 {
+		iwad = u.config.IWADs[0]
 	}
 
 	if g == nil {
@@ -157,7 +157,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 		games.Persist()
 		games.InformChangeListeners()
-		appModeNormal()
+		u.appModeNormal()
 	})
 
 	// build form

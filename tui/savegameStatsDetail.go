@@ -10,7 +10,7 @@ import (
 )
 
 // stats
-func makeLevelStatsTable(s savesStats.Savegame, lastFocus *tview.List) *tview.Table {
+func (u *ui) makeLevelStatsTable(s savesStats.Savegame, lastFocus *tview.List) *tview.Table {
 	stats := newKVTable()
 	stats.SetSelectable(true, false)
 	stats.spacer()
@@ -31,9 +31,9 @@ func makeLevelStatsTable(s savesStats.Savegame, lastFocus *tview.List) *tview.Ta
 		populate(lvl)
 	}
 
-	stats.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+	stats.SetInputCapture(u.withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyTAB {
-			app.SetFocus(lastFocus)
+			u.app.SetFocus(lastFocus)
 		}
 		return event
 	}))

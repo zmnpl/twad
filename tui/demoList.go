@@ -10,7 +10,7 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-func makeDemoList(g *games.Game) (*tview.Flex, error) {
+func (u *ui) makeDemoList(g *games.Game) (*tview.Flex, error) {
 	demoFlex, demoList := newTitledList(dict.demosHeader)
 
 	// get demos
@@ -53,15 +53,15 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 
 		demos, err = g.RemoveDemo(demos[i].Name())
 		if err != nil {
-			showError("could not remove demo", err.Error(), nil, nil)
+			u.showError("could not remove demo", err.Error(), nil, nil)
 			return
 		}
 
 		if len(demos) > 0 {
 			populate()
-			app.SetFocus(demoList)
+			u.app.SetFocus(demoList)
 		} else {
-			appModeNormal()
+			u.appModeNormal()
 		}
 		games.Persist()
 
@@ -69,7 +69,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 	}
 
 	// tab navigates back to games table; tab navigation on list is redundant
-	demoList.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+	demoList.SetInputCapture(u.withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 
 		// delete mod
@@ -82,7 +82,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 					return nil
 				}
 
-				confirm(detailSidePagesSub1, demos[ci].Name(), 2, 2, demoList, func() { // TODO: calculate offsets
+				confirm(u.detailSidePagesSub1, demos[ci].Name(), 2, 2, demoList, func() { // TODO: calculate offsets
 					removeDemo(ci)
 				})
 			}
@@ -91,7 +91,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 
 		// start zip import from here
 		if k == tcell.KeyRune && event.Rune() == 'i' {
-			showZipSelect()
+			u.showZipSelect()
 			return nil
 		}
 

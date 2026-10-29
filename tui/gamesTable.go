@@ -9,28 +9,28 @@ import (
 const gamesTableHeaderRows = 1
 
 // center table with mods
-func makeGamesTable() *tview.Table {
-	gamesTable = tview.NewTable().
+func (u *ui) makeGamesTable() *tview.Table {
+	u.gamesTable = tview.NewTable().
 		SetFixed(1, 1).
 		SetSelectable(true, false).
 		SetBorders(tableBorders).SetSeparator('|')
-	gamesTable.SetBorderPadding(0, 0, 1, 2)
+	u.gamesTable.SetBorderPadding(0, 0, 1, 2)
 
-	gamesTable.SetSelectionChangedFunc(func(r int, c int) {
+	u.gamesTable.SetSelectionChangedFunc(func(r int, c int) {
 		if g, ok := gameAt(r); ok {
-			selectedGameChanged(g)
+			u.selectedGameChanged(g)
 		}
 	})
 
-	gamesTable.SetSelectedFunc(func(r int, c int) {
+	u.gamesTable.SetSelectedFunc(func(r int, c int) {
 		if g, ok := gameAt(r); ok {
 			g.Run()
 		}
 	})
 
-	gamesTable.SetInputCapture(withQuit(handleKeyBindings))
+	u.gamesTable.SetInputCapture(u.withQuit(u.handleKeyBindings))
 
-	return gamesTable
+	return u.gamesTable
 }
 
 // gamesTableColumn describes a column of the games table and how to show a game in it
@@ -60,35 +60,35 @@ func gameAt(r int) (*games.Game, bool) {
 }
 
 // selectedGame returns the game selected in the games table
-func selectedGame() (*games.Game, bool) {
-	r, _ := gamesTable.GetSelection()
+func (u *ui) selectedGame() (*games.Game, bool) {
+	r, _ := u.gamesTable.GetSelection()
 	return gameAt(r)
 }
 
 // selectedRowY returns the screen row right below the selected game within contentPages
-func selectedRowY() int {
-	r, _ := gamesTable.GetSelection()
-	rowOffset, _ := gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
-	_, _, _, commandPreviewHeight := commandPreview.GetRect()
+func (u *ui) selectedRowY() int {
+	r, _ := u.gamesTable.GetSelection()
+	rowOffset, _ := u.gamesTable.GetOffset() // account for, when table is scrolled beyond visible screen
+	_, _, _, commandPreviewHeight := u.commandPreview.GetRect()
 	return commandPreviewHeight + (r + 1) - rowOffset
 }
 
-func populateGamesTable() {
-	gamesTable.Clear()
+func (u *ui) populateGamesTable() {
+	u.gamesTable.Clear()
 
 	for c, col := range gamesTableColumns() {
-		gamesTable.SetCell(0, c, tview.NewTableCell(col.header).SetTextColor(tview.Styles.SecondaryTextColor))
+		u.gamesTable.SetCell(0, c, tview.NewTableCell(col.header).SetTextColor(tview.Styles.SecondaryTextColor))
 	}
 
 	allGames := games.Games()
 	for i := range allGames {
-		setGameRow(i+gamesTableHeaderRows, &allGames[i])
+		u.setGameRow(i+gamesTableHeaderRows, &allGames[i])
 	}
 }
 
 // setGameRow (re)draws the cells of a game in the given row
-func setGameRow(r int, g *games.Game) {
+func (u *ui) setGameRow(r int, g *games.Game) {
 	for c, col := range gamesTableColumns() {
-		gamesTable.SetCell(r, c, tview.NewTableCell(col.value(g)).SetTextColor(col.color))
+		u.gamesTable.SetCell(r, c, tview.NewTableCell(col.value(g)).SetTextColor(col.color))
 	}
 }

@@ -13,17 +13,17 @@ const (
 )
 
 // command preview
-func makeCommandPreview() *tview.TextView {
-	commandPreview = tview.NewTextView().SetDynamicColors(true)
-	commandPreview.SetBorder(true)
-	fmt.Fprintf(commandPreview, "")
+func (u *ui) makeCommandPreview() *tview.TextView {
+	u.commandPreview = tview.NewTextView().SetDynamicColors(true)
+	u.commandPreview.SetBorder(true)
+	fmt.Fprintf(u.commandPreview, "")
 
-	return commandPreview
+	return u.commandPreview
 }
 
-func populateCommandPreview(g *games.Game) {
-	commandPreview.Clear()
-	fmt.Fprintf(commandPreview, fmt.Sprintf("%s %s", previewText, stylizeCommandList(g.CommandList())))
+func (u *ui) populateCommandPreview(g *games.Game) {
+	u.commandPreview.Clear()
+	fmt.Fprintf(u.commandPreview, fmt.Sprintf("%s %s", previewText, stylizeCommandList(g.CommandList())))
 }
 
 func stylizeCommandList(params []string) string {

@@ -9,7 +9,7 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-func makeModList(g *games.Game) *tview.Flex {
+func (u *ui) makeModList(g *games.Game) *tview.Flex {
 	modListFlex, modList := newTitledList(dict.overviewMods)
 	// populate list with data
 	for _, mod := range g.Mods {
@@ -72,12 +72,12 @@ func makeModList(g *games.Game) *tview.Flex {
 	}
 
 	// tab navigates back to games table; tab navigation on list is redundant
-	modList.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+	modList.SetInputCapture(u.withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 
 		// switch back to game table
 		if k == tcell.KeyTab {
-			app.SetFocus(gamesTable)
+			u.app.SetFocus(u.gamesTable)
 			return nil
 		}
 
@@ -91,7 +91,7 @@ func makeModList(g *games.Game) *tview.Flex {
 					return nil
 				}
 
-				confirm(detailSidePagesSub1, g.Mods[ci], 2, 2, modList, func() { // TODO: calculate offsets
+				confirm(u.detailSidePagesSub1, g.Mods[ci], 2, 2, modList, func() { // TODO: calculate offsets
 					removeMod(ci)
 				})
 			}
@@ -100,7 +100,7 @@ func makeModList(g *games.Game) *tview.Flex {
 
 		// add mod
 		if k == tcell.KeyRune && event.Rune() == 'm' {
-			showModTree(g)
+			u.showModTree(g)
 			return nil
 		}
 

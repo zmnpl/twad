@@ -51,7 +51,7 @@ SOFTWARE.`
 )
 
 // header
-func makeHeader() *tview.TextView {
+func (u *ui) makeHeader() *tview.TextView {
 	header := tview.NewTextView().
 		SetDynamicColors(true).
 		SetRegions(true)
@@ -63,20 +63,20 @@ func makeHeader() *tview.TextView {
 	// 	fmt.Fprintf(header, "%s", doomLogo)
 	// }
 
-	fmt.Fprintf(header, "%s", makeLogo())
+	fmt.Fprintf(header, "%s", u.makeLogo())
 
 	return header
 }
 
 // first start hello
-func makeFirstStartHello() *tview.TextView {
+func (u *ui) makeFirstStartHello() *tview.TextView {
 	hello := tview.NewTextView().SetDynamicColors(true)
 	hello.SetBorder(true)
 	fmt.Fprint(hello, helloText)
 
-	hello.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+	hello.SetInputCapture(u.withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		if event.Key() == tcell.KeyRune && event.Rune() == 'o' {
-			showOptions()
+			u.showOptions()
 		}
 		return event
 	}))
@@ -85,7 +85,7 @@ func makeFirstStartHello() *tview.TextView {
 }
 
 // license
-func makeLicense() *tview.TextView {
+func (u *ui) makeLicense() *tview.TextView {
 	disclaimer := tview.NewTextView().SetDynamicColors(true).SetRegions(true)
 	fmt.Fprintf(disclaimer, "%s\n", doomLogoCreditHeader)
 	fmt.Fprintf(disclaimer, "%s\n\n", creditDoomLogo)
@@ -95,10 +95,10 @@ func makeLicense() *tview.TextView {
 	fmt.Fprintf(disclaimer, "%s", mitLicense)
 	disclaimer.SetBorder(true).SetTitle("Credits / License")
 
-	disclaimer.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+	disclaimer.SetInputCapture(u.withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		// switch back to nowmal mode
 		if event.Key() == tcell.KeyRune && event.Rune() == 'c' {
-			appModeNormal()
+			u.appModeNormal()
 			return nil
 		}
 		return event

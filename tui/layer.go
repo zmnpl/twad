@@ -8,13 +8,15 @@ import (
 // transient pages (dialogs, detail views, ...) get opened and closed again
 type layer struct {
 	*tview.Pages
+	u         *ui
 	base      string
 	transient map[string]bool
 }
 
-func newLayer(base string) *layer {
+func newLayer(u *ui, base string) *layer {
 	return &layer{
 		Pages:     tview.NewPages(),
+		u:         u,
 		base:      base,
 		transient: make(map[string]bool),
 	}
@@ -34,7 +36,7 @@ func (l *layer) add(name string, p tview.Primitive) {
 // show puts p on top as transient page and focuses it
 func (l *layer) show(name string, p tview.Primitive) {
 	l.add(name, p)
-	app.SetFocus(p)
+	l.u.app.SetFocus(p)
 }
 
 // showAt shows p as dialog of the given size at x, right below row y
@@ -52,7 +54,7 @@ func (l *layer) switchTo(name string, p tview.Primitive) {
 // open switches to an already existing page and focuses the given primitive
 func (l *layer) open(name string, focus tview.Primitive) {
 	l.SwitchToPage(name)
-	app.SetFocus(focus)
+	l.u.app.SetFocus(focus)
 }
 
 // close removes a transient page and hands focus to the given primitive
@@ -66,10 +68,10 @@ func (l *layer) close(name string, focus tview.Primitive) {
 	}
 
 	if focus == nil {
-		appModeNormal()
+		l.u.appModeNormal()
 		return
 	}
-	app.SetFocus(focus)
+	l.u.app.SetFocus(focus)
 }
 
 // reset removes all transient pages and shows the base page

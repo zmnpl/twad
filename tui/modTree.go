@@ -11,8 +11,8 @@ import (
 )
 
 // tree view for selecting additional mods TODO
-func makeModTree(g *games.Game) *tview.TreeView {
-	rootDir := config.WadDir
+func (u *ui) makeModTree(g *games.Game) *tview.TreeView {
+	rootDir := u.config.WadDir
 	if _, err := os.Stat(rootDir); err != nil {
 		if os.IsNotExist(err) {
 		}
@@ -21,7 +21,7 @@ func makeModTree(g *games.Game) *tview.TreeView {
 
 	modFolderTree, rootNode := newTree(rootDir)
 	modFolderTree.SetTitle(dict.modTreeTitle)
-	add := makeFileTreeAddFunc(helper.FilterExtensions, config.ModExtensions, true, false)
+	add := makeFileTreeAddFunc(helper.FilterExtensions, u.config.ModExtensions, true, false)
 	add(rootNode, rootDir)
 
 	modFolderTree.SetSelectedFunc(func(node *tview.TreeNode) {
@@ -42,9 +42,9 @@ func makeModTree(g *games.Game) *tview.TreeView {
 			case fi.IsDir():
 				add(node, path)
 			default:
-				g.AddMod(strings.TrimPrefix(path, config.WadDir+"/"))
-				detailSidePagesSub2.close(pageModSelector, gamesTable)
-				selectedGameChanged(g)
+				g.AddMod(strings.TrimPrefix(path, u.config.WadDir+"/"))
+				u.detailSidePagesSub2.close(pageModSelector, u.gamesTable)
+				u.selectedGameChanged(g)
 			}
 		} else {
 			node.SetExpanded(!node.IsExpanded())
