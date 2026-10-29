@@ -132,7 +132,7 @@ func firstStart() error {
 	if err != nil {
 		return err
 	}
-	return writeFileAtomic(configFullPath(), defaultConfigJSON)
+	return WriteFileAtomic(configFullPath(), defaultConfigJSON)
 }
 
 func loadConfig() error {
@@ -275,12 +275,7 @@ func Persist() error {
 		return err
 	}
 
-	// unchanged files are left alone; spares file syncing tools some work
-	if current, err := os.ReadFile(configFullPath()); err == nil && bytes.Equal(current, JSON) {
-		return nil
-	}
-
-	return writeFileAtomic(configFullPath(), JSON)
+	return WriteFileAtomic(configFullPath(), JSON)
 }
 
 // WadDirIsSane checks if the configured DOOMWADDIR is something useful
@@ -389,11 +384,16 @@ func configFullPath() string {
 	return filepath.Join(GetConfigFolder(), configName)
 }
 
-// writeFileAtomic replaces the file at path by writing a temporary file next to it and renaming it,
+// WriteFileAtomic replaces the file at path by writing a temporary file next to it and renaming it,
 // so the file is never left half written; symlinks are followed
-func writeFileAtomic(path string, data []byte) error {
+// An unchanged file is left alone, which spares file syncing tools some work
+func WriteFileAtomic(path string, data []byte) error {
 	if target, err := filepath.EvalSymlinks(path); err == nil {
 		path = target
+	}
+
+	if current, err := os.ReadFile(path); err == nil && bytes.Equal(current, data) {
+		return nil
 	}
 
 	tmp, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".*.tmp")

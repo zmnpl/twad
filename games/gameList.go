@@ -2,7 +2,9 @@ package games
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"sync"
 
@@ -17,6 +19,10 @@ var (
 	instance        GameList
 	changeListeners []func()
 	gamesJSONName   = "games.json"
+	// loadErr is set when an existing games file couldn't be loaded;
+	// persisting is refused then, so the games don't get overwritten with an empty list
+	loadErr   error
+	persistMu sync.Mutex
 )
 
 func init() {
@@ -28,9 +34,15 @@ func init() {
 func Games() GameList {
 	once.Do(func() {
 		instance = make(GameList, 0)
-		loadGames()
+		loadErr = loadGames()
 	})
 	return instance
+}
+
+// LoadError returns the error, if the existing games file couldn't be loaded
+func LoadError() error {
+	Games()
+	return loadErr
 }
 
 // c := make(chan func() error, 10)
@@ -100,27 +112,38 @@ func GameCount() int {
 
 // Persist writes all games into the according JSON file
 func Persist() error {
+	if loadErr != nil {
+		return fmt.Errorf("not saving games, because they couldn't be loaded: %w", loadErr)
+	}
+
+	persistMu.Lock()
+	defer persistMu.Unlock()
+
 	gamesJSON, err := json.MarshalIndent(instance, "", "    ")
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(base.GetConfigFolder()+"/"+gamesJSONName, gamesJSON, 0755)
-	if err != nil {
-		return err
-	}
-	return nil
+	return base.WriteFileAtomic(gamesJSONPath(), gamesJSON)
+}
+
+func gamesJSONPath() string {
+	return filepath.Join(base.GetConfigFolder(), gamesJSONName)
 }
 
 func loadGames() error {
-	content, err := os.ReadFile(base.GetConfigFolder() + "/" + gamesJSONName) // TODO: Resolve simlinks
+	content, err := os.ReadFile(gamesJSONPath())
+	if os.IsNotExist(err) {
+		return nil
+	}
 	if err != nil {
 		return err
 	}
 
 	err = json.Unmarshal(content, &instance)
 	if err != nil {
-		return err
+		instance = make(GameList, 0)
+		return fmt.Errorf("%s: %w", gamesJSONPath(), err)
 	}
 
 	for i := range instance {
