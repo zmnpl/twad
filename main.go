@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"fmt"
+	"os"
 
 	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/rofimode"
@@ -13,7 +15,10 @@ func main() {
 	dmenu := flag.Bool("dmenu", false, "Run dmenu mode.")
 	flag.Parse()
 
-	base.Config()
+	if err := base.ConfigError(); err != nil {
+		fmt.Fprintf(os.Stderr, "twad: %v\nFix or remove the config file and start again.\n", err)
+		os.Exit(1)
+	}
 
 	if *rofi {
 		rofimode.RunRofiMode("rofi")

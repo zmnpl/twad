@@ -2,7 +2,7 @@ package tui
 
 import (
 	"os"
-	"strings"
+	"path/filepath"
 
 	"github.com/zmnpl/twad/helper"
 
@@ -40,7 +40,11 @@ func (u *ui) makeModTree(g *games.Game) (*tview.TreeView, error) {
 			case fi.IsDir():
 				add(node, path)
 			default:
-				g.AddMod(strings.TrimPrefix(path, u.config.WadDir+"/"))
+				mod, err := filepath.Rel(u.config.WadDir, path)
+				if err != nil {
+					return
+				}
+				g.AddMod(filepath.ToSlash(mod))
 				u.detailSidePagesSub2.close(pageModSelector, u.gamesTable)
 				u.selectedGameChanged(g)
 			}

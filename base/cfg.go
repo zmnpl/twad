@@ -1,6 +1,7 @@
 package base
 
 import (
+	"archive/zip"
 	"bufio"
 	"bytes"
 	"encoding/json"
@@ -21,6 +22,10 @@ import (
 var (
 	instance *Cfg
 	once     sync.Once
+	// loadErr is set when an existing config file couldn't be loaded;
+	// persisting is refused then, so the file doesn't get overwritten with defaults
+	loadErr   error
+	persistMu sync.Mutex
 	// KnownIwads contains names of the most common iwads
 	KnownIwads = map[string]bool{
 		"doom.wad":      true,
@@ -138,17 +143,24 @@ func firstStart() {
 func loadConfig() error {
 	dConf := defaultConfig()
 
-	content, err := os.ReadFile(configFullPath()) // TODO: Resolve simlinks
+	content, err := os.ReadFile(configFullPath())
 	if err != nil {
 		instance = &dConf
+		if os.IsNotExist(err) {
+			return nil
+		}
 		return err
 	}
 
 	err = json.Unmarshal(content, instance)
 	if err != nil {
 		instance = &dConf
-		return err
+		return fmt.Errorf("%s: %w", configFullPath(), err)
 	}
+
+	// empty entries can't be selected in any meaningful way
+	instance.Ports = withoutEmpty(instance.Ports)
+	instance.IWADs = withoutEmpty(instance.IWADs)
 
 	// check zero values for certain variables
 	// empty ones do not really make sense
@@ -169,8 +181,9 @@ func loadConfig() error {
 		instance.IWADs = dConf.IWADs
 	}
 
-	if instance.GameListAbsoluteWidth == 0 {
-		instance.GameListAbsoluteWidth = 40
+	// a width of 0 would hide the games table
+	if instance.GameListRelativeWidth < 1 || instance.GameListRelativeWidth > 100 {
+		instance.GameListRelativeWidth = dConf.GameListRelativeWidth
 	}
 
 	updateConfig()
@@ -199,7 +212,6 @@ func updateConfig() {
 	}
 
 	instance.CfgVersion = CFG_VERSION
-	go Persist()
 }
 
 // Exported functions
@@ -208,9 +220,16 @@ func updateConfig() {
 func Config() *Cfg {
 	once.Do(func() {
 		instance = &Cfg{}
-		loadConfig()
+		loadErr = loadConfig()
 	})
 	return instance
+}
+
+// ConfigError returns the error, if the existing config file couldn't be loaded
+// In that case defaults are used and the config won't be persisted
+func ConfigError() error {
+	Config()
+	return loadErr
 }
 
 // GetConfigFolder returns the folder where configuration is stored
@@ -254,19 +273,26 @@ func GetDemoFolder() string {
 	return filepath.Join(GetConfigFolder(), "demos")
 }
 
-// Persist writes all games into the according JSON file
+// Persist writes the configuration into its JSON file
 func Persist() error {
+	if loadErr != nil {
+		return fmt.Errorf("not saving config, because it couldn't be loaded: %w", loadErr)
+	}
+
+	persistMu.Lock()
+	defer persistMu.Unlock()
+
 	JSON, err := json.MarshalIndent(instance, "", "    ")
 	if err != nil {
 		return err
 	}
 
-	err = os.WriteFile(filepath.Join(GetConfigFolder(), configName), JSON, 0755)
-	if err != nil {
-		return err
+	// unchanged files are left alone; spares file syncing tools some work
+	if current, err := os.ReadFile(configFullPath()); err == nil && bytes.Equal(current, JSON) {
+		return nil
 	}
 
-	return nil
+	return writeFileAtomic(configFullPath(), JSON)
 }
 
 // WadDirIsSane checks if the configured DOOMWADDIR is something useful
@@ -284,7 +310,7 @@ func WadDirIsSane() bool {
 // ModOk checks, if the given mod (relative file path) exists within the configured DOOMWADDIR
 // TODO: Maybe even check with MD5
 func ModOk(mod string) bool {
-	if _, err := os.Stat(path.Join(instance.WadDir, mod)); os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(instance.WadDir, mod)); os.IsNotExist(err) {
 		return false
 	}
 	return true
@@ -375,6 +401,43 @@ func configFullPath() string {
 	return filepath.Join(GetConfigFolder(), configName)
 }
 
+// writeFileAtomic replaces the file at path by writing a temporary file next to it and renaming it,
+// so the file is never left half written; symlinks are followed
+func writeFileAtomic(path string, data []byte) error {
+	if target, err := filepath.EvalSymlinks(path); err == nil {
+		path = target
+	}
+
+	tmp, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".*.tmp")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(tmp.Name()) // fails harmlessly after the rename
+
+	if _, err := tmp.Write(data); err != nil {
+		tmp.Close()
+		return err
+	}
+	if err := tmp.Chmod(0644); err != nil {
+		tmp.Close()
+		return err
+	}
+	if err := tmp.Close(); err != nil {
+		return err
+	}
+	return os.Rename(tmp.Name(), path)
+}
+
+func withoutEmpty(list []string) []string {
+	out := make([]string, 0, len(list))
+	for _, s := range list {
+		if s = strings.TrimSpace(s); s != "" {
+			out = append(out, s)
+		}
+	}
+	return out
+}
+
 // General Helper
 func PathHasIwads(path string) (bool, error) {
 	files, err := os.ReadDir(path)
@@ -417,40 +480,25 @@ func PortSharedConfigPath(port string) string {
 	return filepath.Join(GetSharedGameConfigFolder(), ports.CanonicalName(port))
 }
 
-// GetFileFromPK3 returns one specific file from given wad or pk3 file
-// Don't forget to close the ReadCloser when done reading
-// Can return nil if it didn't work out
-func GetFileFromPK3(pk3Path string, filename string) (io.ReadCloser, error) {
-	f, err := os.Open(pk3Path)
+// GetFileFromPK3 returns the content of one specific file from given pk3 file
+// The file is matched by its name, regardless of the directory it is in
+func GetFileFromPK3(pk3Path string, filename string) ([]byte, error) {
+	r, err := zip.OpenReader(pk3Path)
 	if err != nil {
 		return nil, err
 	}
+	defer r.Close()
 
-	fi, err := f.Stat()
-	if err != nil {
-		return nil, err
-	}
-
-	z := archiver.NewZip()
-	z.Open(f, fi.Size())
-	for {
-		f, err := z.Read()
-		if err == io.EOF {
-			break
+	for _, f := range r.File {
+		if path.Base(f.Name) != filename {
+			continue
 		}
+		content, err := f.Open()
 		if err != nil {
-			break
+			return nil, err
 		}
-
-		if f.Name() == filename {
-			fmt.Println(f.Name())
-			return f, nil
-		}
-
-		err = f.Close()
-		if err != nil {
-			// TODO: Does that interest me?
-		}
+		defer content.Close()
+		return io.ReadAll(content)
 	}
 	return nil, fmt.Errorf("couldn't find %v in %v", filename, pk3Path)
 }
@@ -462,14 +510,8 @@ func GetFileContentStringFromPK3(pk3path, filename string) (contentString string
 	if err != nil {
 		return
 	}
-	defer content.Close()
 
-	contentBytes, err := io.ReadAll(content)
-	if err != nil {
-		return
-	}
-
-	contentString = string(contentBytes)
+	contentString = string(content)
 	return
 }
 
@@ -480,9 +522,8 @@ func GetFileLinesFromPK3(pk3path, filename string) (lines []string, err error) {
 	if err != nil {
 		return
 	}
-	defer content.Close()
 
-	scanner := bufio.NewScanner(content)
+	scanner := bufio.NewScanner(bytes.NewReader(content))
 	for scanner.Scan() {
 		lines = append(lines, scanner.Text())
 	}

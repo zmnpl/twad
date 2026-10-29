@@ -208,26 +208,31 @@ func (u *ui) makeOptions() *tview.Flex {
 
 		c.WadDir = doomwaddirPath.GetText()
 
-		sps := make([]string, base.MAX_SOURCE_PORTS)
+		sps := make([]string, 0, base.MAX_SOURCE_PORTS)
 		for i := range spInputs {
-			sps[i] = strings.TrimSpace(spInputs[i].GetText())
+			if sp := strings.TrimSpace(spInputs[i].GetText()); sp != "" {
+				sps = append(sps, sp)
+			}
 		}
 		c.Ports = sps
 
-		iwds := strings.Split(iwads.GetText(), ",")
-		for i := range iwds {
-			iwds[i] = strings.TrimSpace(iwds[i])
+		c.IWADs = nil
+		for _, iwad := range strings.Split(iwads.GetText(), ",") {
+			if iwad = strings.TrimSpace(iwad); iwad != "" {
+				c.IWADs = append(c.IWADs, iwad)
+			}
 		}
-		c.IWADs = iwds
 
 		c.HideHeader = printHeader.IsChecked()
 		c.DeleteWithoutWarning = dontWarn.IsChecked()
 		c.GameListRelativeWidth, _ = strconv.Atoi(gameListRelWidth.GetText())
 		c.UseTerminalColors = termColors.IsChecked()
 
-		base.Persist()
 		base.EnableBasePath()
 		u.appModeNormal()
+		if err := base.Persist(); err != nil {
+			u.showError("Saving options failed", err.Error(), nil, nil)
+		}
 	})
 
 	// layout
