@@ -41,7 +41,8 @@ type dictionary struct {
 	// modlist
 	overviewMods string
 
-	modTreeTitle string
+	modTreeTitle     string
+	modTreeErrWadDir string
 
 	// options
 	optsErrPathDoesntExist string
@@ -133,7 +134,8 @@ func defaultDict() dictionary {
 		// modlist
 		overviewMods: "Mods in order",
 
-		modTreeTitle: "Add new mod to game",
+		modTreeTitle:     "Add new mod to game",
+		modTreeErrWadDir: "WAD directory not available",
 
 		// options
 		optsErrPathDoesntExist: "doesn't exist",

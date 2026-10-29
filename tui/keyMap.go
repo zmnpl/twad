@@ -255,7 +255,12 @@ func visitUrl(g *games.Game) {
 }
 
 func (u *ui) showModTree(g *games.Game) {
-	u.detailSidePagesSub2.switchTo(pageModSelector, u.makeModTree(g))
+	modTree, err := u.makeModTree(g)
+	if err != nil {
+		u.showError(dict.modTreeErrWadDir, err.Error(), nil, nil)
+		return
+	}
+	u.detailSidePagesSub2.switchTo(pageModSelector, modTree)
 }
 
 // switch focus to mod list; only if game has mods

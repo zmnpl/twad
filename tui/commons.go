@@ -29,6 +29,14 @@ func newTree(rootDir string) (*tview.TreeView, *tview.TreeNode) {
 func makeFileTreeAddFunc(fileFilter func(files []os.DirEntry, extensions string, includeDirs bool) []os.DirEntry, extensions string, includeDirs bool, hideUnixHidden bool) func(target *tview.TreeNode, path string) {
 	return func(target *tview.TreeNode, path string) {
 		files, err := os.ReadDir(path)
+		if err != nil {
+			// show why it can't be expanded
+			target.AddChild(tview.NewTreeNode(err.Error()).
+				SetColor(warnColor).
+				SetSelectable(false))
+			return
+		}
+
 		if fileFilter != nil {
 			files = fileFilter(files, extensions, includeDirs)
 		}
@@ -36,10 +44,6 @@ func makeFileTreeAddFunc(fileFilter func(files []os.DirEntry, extensions string,
 		sort.Slice(files, func(i, j int) bool {
 			return strings.ToLower(files[i].Name()) < strings.ToLower(files[j].Name())
 		})
-
-		if err != nil {
-			panic(err)
-		}
 
 		for _, file := range files {
 			// hide hiden files

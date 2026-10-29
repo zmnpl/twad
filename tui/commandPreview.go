@@ -16,14 +16,13 @@ const (
 func (u *ui) makeCommandPreview() *tview.TextView {
 	u.commandPreview = tview.NewTextView().SetDynamicColors(true)
 	u.commandPreview.SetBorder(true)
-	fmt.Fprintf(u.commandPreview, "")
 
 	return u.commandPreview
 }
 
 func (u *ui) populateCommandPreview(g *games.Game) {
 	u.commandPreview.Clear()
-	fmt.Fprintf(u.commandPreview, fmt.Sprintf("%s %s", previewText, stylizeCommandList(g.CommandList())))
+	fmt.Fprintf(u.commandPreview, "%s %s", previewText, stylizeCommandList(g.CommandList()))
 }
 
 func stylizeCommandList(params []string) string {

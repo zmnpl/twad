@@ -36,10 +36,6 @@ var (
 	colorTagMoreContrast = "[orange]"
 )
 
-func init() {
-	//selectTheme()
-}
-
 func (u *ui) selectTheme() {
 	// "Hard coded" theme
 	twadTheme := tview.Theme{

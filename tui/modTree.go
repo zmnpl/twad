@@ -10,13 +10,11 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
-// tree view for selecting additional mods TODO
-func (u *ui) makeModTree(g *games.Game) *tview.TreeView {
+// tree view for selecting additional mods
+func (u *ui) makeModTree(g *games.Game) (*tview.TreeView, error) {
 	rootDir := u.config.WadDir
 	if _, err := os.Stat(rootDir); err != nil {
-		if os.IsNotExist(err) {
-		}
-		return nil
+		return nil, err
 	}
 
 	modFolderTree, rootNode := newTree(rootDir)
@@ -51,5 +49,5 @@ func (u *ui) makeModTree(g *games.Game) *tview.TreeView {
 		}
 	})
 
-	return modFolderTree
+	return modFolderTree, nil
 }

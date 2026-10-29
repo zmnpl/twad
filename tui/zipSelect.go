@@ -25,11 +25,6 @@ func newZipImportUI(u *ui) *zipSelect {
 func (z *zipSelect) initZipSelect() {
 	//rootDir := helper.Home() // TODO: Start from / but preselect /home/user
 	rootDir := "/"
-	if _, err := os.Stat(rootDir); err != nil {
-		if os.IsNotExist(err) {
-			// TODO
-		}
-	}
 
 	var rootNode *tview.TreeNode
 	z.selectTree, rootNode = newTree(rootDir)

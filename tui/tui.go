@@ -11,12 +11,6 @@ import (
 	"github.com/zmnpl/twad/base"
 )
 
-type Foo *tview.TextView
-
-type Bar struct {
-	*tview.TextView
-}
-
 const (
 	pageOptions        = "options"
 	pageStats          = "stats"
@@ -25,14 +19,12 @@ const (
 	pageModSelector    = "modselector"
 	pageHeader         = "header"
 	pageMain           = "main"
-	pageDetailGrid     = "detailgrid"
 	pageContent        = "content"
 	pageContentMain    = "maincontent"
 	pageHelp           = "help"
 	pageLicense        = "license"
 	pageYouSure        = "yousure"
 	pageMods           = "mods"
-	pageDefaultRight   = "right"
 	pageWarp           = "warp"
 	pageDemos          = "demos"
 	pageSaves          = "saves"
@@ -114,9 +106,6 @@ func (u *ui) initUIElements() {
 	u.app = tview.NewApplication()
 
 	u.statusline = tview.NewTextView()
-	u.statusline.SetChangedFunc(func() {
-		u.app.Draw()
-	})
 
 	// build up layout
 	u.canvas = tview.NewPages()
@@ -174,17 +163,27 @@ func (u *ui) initUIElements() {
 	u.idgamesBrowser.SetDownloadPath(base.DOWNLOAD_PATH())
 	u.idgamesBrowser.SetConfirmCallback(func(g goidgames.Idgame) {
 		confirm(u.contentPages, fmt.Sprintf("Download %v?", g.Title), 0, 5, u.idgamesBrowser.GetRootLayout(), func() {
+			// keep input away from the browser while downloading
+			u.app.SetFocus(u.statusline)
+
 			go func() {
-				u.app.SetFocus(u.statusline)
+				path, err := base.DownloadIdGame(g, base.DOWNLOAD_PATH(), func(total uint64) {
+					u.app.QueueUpdateDraw(func() {
+						u.statusline.SetText(fmt.Sprintf(" Downloading... %v complete", total))
+					})
+				})
 
-				path, err := DownloadIdGame(g, base.DOWNLOAD_PATH(), u.statusline)
-				if err != nil {
-					u.showError("Download Failed", err.Error(), tview.NewInputField(), nil)
-					return
-				}
+				// back to the ui goroutine
+				u.app.QueueUpdateDraw(func() {
+					u.statusline.Clear()
+					if err != nil {
+						u.showError("Download Failed", err.Error(), u.idgamesBrowser.GetRootLayout(), nil)
+						return
+					}
 
-				// suggest import of downloaded archive
-				u.runZipImport(path, g.Title, 0, 5, u.idgamesBrowser.GetRootLayout())
+					// suggest import of downloaded archive
+					u.runZipImport(path, g.Title, 0, 5, u.idgamesBrowser.GetRootLayout())
+				})
 			}()
 		})
 	})
