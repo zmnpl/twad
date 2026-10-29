@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
 )
@@ -14,17 +15,54 @@ func makeGamesTable() *tview.Table {
 		SetSelectable(true, false).
 		SetBorders(tableBorders).SetSeparator('|')
 	gamesTable.SetBorderPadding(0, 0, 1, 2)
+
+	gamesTable.SetSelectionChangedFunc(func(r int, c int) {
+		if g, ok := gameAt(r); ok {
+			selectedGameChanged(g)
+		}
+	})
+
+	gamesTable.SetSelectedFunc(func(r int, c int) {
+		if g, ok := gameAt(r); ok {
+			g.Run()
+		}
+	})
+
+	gamesTable.SetInputCapture(withQuit(handleKeyBindings))
+
 	return gamesTable
 }
 
-// selectedGame returns the game selected in the games table
-func selectedGame() (*games.Game, bool) {
-	r, _ := gamesTable.GetSelection()
+// gamesTableColumn describes a column of the games table and how to show a game in it
+type gamesTableColumn struct {
+	header string
+	value  func(g *games.Game) string
+	color  tcell.Color
+}
+
+// evaluated when used, because header texts and colors get set up at runtime
+func gamesTableColumns() []gamesTableColumn {
+	return []gamesTableColumn{
+		{dict.gameTableHeaderRating, (*games.Game).RatingString, tview.Styles.TitleColor},
+		{dict.gameTableHeaderName, func(g *games.Game) string { return g.Name }, tview.Styles.SecondaryTextColor},
+		{dict.gameTableHeaderSourcePort, func(g *games.Game) string { return g.Port }, tview.Styles.PrimaryTextColor},
+		{dict.gameTableHeaderIwad, func(g *games.Game) string { return g.Iwad }, tview.Styles.PrimaryTextColor},
+	}
+}
+
+// gameAt returns the game shown in the given row of the games table
+func gameAt(r int) (*games.Game, bool) {
 	allGames := games.Games()
 	if r < gamesTableHeaderRows || r-gamesTableHeaderRows >= len(allGames) {
 		return nil, false
 	}
 	return &allGames[r-gamesTableHeaderRows], true
+}
+
+// selectedGame returns the game selected in the games table
+func selectedGame() (*games.Game, bool) {
+	r, _ := gamesTable.GetSelection()
+	return gameAt(r)
 }
 
 // selectedRowY returns the screen row right below the selected game within contentPages
@@ -37,67 +75,20 @@ func selectedRowY() int {
 
 func populateGamesTable() {
 	gamesTable.Clear()
-	allGames := games.Games()
 
-	fixRows, fixCols := gamesTableHeaderRows, 4
-	rows, cols := len(allGames), 0
-
-	for r := 0; r < rows+fixRows; r++ {
-		var game games.Game
-		if r > 0 {
-			game = allGames[r-fixRows]
-		}
-		for c := 0; c < cols+fixCols; c++ {
-			var cell *tview.TableCell
-
-			if r < 1 {
-				switch c {
-				case 0:
-					cell = tview.NewTableCell(dict.gameTableHeaderRating).SetTextColor(tview.Styles.SecondaryTextColor)
-				case 1:
-					cell = tview.NewTableCell(dict.gameTableHeaderName).SetTextColor(tview.Styles.SecondaryTextColor)
-				case 2:
-					cell = tview.NewTableCell(dict.gameTableHeaderSourcePort).SetTextColor(tview.Styles.SecondaryTextColor)
-				case 3:
-					cell = tview.NewTableCell(dict.gameTableHeaderIwad).SetTextColor(tview.Styles.SecondaryTextColor)
-				default:
-					cell = tview.NewTableCell("").SetTextColor(tview.Styles.SecondaryTextColor)
-				}
-			} else {
-				switch c {
-				case 0:
-					cell = tview.NewTableCell(game.RatingString()).SetTextColor(tview.Styles.TitleColor)
-				case 1:
-					cell = tview.NewTableCell(game.Name).SetTextColor(tview.Styles.SecondaryTextColor)
-				case 2:
-					cell = tview.NewTableCell(game.Port).SetTextColor(tview.Styles.PrimaryTextColor)
-				case 3:
-					cell = tview.NewTableCell(game.Iwad).SetTextColor(tview.Styles.PrimaryTextColor)
-				default:
-					cell = tview.NewTableCell("").SetTextColor(tview.Styles.PrimaryTextColor)
-				}
-			}
-			gamesTable.SetCell(r, c, cell)
-		}
+	for c, col := range gamesTableColumns() {
+		gamesTable.SetCell(0, c, tview.NewTableCell(col.header).SetTextColor(tview.Styles.SecondaryTextColor))
 	}
 
-	gamesTable.SetSelectionChangedFunc(func(r int, c int) {
-		var g *games.Game
-		switch r {
-		case 0:
-			return
-		default:
-			g = &allGames[r-fixRows]
-		}
-		selectedGameChanged(g)
-	})
+	allGames := games.Games()
+	for i := range allGames {
+		setGameRow(i+gamesTableHeaderRows, &allGames[i])
+	}
+}
 
-	gamesTable.SetSelectedFunc(func(r int, c int) {
-		switch {
-		case r > 0:
-			allGames[r-fixRows].Run()
-		}
-	})
-
-	gamesTable.SetInputCapture(withQuit(handleKeyBindings))
+// setGameRow (re)draws the cells of a game in the given row
+func setGameRow(r int, g *games.Game) {
+	for c, col := range gamesTableColumns() {
+		gamesTable.SetCell(r, c, tview.NewTableCell(col.value(g)).SetTextColor(col.color))
+	}
 }

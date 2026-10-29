@@ -271,7 +271,7 @@ func rateGame(increment int) func(*games.Game) {
 	return func(g *games.Game) {
 		g.Rate(increment)
 		r, _ := gamesTable.GetSelection()
-		gamesTable.SetCell(r, 0, tview.NewTableCell(g.RatingString()).SetTextColor(tview.Styles.TitleColor))
+		setGameRow(r, g)
 		games.Persist()
 	}
 }
