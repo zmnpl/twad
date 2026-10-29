@@ -15,8 +15,8 @@ func main() {
 	dmenu := flag.Bool("dmenu", false, "Run dmenu mode.")
 	flag.Parse()
 
-	if err := base.ConfigError(); err != nil {
-		fmt.Fprintf(os.Stderr, "twad: %v\nFix or remove the config file and start again.\n", err)
+	if err := base.Setup(); err != nil {
+		fmt.Fprintf(os.Stderr, "twad: %v\n", err)
 		os.Exit(1)
 	}
 

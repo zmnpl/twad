@@ -14,7 +14,11 @@ import (
 )
 
 // Home returns the users home directory
+// $HOME (%USERPROFILE% on Windows) takes precedence over the user database
 func Home() string {
+	if home, err := os.UserHomeDir(); err == nil {
+		return home
+	}
 	usr, err := user.Current()
 	if err != nil {
 		log.Fatal(err)

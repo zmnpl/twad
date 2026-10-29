@@ -6,14 +6,12 @@ import (
 	"io"
 	"os/exec"
 
-	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/games"
 )
 
 // RunRofiMode starts rofi (or demenu) to select and run a already created game.
 // It pipes all games as a list of names to the external program
 func RunRofiMode(command string) {
-	base.EnableBasePath()
 	var params []string
 	if command == "rofi" && commandExists("rofi") {
 		params = []string{"rofi", "-dmenu", "-p", "'Rip & Tear'"}

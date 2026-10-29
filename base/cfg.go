@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -74,11 +73,25 @@ type Cfg struct {
 	CfgVersion             int      `json:"cfg_version"`
 }
 
-func init() {
-	firstStart()
+// Setup prepares everything twad needs before running games:
+// it creates missing folders and the default config, loads and migrates the config,
+// persists it and points the engines at the WAD dir
+func Setup() error {
+	if err := firstStart(); err != nil {
+		return err
+	}
+
 	Config()
-	Persist() // just in case new settings made it into the programm
-	EnableBasePath()
+	if loadErr != nil {
+		return fmt.Errorf("%w\nfix or remove the config file and start again", loadErr)
+	}
+
+	// just in case new settings made it into the programm
+	if err := Persist(); err != nil {
+		return err
+	}
+
+	return EnableBasePath()
 }
 
 func defaultConfig() Cfg {
@@ -93,51 +106,33 @@ func defaultConfig() Cfg {
 	}
 
 	// check if user has set DOOMWADDIR
-	if dwd, exists := os.LookupEnv("DOOMWADDIR"); exists {
+	if dwd := os.Getenv("DOOMWADDIR"); dwd != "" {
 		config.WadDir = dwd
 	}
 
 	return config
 }
 
-func firstStart() {
-	// create directory for games and configs
-	err := os.MkdirAll(GetSavegameFolder(), 0755)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = os.MkdirAll(GetGameConfigFolder(), 0755)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = os.MkdirAll(GetSharedGameConfigFolder(), 0755)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// shared config paths
+// firstStart creates the folders for savegames and configs, as well as a default config if there is none
+func firstStart() error {
+	folders := []string{GetSavegameFolder(), GetGameConfigFolder(), GetSharedGameConfigFolder()}
 	for _, canonical := range ports.PortCanonicalNames {
-		err = os.MkdirAll(PortSharedConfigPath(canonical), 0755)
-		if err != nil {
-			log.Fatal(err)
+		folders = append(folders, PortSharedConfigPath(canonical))
+	}
+	for _, folder := range folders {
+		if err := os.MkdirAll(folder, 0755); err != nil {
+			return err
 		}
 	}
 
-	configPath := configFullPath()
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		f, err := os.Create(configPath)
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		defaulConfigJSON, _ := json.MarshalIndent(defaultConfig(), "", "    ")
-		if _, err = f.Write([]byte(defaulConfigJSON)); err != nil {
-			log.Fatal(err)
-		}
-		defer f.Close()
+	if _, err := os.Stat(configFullPath()); !os.IsNotExist(err) {
+		return nil
 	}
+	defaultConfigJSON, err := json.MarshalIndent(defaultConfig(), "", "    ")
+	if err != nil {
+		return err
+	}
+	return writeFileAtomic(configFullPath(), defaultConfigJSON)
 }
 
 func loadConfig() error {
@@ -223,13 +218,6 @@ func Config() *Cfg {
 		loadErr = loadConfig()
 	})
 	return instance
-}
-
-// ConfigError returns the error, if the existing config file couldn't be loaded
-// In that case defaults are used and the config won't be persisted
-func ConfigError() error {
-	Config()
-	return loadErr
 }
 
 // GetConfigFolder returns the folder where configuration is stored
