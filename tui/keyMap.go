@@ -205,11 +205,6 @@ func makeHelp() *tview.TextView {
 }
 
 func showHelp() {
-	help := makeHelp()
 	appModeNormal()
-
-	contentPages.AddPage(pageHelpKeymap, help, true, true)
-	contentPages.SwitchToPage(pageHelpKeymap)
-
-	app.SetFocus(help)
+	contentPages.switchTo(pageHelpKeymap, makeHelp())
 }

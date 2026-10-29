@@ -101,20 +101,9 @@ func makeModList(g *games.Game) *tview.Flex {
 					return nil
 				}
 
-				youSure := makeYouSureBox(g.Mods[ci],
-					func() {
-						removeMod(ci)
-						detailSidePagesSub1.RemovePage(pageYouSure)
-						app.SetFocus(modList)
-					},
-					func() {
-						detailSidePagesSub1.RemovePage(pageYouSure)
-						app.SetFocus(modList)
-					},
-					2, 2, modList.Box)
-				detailSidePagesSub1.AddPage(pageYouSure,
-					youSure, true, true) // TODO: calculate offsets
-				app.SetFocus(youSure)
+				confirm(detailSidePagesSub1, g.Mods[ci], 2, 2, modList, func() { // TODO: calculate offsets
+					removeMod(ci)
+				})
 			}
 			return nil
 		}
@@ -123,10 +112,7 @@ func makeModList(g *games.Game) *tview.Flex {
 			switch event.Rune() {
 			// add mod
 			case 'm':
-				modTree := makeModTree(g)
-				detailSidePagesSub2.AddPage(pageModSelector, modTree, true, false)
-				detailSidePagesSub2.SwitchToPage(pageModSelector)
-				app.SetFocus(modTree)
+				detailSidePagesSub2.switchTo(pageModSelector, makeModTree(g))
 				return nil
 
 			// quit app from here as well

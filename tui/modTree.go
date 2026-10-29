@@ -43,8 +43,8 @@ func makeModTree(g *games.Game) *tview.TreeView {
 				add(node, path)
 			default:
 				g.AddMod(strings.TrimPrefix(path, config.WadDir+"/"))
+				detailSidePagesSub2.close(pageModSelector, gamesTable)
 				selectedGameChanged(g)
-				app.SetFocus(gamesTable)
 			}
 		} else {
 			node.SetExpanded(!node.IsExpanded())

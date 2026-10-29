@@ -16,11 +16,7 @@ func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOf
 	// sets focus to the given primitive
 	// if nil was given, then the apps default state will be restored
 	resetFocus := func() {
-		contentPages.RemovePage(pageZipImport)
-		if handFocusBackTo != nil {
-			app.SetFocus(handFocusBackTo)
-			return
-		}
+		contentPages.close(pageZipImport, handFocusBackTo)
 	}
 
 	modNameInput := tview.NewInputField().SetLabel(dict.zipImportToLabel).SetText(path.Base(archivePath))
@@ -86,6 +82,6 @@ func runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOf
 	height := 8
 	width := len(dict.zipImportSecurityWarn) + 4
 
-	contentPages.AddPage(pageZipImport, modalAt(layout, xOffset, yOffset, width, height), true, true)
+	contentPages.showAt(pageZipImport, layout, xOffset, yOffset, width, height)
 	app.SetFocus(modNameForm)
 }

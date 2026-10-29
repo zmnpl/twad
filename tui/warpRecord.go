@@ -10,6 +10,11 @@ import (
 	"github.com/zmnpl/twad/games"
 )
 
+const (
+	warpDialogWidth  = 50
+	warpDialogHeight = 13
+)
+
 var (
 	skillLevels []string
 )
@@ -43,7 +48,7 @@ func splitWarpString(warp string) (episode, level int) {
 }
 
 // warp dialog
-func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, container *tview.Box) *tview.Flex {
+func makeWarpRecord(game games.Game) *tview.Form {
 	episode := 0
 	level := 0
 
@@ -110,8 +115,5 @@ func makeWarpRecord(game games.Game, onCancel func(), xOffset int, yOffset int, 
 		}
 	})
 
-	// surrounding layout
-	height := 13
-	width := 50
-	return modalAt(warpRecordForm, xOffset, anchoredY(yOffset, height, container), width, height)
+	return warpRecordForm
 }

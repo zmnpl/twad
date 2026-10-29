@@ -20,9 +20,9 @@ type Bar struct {
 const (
 	pageOptions        = "options"
 	pageStats          = "stats"
+	pageSaveStats      = "savestats"
 	pageAddEdit        = "addEdit"
 	pageModSelector    = "modselector"
-	pageFirstSetup     = "firstsetup"
 	pageHeader         = "header"
 	pageMain           = "main"
 	pageDetailGrid     = "detailgrid"
@@ -42,7 +42,6 @@ const (
 	pageHello          = "hello"
 	pageHelpKeymap     = "helpkeymap"
 	pageIdgamesBrowser = "idgamesbrowse"
-	pageDLConfirm      = "downloadConfirm"
 
 	tableBorders = false
 )
@@ -53,12 +52,12 @@ var (
 
 	canvas       *tview.Pages
 	headerPages  *tview.Pages
-	contentPages *tview.Pages
+	contentPages *layer
 	footerPages  *tview.Pages
 
-	detailPages         *tview.Pages
-	detailSidePagesSub1 *tview.Pages
-	detailSidePagesSub2 *tview.Pages
+	detailPages         *layer
+	detailSidePagesSub1 *layer
+	detailSidePagesSub2 *layer
 
 	gamesTable     *tview.Table
 	commandPreview *tview.TextView
@@ -81,10 +80,7 @@ func Draw() {
 
 	// settings - only when first start of app
 	if !config.Configured {
-		hello := makeFirstStartHello()
-		contentPages.AddPage(pageHello, hello, true, false)
-		contentPages.SwitchToPage(pageHello)
-		app.SetFocus(hello)
+		contentPages.switchTo(pageHello, makeFirstStartHello())
 		config.Configured = true
 	}
 
@@ -121,7 +117,7 @@ func initUIElements() {
 	// build up layout
 	canvas = tview.NewPages()
 	headerPages = tview.NewPages()
-	contentPages = tview.NewPages()
+	contentPages = newLayer(pageContent)
 	footerPages = tview.NewPages()
 
 	// create header
@@ -157,51 +153,38 @@ func initUIElements() {
 	detailGrid := tview.NewGrid()
 	detailGrid.SetRows(-1, -1)
 	detailGrid.SetColumns(-4, -6)
-	detailSidePagesSub1 = tview.NewPages()
-	detailSidePagesSub2 = tview.NewPages()
+	detailSidePagesSub1 = newLayer(pageMods)
+	detailSidePagesSub2 = newLayer(pageStats)
 	// first not so wide screens, then add wide screen layouts
 	detailGrid.AddItem(detailSidePagesSub1, 0, 0, 1, 2, 0, 0, false).AddItem(detailSidePagesSub1, 0, 0, 2, 1, 0, 75, false)
 	detailGrid.AddItem(detailSidePagesSub2, 1, 0, 1, 2, 0, 0, false).AddItem(detailSidePagesSub2, 0, 1, 2, 1, 0, 75, false)
 
-	detailPages = tview.NewPages()
-	detailPages.AddPage(pageContentMain, detailGrid, true, true)
+	detailPages = newLayer(pageContentMain)
+	detailPages.setBase(detailGrid)
 
 	zipSelector = newZipImportUI()
-	contentPages.AddPage(pageZipSelect, zipSelector.layout, true, true)
+	contentPages.AddPage(pageZipSelect, zipSelector.layout, true, false)
 
 	// id games browser
 	idgamesBrowser = goidgames.NewIdgamesBrowser(app)
 	idgamesBrowser.SetDownloadPath(base.DOWNLOAD_PATH())
 	idgamesBrowser.SetConfirmCallback(func(g goidgames.Idgame) {
-		youSure := makeYouSureBox(fmt.Sprintf("Download %v?", g.Title),
-			func() {
-				go func() {
-					app.SetFocus(statusline)
+		confirm(contentPages, fmt.Sprintf("Download %v?", g.Title), 0, 5, idgamesBrowser.GetRootLayout(), func() {
+			go func() {
+				app.SetFocus(statusline)
 
-					path, err := DownloadIdGame(g, base.DOWNLOAD_PATH())
-					if err != nil {
-						showError("Download Failed", err.Error(), tview.NewInputField(), nil)
-						contentPages.RemovePage(pageDLConfirm)
-						return
-					}
-					contentPages.RemovePage(pageDLConfirm)
+				path, err := DownloadIdGame(g, base.DOWNLOAD_PATH())
+				if err != nil {
+					showError("Download Failed", err.Error(), tview.NewInputField(), nil)
+					return
+				}
 
-					// suggest import of downloaded archive
-					runZipImport(path, g.Title, 0, 5, idgamesBrowser.GetRootLayout())
-				}()
-			},
-			func() {
-				contentPages.RemovePage(pageDLConfirm)
-				app.SetFocus(idgamesBrowser.GetRootLayout())
-			},
-			0,
-			5,
-			idgamesBrowser.GetRootLayout().Box)
-
-		contentPages.AddPage(pageDLConfirm, youSure,
-			true, true)
+				// suggest import of downloaded archive
+				runZipImport(path, g.Title, 0, 5, idgamesBrowser.GetRootLayout())
+			}()
+		})
 	})
-	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.GetRootLayout(), true, true)
+	contentPages.AddPage(pageIdgamesBrowser, idgamesBrowser.GetRootLayout(), true, false)
 
 	// add central content page
 	contentFlex := tview.NewFlex().SetDirection(tview.FlexRow)
@@ -210,7 +193,7 @@ func initUIElements() {
 		AddItem(tview.NewFlex().SetDirection(tview.FlexColumn).
 			AddItem(gamesTable, 0, config.GameListRelativeWidth, true).
 			AddItem(detailPages, 0, 100-config.GameListRelativeWidth, true), 0, 1, true)
-	contentPages.AddPage(pageContent, contentFlex, true, true)
+	contentPages.setBase(contentFlex)
 }
 
 // small or big header
@@ -228,8 +211,8 @@ func getHeader() (tview.Primitive, int) {
 // update functions
 func selectedGameChanged(g *games.Game) {
 	populateCommandPreview(g)
-	detailSidePagesSub1.AddPage(pageMods, makeModList(g), true, true)
-	detailSidePagesSub2.AddPage(pageStats, makeStatsTable(g), true, true)
+	detailSidePagesSub1.setBase(makeModList(g))
+	detailSidePagesSub2.setBase(makeStatsTable(g))
 }
 
 // redraw whole table
@@ -239,28 +222,13 @@ func whenGamesChanged() {
 
 // reset ui
 func appModeNormal() {
-	// cleanup
-	// clear bigMainPager
-	contentPages.RemovePage(pageYouSure)
-	contentPages.RemovePage(pageFirstSetup)
-	contentPages.RemovePage(pageOptions)
-	contentPages.RemovePage(pageWarp)
-	contentPages.RemovePage(pageError)
-
-	// clear actionPager
-	detailPages.RemovePage(pageAddEdit)
-	detailSidePagesSub1.RemovePage(pageYouSure)
-	detailSidePagesSub1.RemovePage(pageDemos)
-	detailSidePagesSub1.RemovePage(pageSaves)
+	contentPages.reset()
+	detailPages.reset()
+	detailSidePagesSub1.reset()
+	detailSidePagesSub2.reset()
 
 	// reset import
 	zipSelector.reset()
-
-	// set ui state
-	detailPages.SwitchToPage(pageContentMain)
-	detailSidePagesSub1.SwitchToPage(pageMods)
-	detailSidePagesSub2.SwitchToPage(pageStats)
-	contentPages.SwitchToPage(pageContent)
 
 	statusline.Clear()
 

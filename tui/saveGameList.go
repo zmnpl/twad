@@ -38,7 +38,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 
 			if i == 0 {
 				statsTable = makeLevelStatsTable(*savegames[i], savegameList)
-				detailSidePagesSub2.AddPage(pageStats, statsTable, true, true)
+				detailSidePagesSub2.add(pageSaveStats, statsTable)
 			}
 		}
 	}
@@ -52,7 +52,7 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 
 	savegameList.SetChangedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
 		statsTable = makeLevelStatsTable(*savegames[index], savegameList)
-		detailSidePagesSub2.AddPage(pageStats, statsTable, true, true)
+		detailSidePagesSub2.add(pageSaveStats, statsTable)
 	})
 
 	// tab navigates back to games table; tab navigation on list is redundant

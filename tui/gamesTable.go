@@ -113,25 +113,16 @@ func populateGamesTable() {
 					appModeNormal()
 					return nil
 				}
-				lp := makeLicense()
-				detailSidePagesSub2.AddPage(pageLicense, lp, true, true)
-				detailSidePagesSub2.SwitchToPage(pageLicense)
-				app.SetFocus(lp)
+				detailSidePagesSub2.switchTo(pageLicense, makeLicense())
 				return nil
 
 			// options
 			case 'o':
-				optionsDiag := makeOptions()
-				contentPages.AddPage(pageOptions, optionsDiag, true, false)
-				contentPages.SwitchToPage(pageOptions)
-				app.SetFocus(optionsDiag)
+				contentPages.switchTo(pageOptions, makeOptions())
 
 			// new game
 			case 'n':
-				newForm := makeAddEditGame(nil)
-				detailPages.AddPage(pageAddEdit, newForm, true, false)
-				detailPages.SwitchToPage(pageAddEdit)
-				app.SetFocus(newForm)
+				detailPages.switchTo(pageAddEdit, makeAddEditGame(nil))
 				return nil
 
 			// increase game rating
@@ -151,9 +142,7 @@ func populateGamesTable() {
 			// warp
 			case 'w':
 				if r > 0 {
-					warp := makeWarpRecord(allGames[r-fixRows], appModeNormal, dialogXOffset, selectedRowY(), contentPages.Box)
-					contentPages.AddPage(pageWarp, warp, true, true)
-					app.SetFocus(warp)
+					contentPages.showAt(pageWarp, makeWarpRecord(allGames[r-fixRows]), dialogXOffset, selectedRowY(), warpDialogWidth, warpDialogHeight)
 					return nil
 				}
 
@@ -165,8 +154,7 @@ func populateGamesTable() {
 					if err != nil {
 						return nil
 					}
-					detailSidePagesSub1.AddPage(pageDemos, demoList, true, true)
-					app.SetFocus(demoList)
+					detailSidePagesSub1.show(pageDemos, demoList)
 					return nil
 				}
 
@@ -178,17 +166,13 @@ func populateGamesTable() {
 					if err != nil {
 						return nil
 					}
-					detailSidePagesSub1.AddPage(pageSaves, savegameList, true, true)
-					app.SetFocus(savegameList)
+					detailSidePagesSub1.show(pageSaves, savegameList)
 					return nil
 				}
 			// add mod to game
 			case 'm':
 				if r > 0 {
-					modTree := makeModTree(&allGames[r-fixRows])
-					detailSidePagesSub2.AddPage(pageModSelector, modTree, true, false)
-					detailSidePagesSub2.SwitchToPage(pageModSelector)
-					app.SetFocus(modTree)
+					detailSidePagesSub2.switchTo(pageModSelector, makeModTree(&allGames[r-fixRows]))
 					return nil
 				}
 
@@ -203,10 +187,7 @@ func populateGamesTable() {
 			// edit selected game
 			case 'e':
 				if r > 0 {
-					addEdit := makeAddEditGame(&allGames[r-fixRows])
-					detailPages.AddPage(pageAddEdit, addEdit, true, false)
-					detailPages.SwitchToPage(pageAddEdit)
-					app.SetFocus(addEdit)
+					detailPages.switchTo(pageAddEdit, makeAddEditGame(&allGames[r-fixRows]))
 					return nil
 				}
 
@@ -226,15 +207,13 @@ func populateGamesTable() {
 		}
 
 		if k == tcell.KeyF2 {
-			contentPages.SwitchToPage(pageIdgamesBrowser)
-			app.SetFocus(idgamesBrowser.GetRootLayout())
+			contentPages.open(pageIdgamesBrowser, idgamesBrowser.GetRootLayout())
 			//idgamesBrowser.UpdateLatest()
 			return nil
 		}
 
 		if k == tcell.KeyF3 {
-			contentPages.SwitchToPage(pageZipSelect)
-			app.SetFocus(zipSelector.selectTree)
+			contentPages.open(pageZipSelect, zipSelector.selectTree)
 			return nil
 		}
 
@@ -282,8 +261,6 @@ Capitalize on low hanging fruit to identify a ballpark value added activity to b
 					gamesTable.Select(r-1, 0)
 				}
 				games.RemoveGameAt(r - fixRows)
-				contentPages.RemovePage(pageYouSure)
-				app.SetFocus(gamesTable)
 			}
 
 			if config.DeleteWithoutWarning {
@@ -291,8 +268,7 @@ Capitalize on low hanging fruit to identify a ballpark value added activity to b
 				return nil
 			}
 
-			youSure := makeYouSureBox(allGames[r-fixRows].Name, remove, appModeNormal, dialogXOffset, selectedRowY(), contentPages.Box)
-			contentPages.AddPage(pageYouSure, youSure, true, true)
+			confirm(contentPages, allGames[r-fixRows].Name, dialogXOffset, selectedRowY(), gamesTable, remove)
 			return nil
 		}
 

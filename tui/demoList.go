@@ -92,19 +92,9 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 					return nil
 				}
 
-				youSure := makeYouSureBox(demos[ci].Name(),
-					func() {
-						removeDemo(ci)
-						detailSidePagesSub1.RemovePage(pageYouSure)
-					},
-					func() {
-						detailSidePagesSub1.RemovePage(pageYouSure)
-						app.SetFocus(demoList)
-					},
-					2, 2, demoList.Box)
-				detailSidePagesSub1.AddPage(pageYouSure,
-					youSure, true, true) // TODO: calculate offsets
-				app.SetFocus(youSure)
+				confirm(detailSidePagesSub1, demos[ci].Name(), 2, 2, demoList, func() { // TODO: calculate offsets
+					removeDemo(ci)
+				})
 			}
 			return nil
 		}
@@ -118,8 +108,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 
 			// start zip import from here
 			case 'i':
-				contentPages.SwitchToPage(pageZipSelect)
-				app.SetFocus(zipSelector.selectTree)
+				contentPages.open(pageZipSelect, zipSelector.selectTree)
 				return nil
 
 			}

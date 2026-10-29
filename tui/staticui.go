@@ -87,10 +87,7 @@ func makeFirstStartHello() *tview.TextView {
 
 			// options
 			case 'o':
-				optionsDiag := makeOptions()
-				contentPages.AddPage(pageOptions, optionsDiag, true, false)
-				contentPages.SwitchToPage(pageOptions)
-				app.SetFocus(optionsDiag)
+				contentPages.switchTo(pageOptions, makeOptions())
 			}
 		}
 		return event
