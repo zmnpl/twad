@@ -3,7 +3,6 @@ package tui
 import (
 	"os"
 
-	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/helper"
 )
@@ -70,17 +69,7 @@ func (z *zipSelect) initZipSelect() {
 		}
 	})
 
-	z.selectTree.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		k := event.Key()
-		if k == tcell.KeyRune {
-			switch event.Rune() {
-			case 'q':
-				app.Stop()
-				return nil
-			}
-		}
-		return event
-	})
+	z.selectTree.SetInputCapture(withQuit(nil))
 }
 
 func (z *zipSelect) reset() {

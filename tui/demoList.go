@@ -79,7 +79,7 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 	}
 
 	// tab navigates back to games table; tab navigation on list is redundant
-	demoList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	demoList.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 
 		// delete mod
@@ -99,24 +99,14 @@ func makeDemoList(g *games.Game) (*tview.Flex, error) {
 			return nil
 		}
 
-		if k == tcell.KeyRune {
-			switch event.Rune() {
-			// quit app from here as well
-			case 'q':
-				app.Stop()
-				return nil
-
-			// start zip import from here
-			case 'i':
-				contentPages.open(pageZipSelect, zipSelector.selectTree)
-				return nil
-
-			}
-
+		// start zip import from here
+		if k == tcell.KeyRune && event.Rune() == 'i' {
+			showZipSelect()
+			return nil
 		}
 
 		return event
-	})
+	}))
 
 	return demoFlex, nil
 }

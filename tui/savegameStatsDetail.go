@@ -46,22 +46,12 @@ func makeLevelStatsTable(s savesStats.Savegame, lastFocus *tview.List) *tview.Ta
 		populate(lvl)
 	}
 
-	stats.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		k := event.Key()
-		if k == tcell.KeyTAB {
+	stats.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == tcell.KeyTAB {
 			app.SetFocus(lastFocus)
 		}
-
-		if k == tcell.KeyRune {
-			switch event.Rune() {
-			// quit app from here as well
-			case 'q':
-				app.Stop()
-				return nil
-			}
-		}
 		return event
-	})
+	}))
 
 	return stats
 }

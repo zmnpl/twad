@@ -74,24 +74,12 @@ func makeFirstStartHello() *tview.TextView {
 	hello.SetBorder(true)
 	fmt.Fprint(hello, helloText)
 
-	hello.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		k := event.Key()
-
-		if k == tcell.KeyRune {
-			switch event.Rune() {
-
-			// get out
-			case 'q':
-				app.Stop()
-				return nil
-
-			// options
-			case 'o':
-				contentPages.switchTo(pageOptions, makeOptions())
-			}
+	hello.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == tcell.KeyRune && event.Rune() == 'o' {
+			showOptions()
 		}
 		return event
-	})
+	}))
 
 	return hello
 }
@@ -107,26 +95,14 @@ func makeLicense() *tview.TextView {
 	fmt.Fprintf(disclaimer, "%s", mitLicense)
 	disclaimer.SetBorder(true).SetTitle("Credits / License")
 
-	disclaimer.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		k := event.Key()
+	disclaimer.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		// switch back to nowmal mode
-		if k == tcell.KeyRune {
-			switch event.Rune() {
-
-			// get out
-			case 'q':
-				app.Stop()
-				return nil
-
-			case 'c':
-				appModeNormal()
-				return nil
-			}
-
+		if event.Key() == tcell.KeyRune && event.Rune() == 'c' {
+			appModeNormal()
+			return nil
 		}
-
 		return event
-	})
+	}))
 
 	return disclaimer
 }

@@ -82,7 +82,7 @@ func makeModList(g *games.Game) *tview.Flex {
 	}
 
 	// tab navigates back to games table; tab navigation on list is redundant
-	modList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	modList.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
 		k := event.Key()
 
 		// switch back to game table
@@ -108,22 +108,14 @@ func makeModList(g *games.Game) *tview.Flex {
 			return nil
 		}
 
-		if k == tcell.KeyRune {
-			switch event.Rune() {
-			// add mod
-			case 'm':
-				detailSidePagesSub2.switchTo(pageModSelector, makeModTree(g))
-				return nil
-
-			// quit app from here as well
-			case 'q':
-				app.Stop()
-				return nil
-			}
+		// add mod
+		if k == tcell.KeyRune && event.Rune() == 'm' {
+			showModTree(g)
+			return nil
 		}
 
 		return event
-	})
+	}))
 
 	return modListFlex
 }

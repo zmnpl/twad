@@ -56,24 +56,12 @@ func makeSavegameList(g *games.Game) (*tview.Flex, error) {
 	})
 
 	// tab navigates back to games table; tab navigation on list is redundant
-	savegameList.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		k := event.Key()
-
-		if k == tcell.KeyTAB && statsTable != nil {
+	savegameList.SetInputCapture(withQuit(func(event *tcell.EventKey) *tcell.EventKey {
+		if event.Key() == tcell.KeyTAB && statsTable != nil {
 			app.SetFocus(detailSidePagesSub2)
 		}
-
-		if k == tcell.KeyRune {
-			switch event.Rune() {
-			// quit app from here as well
-			case 'q':
-				app.Stop()
-				return nil
-			}
-		}
-
 		return event
-	})
+	}))
 
 	return frameFlex, nil
 }
