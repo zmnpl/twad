@@ -2,11 +2,11 @@
 
 ## Launch **classic DOOM** with a **classic** retro style terminal user interface
 
-If you love classic __DOOM__ and want to manage modern source ports to play it along with the plethora of maps, skins and gameplay mods then **twad** is for you. **twad** lets you set up a multitude of WAD file combinations, store and launch them with a couple of key strokes. It is light weight and fast to use. If your are living in the termninal you'll feel right at home. Though, even if you are on Windows, double-click and get an **intuitive**, **simplistic** and **fast retro style** user interface to manage your ripping and tearing.
+If you love classic __DOOM__ and want to manage modern source ports to play it along with the plethora of maps, skins and gameplay mods then **twad** is for you. **twad** lets you set up a multitude of WAD file combinations, store and launch them with a couple of keystrokes. It is lightweight and fast to use. If you are living in the terminal you'll feel right at home. And even on Windows, just double-click to get an **intuitive**, **simplistic** and **fast retro style** user interface to manage your ripping and tearing.
 
 ## Compatibility
 
-***twad*** mostly was designed for *nix systems. However, meanwhile I've added some OS-sensitive behaviour and cross compiled for Windows. Actually it works quite well. So...
+***twad*** was mostly designed for *nix systems. However, since then I've added some OS-sensitive behaviour and cross compiled for Windows. Actually it works quite well. So...
 
 ## Now with experimental **Windows support**
 
@@ -28,7 +28,7 @@ If you love classic __DOOM__ and want to manage modern source ports to play it a
 * Collect stats from savegames
 * Run games from rofi or dmenu
 * Import .zip files containing mods
-* Separate savegame / demo folders for games (in **~/.config/twad/...***)
+* Separate savegame / demo folders for games (in `~/.config/twad/...`)
 * Separate configs per game and shared configs per source port
 * IDGames search/browser and download + import
 * Responsive layout (kind of)
@@ -39,6 +39,7 @@ If you love classic __DOOM__ and want to manage modern source ports to play it a
 ![demo](readme_assets/col3.png)
 ![demo](readme_assets/col4.png)
 ![demo](readme_assets/col5.png)
+![demo](readme_assets/col6.png)
 
 
 # Installation Options
@@ -53,24 +54,29 @@ Precompiled binaries are added to the [releases page](https://github.com/zmnpl/t
 
 ## c) Compile yourself
 
-```golang
+```bash
 go install github.com/zmnpl/twad@latest
 ```
 
 ## d) Windows
 
 * Download the .exe from the [releases page](https://github.com/zmnpl/twad/releases)
-* Doubleclick (you can do that)
+* Double-click (you can do that)
+
+## Source ports
+
+***twad*** is a launcher, so you need at least one DOOM source port installed. Out of the box it is set up for *uzdoom*, *gzdoom*, *zandronum* and *lzdoom*. Further ports (e.g. *crispy-doom*, *chocolate-doom*, *prboom-plus*, *dsda-doom*, *woof*) can be added in the options.
 
 # Setup your environment
 
-***twad*** assumes, you have **one folder**, where your IWADs are located. All your pwads (mapsets, gameplay mods, ...) need to be in the same or subfolder of this. The folder, where you put your IWADs is known to source ports as **DOOMWADDIR**.
+***twad*** assumes you have **one folder** where your IWADs are located. All your PWADs (mapsets, gameplay mods, ...) need to be in the same folder or a subfolder of it. The folder where you put your IWADs is known to source ports as **DOOMWADDIR**.
 
 1) Setup your **DOOMWADDIR** as described above
 2) twad's first start will ask you to configure your **DOOMWADDIR** in the options
 3) Within twad create games
 4) Add mods to your games
-666)   __Rip and Tear__
+
+666\) __Rip and Tear__
 
 ## An example DOOMWADDIR could look like this
 ```bash
@@ -94,7 +100,7 @@ go install github.com/zmnpl/twad@latest
 
 ## Or this on Windows
 ```cmd
-C:\DOOM\> dir
+C:\DOOM> tree /F
 .
 ├── Ashes 2063
 │   ├── Ashes2063Maps115.wad
@@ -115,18 +121,19 @@ C:\DOOM\> dir
 
 ## More on DOOMWADDIR
 
-Your DOOM source port needs to know about the base folder of your mods and IWADs to work properly, since ***twad*** uses relative paths. ***twad***'s default method for this is to set the ***DOOMWADDIR*** environment variable when starting a game. This is only set for the current game session. (Should you already have set DOOMWADDIR, twad will shadow it with whatever is set in its configuration)
+Your DOOM source port needs to know about the base folder of your mods and IWADs to work properly, since ***twad*** uses relative paths. ***twad***'s default method for this is to set the ***DOOMWADDIR*** environment variable when starting a game. This is only set for the current game session. (Should you already have set DOOMWADDIR, twad will shadow it with whatever is set in its configuration.)
 
-An alternative/additional method is to add paths to the respective source ports config. For *zdoom* ports it could look like this:
-```bash
+An alternative/additional method is to add paths to the respective source port's config. For *zdoom* ports it could look like this:
+```ini
 # in your doom engine .ini
 [FileSearch.Directories]
-PATH=/home/doomguy/DOOM # path to DOOMWADDIR
+# path to DOOMWADDIR
+PATH=/home/doomguy/DOOM
 ```
 
 # Rofi Mode
 
-You can use [***rofi***](https://github.com/davatorium/rofi) or [***dmenu***](https://tools.suckless.org/dmenu/) to launch your games. Run twad like this to use the respective programm. This will open rofi/dmenu and show a list of all games you already have. Select one you want to play and hit enter. Of course this will also track your statistics.
+You can use [***rofi***](https://github.com/davatorium/rofi) or [***dmenu***](https://tools.suckless.org/dmenu/) to launch your games. Run twad like this to use the respective program. This will open rofi/dmenu and show a list of all games you already have. Select one you want to play and hit enter. Of course this will also track your statistics.
 ```bash
 twad --rofi
 # or
@@ -145,7 +152,7 @@ twad --dmenu
 - ~~Help area~~
 - ~~Savegame Count~~
 - ~~Unified Add/Edit dialog~~
-- ~~Opions scren~~
+- ~~Options screen~~
 - ~~Ability to hide the header for screens with few rows~~
 - ~~Add button for path setup~~
 - ~~Quickload~~
@@ -165,11 +172,11 @@ twad --dmenu
 # Credit where credit is due
 
 ## All the other Doom launchers
-There are already great alternatives to manage and launch your WADs out there for many years and I give credits to all of them since I've taken a lot of inspiration and knowledge on their functionality. Especially [Doomlauncher](https://github.com/nstlaurent/DoomLauncher) is a cool piece of software and the source code is well structured and good to read which helped me quite a lot.
+There have been great alternatives to manage and launch your WADs out there for many years and I give credit to all of them since I've taken a lot of inspiration and knowledge on their functionality. Especially [Doom Launcher](https://github.com/nstlaurent/DoomLauncher) is a cool piece of software and the source code is well structured and good to read which helped me quite a lot.
 
 ## Doom logo
 
-The use of the DOOM ASCII logo has been nicely permitted by Frans P. de Vries. Find it's history [here](http://www.gamers.org/~fpv/doomlogo.html)
+The use of the DOOM ASCII logo has been kindly permitted by Frans P. de Vries. Find its history [here](http://www.gamers.org/~fpv/doomlogo.html)
 
 DOOM and Quake are registered trademarks of id Software, Inc. The DOOM, Quake and id logos are trademarks of id Software, Inc. The ASCII version of the DOOM logo is Copyright © 1994 by F.P. de Vries.
 
