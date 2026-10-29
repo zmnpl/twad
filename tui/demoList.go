@@ -11,17 +11,7 @@ import (
 )
 
 func makeDemoList(g *games.Game) (*tview.Flex, error) {
-	// surrounding container
-	demoFlex := tview.NewFlex().SetDirection(tview.FlexRow)
-	demoFlex.SetBorderPadding(0, 0, 1, 1)
-	demoFlex.AddItem(tview.NewTextView().
-		SetText(dict.demosHeader).
-		SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
-
-	// list
-	demoList := tview.NewList()
-	demoFlex.AddItem(demoList, 0, 1, true)
-	demoList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
+	demoFlex, demoList := newTitledList(dict.demosHeader)
 
 	// get demos
 	demos, err := g.Demos()

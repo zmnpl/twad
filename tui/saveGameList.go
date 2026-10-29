@@ -9,17 +9,7 @@ import (
 )
 
 func makeSavegameList(g *games.Game) (*tview.Flex, error) {
-	// surrounding container
-	frameFlex := tview.NewFlex().SetDirection(tview.FlexRow)
-	frameFlex.SetBorderPadding(0, 0, 1, 1)
-	frameFlex.AddItem(tview.NewTextView().
-		SetText(dict.savesHeader).
-		SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
-
-	// list
-	savegameList := tview.NewList()
-	frameFlex.AddItem(savegameList, 0, 1, true)
-	savegameList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
+	frameFlex, savegameList := newTitledList(dict.savesHeader)
 
 	// get savegames
 	savegames := g.LoadSavegames() //time.Sleep(2 * time.Second)

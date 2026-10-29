@@ -57,19 +57,26 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 	expectedExtension := ports.ConfigFileExtension(g.Port)
 
 	// create basic form items
-	inputName := tview.NewInputField().SetText(g.Name).SetLabel(dict.aeName).SetLabelColor(tview.Styles.SecondaryTextColor)
-	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(dict.aeOwnCfg).SetLabelColor(tview.Styles.SecondaryTextColor)
-	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig).SetLabel(fmt.Sprintf(dict.aeSharedCfgT, expectedExtension)).SetLabelColor(tview.Styles.SecondaryTextColor)
-	if g.PersonalPortCfg {
-		inputSharedCfg.SetLabel(colorTagWarnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
-	}
-	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(dict.aeSourcePort).SetLabelColor(tview.Styles.SecondaryTextColor)
-	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(dict.aeIWAD).SetLabelColor(tview.Styles.SecondaryTextColor)
-	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(dict.aeLink).SetLabelColor(tview.Styles.SecondaryTextColor)
-	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(dict.aeEnvironment).SetLabelColor(tview.Styles.SecondaryTextColor)
-	inputCustomParams := tview.NewInputField().SetText(g.ParamsString()).SetLabel(dict.aeOtherParams).SetLabelColor(tview.Styles.SecondaryTextColor)
+	inputName := tview.NewInputField().SetText(g.Name).SetLabel(dict.aeName)
+	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(dict.aeOwnCfg)
+	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig)
+	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(dict.aeSourcePort)
+	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(dict.aeIWAD)
+	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(dict.aeLink)
+	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(dict.aeEnvironment)
+	inputCustomParams := tview.NewInputField().SetText(g.ParamsString()).SetLabel(dict.aeOtherParams)
 
 	ae := tview.NewForm()
+
+	// shared config label shows the expected extension; warns when an own config is used instead
+	updateSharedCfgLabel := func() {
+		label := fmt.Sprintf(dict.aeSharedCfgT, expectedExtension)
+		if inputOwnCfg.IsChecked() {
+			label = colorTagWarnColor + label
+		}
+		inputSharedCfg.SetLabel(label)
+	}
+	updateSharedCfgLabel()
 
 	// functionality of form items
 	// port
@@ -87,11 +94,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 		_, selectedPort := inputSourcePort.GetCurrentOption()
 		sharedCfgs = base.GetSharedGameConfigs(selectedPort)
 		expectedExtension = ports.ConfigFileExtension(selectedPort)
-
-		inputSharedCfg.SetLabel(fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
-		if inputOwnCfg.IsChecked() {
-			inputSharedCfg.SetLabel(colorTagWarnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
-		}
+		updateSharedCfgLabel()
 	})
 
 	// for iwad
@@ -106,11 +109,7 @@ func makeAddEditGame(g *games.Game) *tview.Flex {
 
 	// own configs
 	inputOwnCfg.SetDoneFunc(func(key tcell.Key) {
-		if inputOwnCfg.IsChecked() {
-			inputSharedCfg.SetLabel(colorTagWarnColor + fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
-			return
-		}
-		inputSharedCfg.SetLabel(fmt.Sprintf(dict.aeSharedCfgT, expectedExtension))
+		updateSharedCfgLabel()
 	})
 
 	// shared configs

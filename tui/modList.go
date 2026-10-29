@@ -10,17 +10,7 @@ import (
 )
 
 func makeModList(g *games.Game) *tview.Flex {
-	// surrounding container
-	modListFlex := tview.NewFlex().SetDirection(tview.FlexRow)
-	modListFlex.SetBorderPadding(0, 0, 1, 1)
-	modListFlex.AddItem(tview.NewTextView().
-		SetText(dict.overviewMods).
-		SetTextColor(tview.Styles.SecondaryTextColor), 1, 0, false)
-
-	// list
-	modList := tview.NewList()
-	modListFlex.AddItem(modList, 0, 1, true)
-	modList.SetSecondaryTextColor(tview.Styles.TitleColor).SetSelectedFocusOnly(true)
+	modListFlex, modList := newTitledList(dict.overviewMods)
 	// populate list with data
 	for _, mod := range g.Mods {
 		colorPrefix := ""

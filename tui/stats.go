@@ -2,73 +2,43 @@ package tui
 
 import (
 	"fmt"
+	"maps"
+	"slices"
 	"strings"
 
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
 )
 
-//  stats
+// stats
 func makeStatsTable(g *games.Game) *tview.Table {
-	stats := tview.NewTable().
-		SetFixed(1, 1).
-		SetSelectable(false, false).
-		SetBorders(tableBorders).SetSeparator(':')
-	stats.SetBorderPadding(0, 0, 1, 1)
+	stats := newKVTable()
 
 	if g == nil {
-		return stats
+		return stats.Table
 	}
 
-	row := 0
-
 	// generic stuff
-	stats.SetCell(row, 0, tview.NewTableCell("Overall").SetTextColor(tview.Styles.ContrastBackgroundColor))
-	row++
-	stats.SetCell(row, 0, tview.NewTableCell("Added/Edited").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.AddEdit)).SetAlign(tview.AlignLeft))
-	row++
-	stats.SetCell(row, 0, tview.NewTableCell("URL").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.Link)).SetAlign(tview.AlignLeft))
-	row++
-	stats.SetCell(row, 0, tview.NewTableCell("# Savegames").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.SaveCount())).SetAlign(tview.AlignLeft))
-	row++
-	stats.SetCell(row, 0, tview.NewTableCell("# Demos").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", g.DemoCount())).SetAlign(tview.AlignLeft))
-	row++
-	stats.SetCell(row, 0, tview.NewTableCell("Playtime").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%.2f min", float64(g.Playtime)/1000/60)).SetAlign(tview.AlignLeft))
-	row++
-	stats.SetCell(row, 0, tview.NewTableCell("Last Played").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprint(g.LastPlayed)).SetAlign(tview.AlignLeft))
-	row++
+	stats.section("Overall")
+	stats.kv("Added/Edited", g.AddEdit)
+	stats.kv("URL", g.Link)
+	stats.kv("# Savegames", g.SaveCount())
+	stats.kv("# Demos", g.DemoCount())
+	stats.kv("Playtime", fmt.Sprintf("%.2f min", float64(g.Playtime)/1000/60))
+	stats.kv("Last Played", g.LastPlayed)
 
 	// stats from savegames
-	stats.SetCell(row, 0, tview.NewTableCell("Latest Savegame").SetTextColor(tview.Styles.ContrastBackgroundColor))
-	row++
-	stats.SetCell(row, 0, tview.NewTableCell("# Maps").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row+1, 0, tview.NewTableCell("# Kills").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row+2, 0, tview.NewTableCell("# Secrets").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row+3, 0, tview.NewTableCell("# Items").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", len(g.Stats))).SetAlign(tview.AlignLeft))
-	stats.SetCell(row+1, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsTotal.KillCount, g.StatsTotal.TotalKills)).SetAlign(tview.AlignLeft))
-	stats.SetCell(row+2, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsTotal.SecretCount, g.StatsTotal.TotalSecrets)).SetAlign(tview.AlignLeft))
-	stats.SetCell(row+3, 1, tview.NewTableCell(fmt.Sprintf("%v/%v", g.StatsTotal.ItemCount, g.StatsTotal.TotalItems)).SetAlign(tview.AlignLeft))
-	row += 4
+	stats.section("Latest Savegame")
+	stats.kv("# Maps", len(g.Stats))
+	stats.progress(g.StatsTotal)
 
 	// what the game printed into console
-	// generic stuff
-	stats.SetCell(row, 0, tview.NewTableCell("Pickups").SetTextColor(tview.Styles.ContrastBackgroundColor))
-	row++
-	for k, v := range g.ConsoleStats {
-		stats.SetCell(row, 0, tview.NewTableCell(strings.Title("# "+k)).SetTextColor(tview.Styles.SecondaryTextColor))
-		stats.SetCell(row, 1, tview.NewTableCell(fmt.Sprintf("%v", v)).SetAlign(tview.AlignLeft))
-		row++
+	stats.section("Pickups")
+	for _, k := range slices.Sorted(maps.Keys(g.ConsoleStats)) {
+		stats.kv(strings.Title("# "+k), g.ConsoleStats[k])
 	}
 
-	stats.SetCell(row, 0, tview.NewTableCell("                    ").SetTextColor(tview.Styles.SecondaryTextColor))
-	stats.SetCell(row, 1, tview.NewTableCell("                    ").SetAlign(tview.AlignLeft))
+	stats.spacer()
 
-	return stats
+	return stats.Table
 }

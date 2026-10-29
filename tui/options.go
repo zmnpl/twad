@@ -19,14 +19,14 @@ var sourcePortCheck = func(input *tview.InputField) {
 	// does this path exist?
 	if _, err := os.Stat(input.GetText()); os.IsNotExist(err) {
 		if commandExists(strings.TrimSpace(input.GetText())) {
-			input.SetLabel(dict.optsSourcePortLabel + colorTagGoodColor + " " + dict.optsLooksGood)
+			input.SetLabel(labelOk(dict.optsSourcePortLabel, dict.optsLooksGood))
 			return
 		}
-		input.SetLabel(dict.optsSourcePortLabel + colorTagWarnColor + " " + dict.optsErrPathDoesntExist)
+		input.SetLabel(labelWarn(dict.optsSourcePortLabel, dict.optsErrPathDoesntExist))
 		return
 	}
 
-	input.SetLabel(dict.optsSourcePortLabel + colorTagGoodColor + " " + dict.optsLooksGood)
+	input.SetLabel(labelOk(dict.optsSourcePortLabel, dict.optsLooksGood))
 }
 
 // builder function that creates a function which autocompletes input fields
@@ -106,10 +106,10 @@ func makeOptions() *tview.Flex {
 	//#######################################################################
 
 	// added to form later
-	iwads := tview.NewInputField().SetLabel(dict.optsIwadsLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(strings.Join(base.Config().IWADs, ","))
+	iwads := tview.NewInputField().SetLabel(dict.optsIwadsLabel).SetText(strings.Join(base.Config().IWADs, ","))
 
 	// path for doomwaddir
-	doomwaddirPath := tview.NewInputField().SetLabel(dict.optsPathLabel).SetLabelColor(tview.Styles.SecondaryTextColor).SetText(base.Config().WadDir)
+	doomwaddirPath := tview.NewInputField().SetLabel(dict.optsPathLabel).SetText(base.Config().WadDir)
 
 	// add doomwaddir to form
 	o.AddFormItem(doomwaddirPath)
@@ -124,22 +124,23 @@ func makeOptions() *tview.Flex {
 	doomwaddirPathCheck := func() {
 		// does this path exist?
 		if _, err := os.Stat(doomwaddirPath.GetText()); os.IsNotExist(err) {
-			doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagWarnColor + " " + dict.optsErrPathDoesntExist)
+			doomwaddirPath.SetLabel(labelWarn(dict.optsPathLabel, dict.optsErrPathDoesntExist))
 			return
 		}
 
 		// check if selected path contains any iwads
 		if hasIwad, err := base.PathHasIwads(doomwaddirPath.GetText()); !hasIwad {
 			if err != nil {
-				doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagWarnColor + " (" + err.Error() + ")")
+				doomwaddirPath.SetLabel(labelWarn(dict.optsPathLabel, "("+err.Error()+")"))
+				return
 			}
-			doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagWarnColor + " " + dict.optsErrPathNoIWads)
+			doomwaddirPath.SetLabel(labelWarn(dict.optsPathLabel, dict.optsErrPathNoIWads))
 			return
 		}
 
 		//iwads.SetText(strings.Join(base.GePathIwads(doomwaddirPath.GetText()), ","))
 
-		doomwaddirPath.SetLabel(dict.optsPathLabel + colorTagGoodColor + " " + dict.optsLooksGood)
+		doomwaddirPath.SetLabel(labelOk(dict.optsPathLabel, dict.optsLooksGood))
 	}
 	// initial check of configured path
 	doomwaddirPathCheck()
@@ -161,7 +162,7 @@ func makeOptions() *tview.Flex {
 	// add source port input fields
 	spInputs := make([]*tview.InputField, base.MAX_SOURCE_PORTS)
 	for i := 0; i < base.MAX_SOURCE_PORTS; i++ {
-		sourcePort := tview.NewInputField().SetLabel(dict.optsSourcePortLabel).SetLabelColor(tview.Styles.SecondaryTextColor)
+		sourcePort := tview.NewInputField().SetLabel(dict.optsSourcePortLabel)
 		autocompleteSourcePort := autocompletePathMaker(sourcePort, false, spExtensionFilter)
 
 		// only autocomplete source ports on windows
@@ -181,16 +182,16 @@ func makeOptions() *tview.Flex {
 
 	// ui options
 	//#######################################################################
-	termColors := tview.NewCheckbox().SetLabel(dict.optsUseTerminalColors).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(base.Config().UseTerminalColors)
+	termColors := tview.NewCheckbox().SetLabel(dict.optsUseTerminalColors).SetChecked(base.Config().UseTerminalColors)
 	o.AddFormItem(termColors)
 
-	dontWarn := tview.NewCheckbox().SetLabel(dict.optsDontWarn).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(base.Config().DeleteWithoutWarning)
+	dontWarn := tview.NewCheckbox().SetLabel(dict.optsDontWarn).SetChecked(base.Config().DeleteWithoutWarning)
 	o.AddFormItem(dontWarn)
 
-	printHeader := tview.NewCheckbox().SetLabel(dict.optsHideHeader).SetLabelColor(tview.Styles.SecondaryTextColor).SetChecked(base.Config().HideHeader)
+	printHeader := tview.NewCheckbox().SetLabel(dict.optsHideHeader).SetChecked(base.Config().HideHeader)
 	o.AddFormItem(printHeader)
 
-	gameListRelWidth := tview.NewInputField().SetLabel(dict.optsGamesListRelativeWitdh).SetLabelColor(tview.Styles.SecondaryTextColor).SetAcceptanceFunc(func(text string, char rune) bool {
+	gameListRelWidth := tview.NewInputField().SetLabel(dict.optsGamesListRelativeWitdh).SetAcceptanceFunc(func(text string, char rune) bool {
 		if text == "-" {
 			return false
 		}
