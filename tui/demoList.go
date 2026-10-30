@@ -44,7 +44,8 @@ func (u *ui) makeDemoList(g *games.Game) (*tview.Flex, error) {
 
 	// hit enter plays demo
 	demoList.SetSelectedFunc(func(index int, mainText string, secondaryText string, shortcut rune) {
-		g.PlayDemo(demos[index].Name())
+		name := demos[index].Name()
+		u.launch(g, func() { g.PlayDemo(name) })
 	})
 
 	// removes demo at given index and focuses app properly

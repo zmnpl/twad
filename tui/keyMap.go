@@ -48,7 +48,7 @@ func (u *ui) buildKeyGroups() {
 		}},
 		{"Launch Selected Game", []keyBinding{
 			{label: "ENTER", desc: "Run Game", footer: true},
-			{label: "F9", desc: "Run Last Savegame", footer: true, key: tcell.KeyF9, game: quickload},
+			{label: "F9", desc: "Run Last Savegame", footer: true, key: tcell.KeyF9, game: u.quickload},
 			{label: "w", desc: "Warp (+Record)", footer: true, ch: 'w', game: u.warpGame},
 		}},
 		{"Selected Game Details", []keyBinding{
@@ -227,12 +227,12 @@ func (u *ui) editGame(g *games.Game) {
 }
 
 // "quickload" tries to load the latest savegame
-func quickload(g *games.Game) {
-	g.Quickload()
+func (u *ui) quickload(g *games.Game) {
+	u.launch(g, func() { g.Quickload() })
 }
 
 func (u *ui) warpGame(g *games.Game) {
-	u.contentPages.showAt(pageWarp, u.makeWarpRecord(*g), dialogXOffset, u.selectedRowY(), warpDialogWidth, warpDialogHeight)
+	u.contentPages.showAt(pageWarp, u.makeWarpRecord(g), dialogXOffset, u.selectedRowY(), warpDialogWidth, warpDialogHeight)
 }
 
 func (u *ui) showDemos(g *games.Game) {

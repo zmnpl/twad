@@ -25,7 +25,7 @@ func (u *ui) makeGamesTable() *tview.Table {
 
 	u.gamesTable.SetSelectedFunc(func(r int, c int) {
 		if g, ok := gameAt(r); ok {
-			g.Run()
+			u.launch(g, func() { g.Run() })
 		}
 	})
 

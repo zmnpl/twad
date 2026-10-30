@@ -14,7 +14,7 @@ const (
 )
 
 // warp dialog
-func (u *ui) makeWarpRecord(game games.Game) *tview.Form {
+func (u *ui) makeWarpRecord(game *games.Game) *tview.Form {
 	episode := 0
 	level := 0
 
@@ -60,25 +60,26 @@ func (u *ui) makeWarpRecord(game games.Game) *tview.Form {
 		difficulty, _ := skl.GetCurrentOption()
 		demo := demoName.GetText()
 
-		u.appModeNormal() // TODO: looks like this is only executed after the game closed; not sure why
+		u.appModeNormal()
 
 		i, beamToMapDisplayName := mapSelect.GetCurrentOption()
-		if i > 0 {
-			if len(demo) > 0 {
-				game.GoToMapRecord(maps[beamToMapDisplayName], difficulty, demo)
-				return
-			} else {
+		u.launch(game, func() {
+			if i > 0 {
+				if len(demo) > 0 {
+					game.GoToMapRecord(maps[beamToMapDisplayName], difficulty, demo)
+					return
+				}
 				game.GoToMap(maps[beamToMapDisplayName], difficulty)
 				return
 			}
-		}
 
-		// supplying a demoname automatically starts recording
-		if len(demo) > 0 {
-			game.WarpRecord(episode, level, difficulty, demo)
-		} else {
-			game.Warp(episode, level, difficulty)
-		}
+			// supplying a demoname automatically starts recording
+			if len(demo) > 0 {
+				game.WarpRecord(episode, level, difficulty, demo)
+			} else {
+				game.Warp(episode, level, difficulty)
+			}
+		})
 	})
 
 	return warpRecordForm

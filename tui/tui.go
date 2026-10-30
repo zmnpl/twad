@@ -219,6 +219,24 @@ func (u *ui) selectedGameChanged(g *games.Game) {
 	u.detailSidePagesSub2.setBase(makeStatsTable(g))
 }
 
+// launch runs a game in the background, so the ui stays responsive while playing
+func (u *ui) launch(g *games.Game, run func()) {
+	u.statusline.SetText(fmt.Sprintf(" Playing %v ...", g.Name))
+
+	go func() {
+		run()
+
+		// back to the ui goroutine
+		u.app.QueueUpdateDraw(func() {
+			u.statusline.Clear()
+			// playtime and stats changed
+			if selected, ok := u.selectedGame(); ok && selected == g {
+				u.selectedGameChanged(g)
+			}
+		})
+	}()
+}
+
 // redraw whole table
 func (u *ui) whenGamesChanged() {
 	u.populateGamesTable()
