@@ -2,14 +2,10 @@ package tui
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
-)
-
-const (
-	previewText = "~$"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 // command preview
@@ -22,49 +18,5 @@ func (u *ui) makeCommandPreview() *tview.TextView {
 
 func (u *ui) populateCommandPreview(g *games.Game) {
 	u.commandPreview.Clear()
-	fmt.Fprintf(u.commandPreview, "%s %s", previewText, stylizeCommandList(g.CommandList()))
-}
-
-func stylizeCommandList(params []string) string {
-	keywords := map[string]bool{
-		"-iwad":          true,
-		"-file":          true,
-		"-savedir":       true,
-		"-save":          true,
-		"-config":        true,
-		"-statdump":      true,
-		"-levelstat":     true,
-		"-fast":          true,
-		"zdoom":          true,
-		"gzdoom":         true,
-		"lzdoom":         true,
-		"zandronum":      true,
-		"chocolate-doom": true,
-		"crispy-doom":    true,
-		"prboom":         true,
-		"prboom-plus":    true,
-		"woof":           true,
-		"dsda":           true,
-	}
-
-	optionals := map[string]int{
-		"-loadgame": 1,
-	}
-
-	var command strings.Builder
-	for _, s := range params {
-		if s == "" {
-			continue
-		}
-		if _, isKnown := keywords[s]; isKnown {
-			command.WriteString(fmt.Sprintf(" %s%s%s", colorTagMoreContrast, s, colorTagPrimaryText))
-			continue
-		}
-		if _, isKnownOptional := optionals[s]; isKnownOptional {
-			command.WriteString(fmt.Sprintf(" %s%s%s", colorTagContrast, s, colorTagPrimaryText))
-			continue
-		}
-		command.WriteString(fmt.Sprintf(" %s", s))
-	}
-	return strings.TrimSpace(command.String())
+	fmt.Fprintf(u.commandPreview, "%s %s", shared.PreviewText, shared.StylizeCommandList(g.CommandList(), colorTagMoreContrast, colorTagContrast, colorTagPrimaryText))
 }

@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 
 	"github.com/zmnpl/twad/helper"
+	"github.com/zmnpl/twad/tui/shared"
 
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
@@ -18,7 +19,7 @@ func (u *ui) makeModTree(g *games.Game) (*tview.TreeView, error) {
 	}
 
 	modFolderTree, rootNode := newTree(rootDir)
-	modFolderTree.SetTitle(dict.modTreeTitle)
+	modFolderTree.SetTitle(shared.Dict.ModTreeTitle)
 	add := makeFileTreeAddFunc(helper.FilterExtensions, u.config.ModExtensions, true, false)
 	add(rootNode, rootDir)
 

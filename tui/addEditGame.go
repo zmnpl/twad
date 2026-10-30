@@ -1,7 +1,6 @@
 package tui
 
 import (
-	"encoding/csv"
 	"fmt"
 	"strings"
 
@@ -10,22 +9,8 @@ import (
 	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/games"
 	"github.com/zmnpl/twad/ports"
+	"github.com/zmnpl/twad/tui/shared"
 )
-
-func splitParams(params string) []string {
-	paramsReader := strings.NewReader(params)
-	c := csv.NewReader(paramsReader)
-	c.Comma = ' '
-
-	p, err := c.ReadAll()
-	if err == nil && len(p) > 0 {
-		for i, v := range p[0] {
-			p[0][i] = strings.TrimSpace(v)
-		}
-		return p[0]
-	}
-	return []string{}
-}
 
 func indexOfItemIn(item string, list []string) (int, bool) {
 	for i, val := range list {
@@ -38,7 +23,7 @@ func indexOfItemIn(item string, list []string) (int, bool) {
 
 func (u *ui) makeAddEditGame(g *games.Game) *tview.Flex {
 	gWasNil := false
-	title := dict.editGame
+	title := shared.Dict.EditGame
 
 	port, iwad := "", ""
 	if len(u.config.Ports) > 0 {
@@ -51,26 +36,26 @@ func (u *ui) makeAddEditGame(g *games.Game) *tview.Flex {
 	if g == nil {
 		foo := games.NewGame("", port, "", iwad)
 		g = &foo
-		title = dict.addGame
+		title = shared.Dict.AddGame
 		gWasNil = true
 	}
 	expectedExtension := ports.ConfigFileExtension(g.Port)
 
 	// create basic form items
-	inputName := tview.NewInputField().SetText(g.Name).SetLabel(dict.aeName)
-	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(dict.aeOwnCfg)
+	inputName := tview.NewInputField().SetText(g.Name).SetLabel(shared.Dict.AeName)
+	inputOwnCfg := tview.NewCheckbox().SetChecked(g.PersonalPortCfg).SetLabel(shared.Dict.AeOwnCfg)
 	inputSharedCfg := tview.NewInputField().SetText(g.SharedConfig)
-	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(dict.aeSourcePort)
-	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(dict.aeIWAD)
-	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(dict.aeLink)
-	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(dict.aeEnvironment)
-	inputCustomParams := tview.NewInputField().SetText(g.ParamsString()).SetLabel(dict.aeOtherParams)
+	inputSourcePort := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(shared.Dict.AeSourcePort)
+	inputIwad := tview.NewDropDown().SetOptions([]string{"NA"}, nil).SetLabel(shared.Dict.AeIWAD)
+	inputURL := tview.NewInputField().SetText(g.Link).SetLabel(shared.Dict.AeLink)
+	inputEnvVars := tview.NewInputField().SetText(g.EnvironmentString()).SetLabel(shared.Dict.AeEnvironment)
+	inputCustomParams := tview.NewInputField().SetText(g.ParamsString()).SetLabel(shared.Dict.AeOtherParams)
 
 	ae := tview.NewForm()
 
 	// shared config label shows the expected extension; warns when an own config is used instead
 	updateSharedCfgLabel := func() {
-		label := fmt.Sprintf(dict.aeSharedCfgT, expectedExtension)
+		label := fmt.Sprintf(shared.Dict.AeSharedCfgT, expectedExtension)
 		if inputOwnCfg.IsChecked() {
 			label = colorTagWarnColor + label
 		}
@@ -141,14 +126,14 @@ func (u *ui) makeAddEditGame(g *games.Game) *tview.Flex {
 	ae.AddFormItem(inputEnvVars)
 	ae.AddFormItem(inputCustomParams)
 
-	ae.AddButton(dict.aeOkButton, func() {
+	ae.AddButton(shared.Dict.AeOkButton, func() {
 		g.Name = strings.TrimSpace(inputName.GetText())
 		_, g.Port = inputSourcePort.GetCurrentOption()
 		_, g.Iwad = inputIwad.GetCurrentOption()
 		g.PersonalPortCfg = inputOwnCfg.IsChecked()
 		g.SharedConfig = inputSharedCfg.GetText()
-		g.Environment = splitParams(inputEnvVars.GetText())
-		g.CustomParameters = splitParams(inputCustomParams.GetText())
+		g.Environment = shared.SplitParams(inputEnvVars.GetText())
+		g.CustomParameters = shared.SplitParams(inputCustomParams.GetText())
 		g.Link = inputURL.GetText()
 
 		if gWasNil {
@@ -163,9 +148,9 @@ func (u *ui) makeAddEditGame(g *games.Game) *tview.Flex {
 	// build form
 	addEditGameForm := tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(ae, 0, 1, true).
-		AddItem(tview.NewTextView().SetText(dict.aeEnvironmentDetail), 2, 0, false).
+		AddItem(tview.NewTextView().SetText(shared.Dict.AeEnvironmentDetail), 2, 0, false).
 		AddItem(nil, 1, 0, false).
-		AddItem(tview.NewTextView().SetText(dict.aeOtherParamsDetail), 1, 0, false)
+		AddItem(tview.NewTextView().SetText(shared.Dict.AeOtherParamsDetail), 1, 0, false)
 	addEditGameForm.SetBorder(true)
 	addEditGameForm.SetTitle(title)
 	addEditGameForm.SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)

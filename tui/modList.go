@@ -7,10 +7,11 @@ import (
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/games"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 func (u *ui) makeModList(g *games.Game) *tview.Flex {
-	modListFlex, modList := newTitledList(dict.overviewMods)
+	modListFlex, modList := newTitledList(shared.Dict.OverviewMods)
 	// populate list with data
 	for _, mod := range g.Mods {
 		colorPrefix := ""

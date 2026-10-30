@@ -3,6 +3,7 @@ package tui
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 // can show errors prominently on the screen
@@ -20,15 +21,15 @@ func (u *ui) showError(errTitle string, errString string, handFocusBackTo tview.
 
 	// YOLO lets the user execute and action despite the error
 	if YOLO != nil {
-		errForm.AddButton(dict.errYolo, func() {
+		errForm.AddButton(shared.Dict.ErrYolo, func() {
 			YOLO()
 			resetFocus()
 		})
-		errForm.AddButton(dict.errNotYet, func() {
+		errForm.AddButton(shared.Dict.ErrNotYet, func() {
 			resetFocus()
 		})
 	} else {
-		errForm.AddButton(dict.errAbort, func() {
+		errForm.AddButton(shared.Dict.ErrAbort, func() {
 			resetFocus()
 		})
 	}
@@ -47,7 +48,7 @@ func (u *ui) showError(errTitle string, errString string, handFocusBackTo tview.
 		AddItem(errForm, 3, 0, true)
 	foo.
 		SetBorder(true).
-		SetTitle(dict.errTitleStart + " - " + errTitle).
+		SetTitle(shared.Dict.ErrTitleStart + " - " + errTitle).
 		SetBorderColor(warnColor).
 		SetTitleColor(warnColor)
 

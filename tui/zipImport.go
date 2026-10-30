@@ -10,6 +10,7 @@ import (
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/helper"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 func (u *ui) runZipImport(archivePath string, folderNameSuggest string, xOffset int, yOffset int, handFocusBackTo tview.Primitive) {
@@ -19,7 +20,7 @@ func (u *ui) runZipImport(archivePath string, folderNameSuggest string, xOffset 
 		u.contentPages.close(pageZipImport, handFocusBackTo)
 	}
 
-	modNameInput := tview.NewInputField().SetLabel(dict.zipImportToLabel).SetText(path.Base(archivePath))
+	modNameInput := tview.NewInputField().SetLabel(shared.Dict.ZipImportToLabel).SetText(path.Base(archivePath))
 
 	modNameInput.SetText(strings.TrimSuffix(path.Base(archivePath), path.Ext(archivePath)))
 	if folderNameSuggest != "" {
@@ -29,14 +30,14 @@ func (u *ui) runZipImport(archivePath string, folderNameSuggest string, xOffset 
 	modNameDoneCheck := func() {
 		suggestedName := modNameInput.GetText()
 		if !helper.IsFileNameValid(suggestedName) {
-			modNameInput.SetLabel(labelWarn(dict.zipImportToLabel, dict.zipImportToBadNameLabel))
+			modNameInput.SetLabel(labelWarn(shared.Dict.ZipImportToLabel, shared.Dict.ZipImportToBadNameLabel))
 			return
 		}
 		if _, err := os.Stat(path.Join(base.Config().WadDir, suggestedName)); !os.IsNotExist(err) {
-			modNameInput.SetLabel(labelWarn(dict.zipImportToLabel, dict.zipImportToExistsLabel))
+			modNameInput.SetLabel(labelWarn(shared.Dict.ZipImportToLabel, shared.Dict.ZipImportToExistsLabel))
 			return
 		}
-		modNameInput.SetLabel(dict.zipImportToLabel)
+		modNameInput.SetLabel(shared.Dict.ZipImportToLabel)
 	}
 
 	modNameInput.SetDoneFunc(func(key tcell.Key) {
@@ -45,42 +46,42 @@ func (u *ui) runZipImport(archivePath string, folderNameSuggest string, xOffset 
 
 	modNameForm := tview.NewForm().
 		AddFormItem(modNameInput).
-		AddButton(dict.zipImportCancel, func() {
+		AddButton(shared.Dict.ZipImportCancel, func() {
 			resetFocus()
 		}).
-		AddButton(dict.zipImportFormOk, func() {
+		AddButton(shared.Dict.ZipImportFormOk, func() {
 			modName := modNameInput.GetText()
 			resetFocus()
 
 			// test file name again
 			if !helper.IsFileNameValid(modName) {
-				u.showError(dict.zipImportNameInvalid, dict.zipImportNameInvalidReasons, modNameInput, nil)
+				u.showError(shared.Dict.ZipImportNameInvalid, shared.Dict.ZipImportNameInvalidReasons, modNameInput, nil)
 				return
 			}
 
 			// test if provided zip exists
 			if _, err := os.Stat(archivePath); os.IsNotExist(err) {
-				u.showError(dict.zipImportArchiveNotFound, err.Error(), handFocusBackTo, nil)
+				u.showError(shared.Dict.ZipImportArchiveNotFound, err.Error(), handFocusBackTo, nil)
 				return
 			}
 
 			// START ACTUAL IMPORT
 			if err := base.ImportArchive(archivePath, modName); err != nil {
-				u.showError(dict.zipImportFailed, err.Error(), handFocusBackTo, nil)
+				u.showError(shared.Dict.ZipImportFailed, err.Error(), handFocusBackTo, nil)
 			}
 		})
 
 	modNameForm.SetFocus(0)
 
 	layout := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetText(" "+dict.zipImportSecurityWarn).SetTextColor(tcell.ColorRed), 1, 0, true).
+		AddItem(tview.NewTextView().SetText(" "+shared.Dict.ZipImportSecurityWarn).SetTextColor(tcell.ColorRed), 1, 0, true).
 		AddItem(modNameForm, 5, 0, false)
 	layout.SetBorder(true).
-		SetTitle(dict.zipImportTitle + " " + filepath.Base(archivePath))
+		SetTitle(shared.Dict.ZipImportTitle + " " + filepath.Base(archivePath))
 
 	// dimensions
 	height := 8
-	width := len(dict.zipImportSecurityWarn) + 4
+	width := len(shared.Dict.ZipImportSecurityWarn) + 4
 
 	u.contentPages.showAt(pageZipImport, layout, xOffset, yOffset, width, height)
 	u.app.SetFocus(modNameForm)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/zmnpl/twad/games"
+	"github.com/zmnpl/twad/tui/shared"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -206,7 +207,7 @@ func (u *ui) getHeader() (tview.Primitive, int) {
 	header = u.makeHeader()
 	if base.Config().HideHeader {
 		headerHeight = 1
-		header = tview.NewTextView().SetDynamicColors(true).SetText(subtitle)
+		header = tview.NewTextView().SetDynamicColors(true).SetText(shared.Subtitle)
 	}
 	return header, headerHeight
 }

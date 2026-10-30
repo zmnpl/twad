@@ -7,6 +7,7 @@ import (
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
 	"github.com/zmnpl/twad/helper"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 // keyBinding describes a key and what it does
@@ -257,7 +258,7 @@ func visitUrl(g *games.Game) {
 func (u *ui) showModTree(g *games.Game) {
 	modTree, err := u.makeModTree(g)
 	if err != nil {
-		u.showError(dict.modTreeErrWadDir, err.Error(), nil, nil)
+		u.showError(shared.Dict.ModTreeErrWadDir, err.Error(), nil, nil)
 		return
 	}
 	u.detailSidePagesSub2.switchTo(pageModSelector, modTree)

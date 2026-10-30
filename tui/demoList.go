@@ -8,10 +8,11 @@ import (
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/base"
 	"github.com/zmnpl/twad/games"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 func (u *ui) makeDemoList(g *games.Game) (*tview.Flex, error) {
-	demoFlex, demoList := newTitledList(dict.demosHeader)
+	demoFlex, demoList := newTitledList(shared.Dict.DemosHeader)
 
 	// get demos
 	demos, err := g.Demos()

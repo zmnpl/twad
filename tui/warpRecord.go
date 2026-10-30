@@ -2,50 +2,16 @@ package tui
 
 import (
 	"sort"
-	"strconv"
-	"strings"
-	"unicode"
 
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 const (
 	warpDialogWidth  = 50
 	warpDialogHeight = 13
 )
-
-var (
-	skillLevels []string
-)
-
-func init() {
-	skillLevels = []string{"I'M TOO YOUNG TO DIE.", "HEY, NOT TOO ROUGH.", "HURT ME PLENTY.", "ULTRA-VIOLENCE.", "NIGHTMARE!"}
-}
-
-// warp strings are expected to be of form
-// "e l"
-// e=episode (number)
-// space-character
-// l=level (number)
-// if one is ommited, the other one just works as "level" for doom ii and the like
-func warpStringAcceptance(warp string, lastChar rune) (warpable bool) {
-	return (unicode.IsDigit(lastChar) || unicode.IsSpace(lastChar)) && len([]rune(warp)) <= 5
-}
-
-func splitWarpString(warp string) (episode, level int) {
-	parts := strings.Split(warp, " ")
-	// episode
-	if len(parts) > 0 {
-		episode, _ = strconv.Atoi(parts[0])
-	}
-	// level
-	if len(parts) > 1 {
-		level, _ = strconv.Atoi(parts[1])
-	}
-
-	return
-}
 
 // warp dialog
 func (u *ui) makeWarpRecord(game games.Game) *tview.Form {
@@ -59,7 +25,7 @@ func (u *ui) makeWarpRecord(game games.Game) *tview.Form {
 		SetBackgroundColor(tview.Styles.PrimitiveBackgroundColor)
 
 	// warp
-	warpTo := tview.NewInputField().SetLabel(dict.warpText).SetAcceptanceFunc(warpStringAcceptance).SetFieldWidth(5)
+	warpTo := tview.NewInputField().SetLabel(shared.Dict.WarpText).SetAcceptanceFunc(shared.WarpStringAcceptance).SetFieldWidth(5)
 	warpRecordForm.AddFormItem(warpTo)
 
 	// map select
@@ -74,23 +40,23 @@ func (u *ui) makeWarpRecord(game games.Game) *tview.Form {
 	warpRecordForm.AddFormItem(mapSelect)
 
 	// skill level
-	skl := tview.NewDropDown().SetOptions(skillLevels, nil).SetCurrentOption(2).SetLabel(dict.skillText)
+	skl := tview.NewDropDown().SetOptions(shared.SkillLevels, nil).SetCurrentOption(2).SetLabel(shared.Dict.SkillText)
 	warpRecordForm.AddFormItem(skl)
 
 	// to record a demo, specify a name
-	demoName := tview.NewInputField().SetLabel(dict.demoText).SetFieldWidth(21)
+	demoName := tview.NewInputField().SetLabel(shared.Dict.DemoText).SetFieldWidth(21)
 
 	demoName.SetChangedFunc(func(text string) {
-		demoName.SetLabel(dict.demoText)
+		demoName.SetLabel(shared.Dict.DemoText)
 		if game.DemoExists(demoName.GetText()) {
-			demoName.SetLabel(colorTagWarnColor + dict.demoTextOverwrite)
+			demoName.SetLabel(colorTagWarnColor + shared.Dict.DemoTextOverwrite)
 		}
 	})
 	warpRecordForm.AddFormItem(demoName)
 
 	// confirm button
-	warpRecordForm.AddButton(dict.warpOkButton, func() {
-		episode, level = splitWarpString(warpTo.GetText())
+	warpRecordForm.AddButton(shared.Dict.WarpOkButton, func() {
+		episode, level = shared.SplitWarpString(warpTo.GetText())
 		difficulty, _ := skl.GetCurrentOption()
 		demo := demoName.GetText()
 

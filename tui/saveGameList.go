@@ -6,10 +6,11 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 func (u *ui) makeSavegameList(g *games.Game) (*tview.Flex, error) {
-	frameFlex, savegameList := newTitledList(dict.savesHeader)
+	frameFlex, savegameList := newTitledList(shared.Dict.SavesHeader)
 
 	// get savegames
 	savegames := g.LoadSavegames() //time.Sleep(2 * time.Second)

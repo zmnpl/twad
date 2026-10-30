@@ -5,6 +5,7 @@ import (
 
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/helper"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 type zipSelect struct {
@@ -28,7 +29,7 @@ func (z *zipSelect) initZipSelect() {
 
 	var rootNode *tview.TreeNode
 	z.selectTree, rootNode = newTree(rootDir)
-	z.selectTree.SetTitle(dict.zipSelectTitle)
+	z.selectTree.SetTitle(shared.Dict.ZipSelectTitle)
 	add := makeFileTreeAddFunc(helper.FilterExtensions, ".zip.tar.gz.rar", true, true)
 	add(rootNode, rootDir)
 

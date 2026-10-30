@@ -3,6 +3,7 @@ package tui
 import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 // first 16 tcell colors
@@ -37,53 +38,25 @@ var (
 )
 
 func (u *ui) selectTheme() {
-	// "Hard coded" theme
-	twadTheme := tview.Theme{
-		// ui stylepageSettings
-		PrimitiveBackgroundColor:    tcell.NewHexColor(0x000000), // black
-		ContrastBackgroundColor:     tcell.NewHexColor(0x4169E1), // royal blue
-		MoreContrastBackgroundColor: tcell.NewHexColor(0xFFA500), // organge
-		BorderColor:                 tcell.NewHexColor(0x4169E1), // royal blue
-		TitleColor:                  tcell.NewHexColor(0x4169E1), // royal blue
-		GraphicsColor:               tcell.NewHexColor(0x4169E1), // royal blue
-		PrimaryTextColor:            tcell.NewHexColor(0xFFFFFF), // white
-		SecondaryTextColor:          tcell.NewHexColor(0xFFA500), // organge
-		TertiaryTextColor:           tcell.NewHexColor(0xFF69B4), // hot pink
-		InverseTextColor:            tcell.NewHexColor(0xFFFACD), // lemon chiffon
-		ContrastSecondaryTextColor:  tcell.NewHexColor(0xFFDAB9), // peach puff
+	t := shared.SelectTheme(u.config.UseTerminalColors)
+
+	tview.Styles = tview.Theme{
+		PrimitiveBackgroundColor:    t.PrimitiveBackground,
+		ContrastBackgroundColor:     t.ContrastBackground,
+		MoreContrastBackgroundColor: t.MoreContrastBackground,
+		BorderColor:                 t.Border,
+		TitleColor:                  t.Title,
+		GraphicsColor:               t.Graphics,
+		PrimaryTextColor:            t.PrimaryText,
+		SecondaryTextColor:          t.SecondaryText,
+		TertiaryTextColor:           t.TertiaryText,
+		InverseTextColor:            t.InverseText,
+		ContrastSecondaryTextColor:  t.ContrastSecondaryText,
 	}
 
-	// Theme based on terminal colors
-	terminalTheme := tview.Theme{
-		PrimitiveBackgroundColor:    tcell.ColorBlack,
-		ContrastBackgroundColor:     tcell.ColorGray,
-		MoreContrastBackgroundColor: tcell.ColorMaroon,
-		BorderColor:                 tcell.ColorNavy,
-		TitleColor:                  tcell.ColorMaroon,
-		GraphicsColor:               tcell.ColorDefault,
-		PrimaryTextColor:            tcell.ColorWhite,
-		SecondaryTextColor:          tcell.ColorPurple,
-		TertiaryTextColor:           tcell.ColorTeal,
-		InverseTextColor:            tcell.ColorBlack,
-		ContrastSecondaryTextColor:  tcell.ColorBlack,
-	}
-
-	// Select theme
-	tview.Styles = twadTheme
-
-	colorTagPrimaryText = "[" + "#FFFFFF" + "]"  // like primary text
-	colorTagContrast = "[" + "#4169E1" + "]"     // like title
-	colorTagMoreContrast = "[" + "#FFA500" + "]" // like secondary text
-
-	if u.config.UseTerminalColors {
-		tview.Styles = terminalTheme
-
-		colorTagPrimaryText = "[" + tview.Styles.PrimaryTextColor.Name() + "]"
-		colorTagContrast = "[" + tview.Styles.TitleColor.Name() + "]"
-		colorTagMoreContrast = "[" + tview.Styles.SecondaryTextColor.Name() + "]"
-
-		colorTagGoodColor = "[green]"
-		colorTagWarnColor = "[red]"
-	}
-
+	colorTagPrimaryText = t.Tag(t.PrimaryText)    // like primary text
+	colorTagContrast = t.Tag(t.Title)             // like title
+	colorTagMoreContrast = t.Tag(t.SecondaryText) // like secondary text
+	colorTagGoodColor = t.Tag(t.Good)
+	colorTagWarnColor = t.Tag(t.Warn)
 }

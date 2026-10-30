@@ -4,6 +4,7 @@ import (
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 	"github.com/zmnpl/twad/games"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 const gamesTableHeaderRows = 1
@@ -43,10 +44,10 @@ type gamesTableColumn struct {
 // evaluated when used, because header texts and colors get set up at runtime
 func gamesTableColumns() []gamesTableColumn {
 	return []gamesTableColumn{
-		{dict.gameTableHeaderRating, (*games.Game).RatingString, tview.Styles.TitleColor},
-		{dict.gameTableHeaderName, func(g *games.Game) string { return g.Name }, tview.Styles.SecondaryTextColor},
-		{dict.gameTableHeaderSourcePort, func(g *games.Game) string { return g.Port }, tview.Styles.PrimaryTextColor},
-		{dict.gameTableHeaderIwad, func(g *games.Game) string { return g.Iwad }, tview.Styles.PrimaryTextColor},
+		{shared.Dict.GameTableHeaderRating, (*games.Game).RatingString, tview.Styles.TitleColor},
+		{shared.Dict.GameTableHeaderName, func(g *games.Game) string { return g.Name }, tview.Styles.SecondaryTextColor},
+		{shared.Dict.GameTableHeaderSourcePort, func(g *games.Game) string { return g.Port }, tview.Styles.PrimaryTextColor},
+		{shared.Dict.GameTableHeaderIwad, func(g *games.Game) string { return g.Iwad }, tview.Styles.PrimaryTextColor},
 	}
 }
 

@@ -2,17 +2,18 @@ package tui
 
 import (
 	"github.com/rivo/tview"
+	"github.com/zmnpl/twad/tui/shared"
 )
 
 // confirm asks the user to confirm an action with a dialog at x, right below row y of the given layer
 // either choice closes the dialog and hands focus back to returnTo; nil restores the apps default state
 func confirm(l *layer, title string, x, y int, returnTo tview.Primitive, onOk func()) {
 	youSureForm := tview.NewForm().
-		AddButton(dict.confirmText, func() {
+		AddButton(shared.Dict.ConfirmText, func() {
 			l.close(pageYouSure, returnTo)
 			onOk()
 		}).
-		AddButton(dict.abortText, func() {
+		AddButton(shared.Dict.AbortText, func() {
 			l.close(pageYouSure, returnTo)
 		})
 	youSureForm.
